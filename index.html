@@ -3,120 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Pro</title>
+    <title>EarnQuick Premium</title>
     
     <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --primary: #00d2ff; --bg: #0f172a; --card: #1e293b; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 150px; }
-        
-        .header { padding: 30px 20px; text-align: center; }
-        .user-pic { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); background: #33d9ff; color: #fff; font-size: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-weight: bold; }
-        
-        .balance-card { background: var(--card); margin: 0 20px 20px; padding: 20px; border-radius: 20px; display: flex; justify-content: space-around; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .balance-card b { font-size: 24px; color: var(--primary); display: block; }
-        .balance-card span { font-size: 14px; opacity: 0.8; }
+        :root {
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --bg: #0b0f1a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --accent: #f43f5e;
+        }
 
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
-        .menu-btn { background: var(--card); padding: 25px 10px; border-radius: 20px; text-align: center; cursor: pointer; border-bottom: 5px solid var(--primary); transition: 0.3s; }
-        .menu-btn:active { transform: scale(0.95); }
-        .menu-btn i { font-size: 32px; margin-bottom: 10px; display: block; }
-        .menu-btn span { font-size: 16px; font-weight: bold; color: #fff; display: block; }
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: radial-gradient(circle at top, #1e293b 0%, #0b0f1a 100%);
+            color: #ffffff;
+            margin: 0;
+            padding-bottom: 110px;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* ব্যানার অ্যাড এরিয়া */
-        #banner-container {
-            position: fixed;
-            bottom: 10px;
-            left: 5%;
-            width: 90%;
-            height: 70px;
-            background: rgba(0,0,0,0.8);
-            border-radius: 15px;
-            border: 1px solid var(--primary);
-            overflow: hidden;
+        /* প্রফেশনাল নিউজ টিকার */
+        .news-ticker {
+            background: linear-gradient(90deg, var(--secondary), var(--primary));
+            color: #000;
+            padding: 8px 0;
+            font-size: 13px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .header {
+            padding: 40px 20px 20px;
+            text-align: center;
+        }
+
+        .profile-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-pic {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+            border: 4px solid #0b0f1a;
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 15px;
+            height: 15px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 3px solid #0b0f1a;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        .balance-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 0 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+        }
+
+        .stat-card span { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-card h2 { margin: 5px 0 0; font-size: 26px; color: var(--primary); }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 0 20px;
+        }
+
+        .action-btn {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 25px 15px;
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:active { transform: scale(0.92); background: rgba(255, 255, 255, 0.1); }
+
+        .action-btn i { font-size: 32px; margin-bottom: 12px; display: block; background: linear-gradient(to bottom, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .btn-watch { border-bottom: 4px solid var(--accent); }
+        .btn-withdraw { border-bottom: 4px solid #22c55e; }
+        .btn-ref { border-bottom: 4px solid var(--secondary); }
+        .btn-sync { border-bottom: 4px solid #eab308; }
+
+        /* ফিক্সড ব্যানার অ্যাড */
+        .ad-dock {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 15, 26, 0.95);
+            backdrop-filter: blur(15px);
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 1000;
+            min-height: 60px;
+            display: flex;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div id="u_pic" class="user-pic">?</div>
-    <div id="u_name" style="font-size: 20px; font-weight: bold;">Loading...</div>
+<div class="news-ticker">
+    <marquee scrollamount="5">🔥 EarnQuick প্রো-তে আপনাকে স্বাগতম! বেশি বেশি অ্যাড দেখুন এবং ইনস্ট্যান্ট পেমেন্ট বুঝে নিন। রেফার বোনাস এখন দ্বিগুণ! 🔥</marquee>
 </div>
 
-<div class="balance-card">
-    <div><span>পয়েন্ট</span><b id="bal">0.00</b></div>
-    <div><span>রেফার</span><b id="ref">0</b></div>
+<div class="header">
+    <div class="profile-container">
+        <div id="u_pic" class="user-pic">?</div>
+        <div class="status-dot"></div>
+    </div>
+    <h1 id="u_name" style="font-size: 22px; margin-top: 15px; letter-spacing: 0.5px;">User Name</h1>
+    <p style="font-size: 12px; color: #64748b; margin-top: -5px;">ID: <span id="u_id">000000</span></p>
+</div>
+
+<div class="balance-container">
+    <div class="stat-card">
+        <span>Current Points</span>
+        <h2 id="bal">0.00</h2>
+    </div>
+    <div class="stat-card">
+        <span>Total Refs</span>
+        <h2 id="ref">0</h2>
+    </div>
 </div>
 
 <div class="menu-grid">
-    <div class="menu-btn" onclick="watchAd()" style="border-color: #e91e63;">
-        <i class="fas fa-play-circle" style="color: #e91e63;"></i>
-        <span>অ্যাড দেখুন</span>
+    <div class="action-btn btn-watch" onclick="watchAd()">
+        <i class="fas fa-play-circle" style="background: linear-gradient(to bottom, #fb7185, var(--accent)); -webkit-background-clip: text;"></i>
+        <span style="font-weight: 600;">Watch Ad</span>
     </div>
-    <div class="menu-btn" onclick="copyRef()" style="border-color: #2196f3;">
-        <i class="fas fa-share-alt" style="color: #2196f3;"></i>
-        <span>রেফার</span>
+    <div class="action-btn btn-withdraw" onclick="tg.showAlert('Withdraw functionality is opening soon!')">
+        <i class="fas fa-wallet" style="background: linear-gradient(to bottom, #4ade80, #22c55e); -webkit-background-clip: text;"></i>
+        <span style="font-weight: 600;">Withdraw</span>
     </div>
-    <div class="menu-btn" onclick="tg.showAlert('বট মেনু থেকে উইথড্র অপশনটি ব্যবহার করুন।')" style="border-color: #4caf50;">
-        <i class="fas fa-wallet" style="color: #4caf50;"></i>
-        <span>উইথড্র</span>
+    <div class="action-btn btn-ref" onclick="copyRef()">
+        <i class="fas fa-users" style="background: linear-gradient(to bottom, var(--primary), var(--secondary)); -webkit-background-clip: text;"></i>
+        <span style="font-weight: 600;">Referral</span>
     </div>
-    <div class="menu-btn" onclick="location.reload()" style="border-color: #ff9800;">
-        <i class="fas fa-sync" style="color: #ff9800;"></i>
-        <span>রিফ্রেশ</span>
+    <div class="action-btn btn-sync" onclick="syncData()">
+        <i class="fas fa-rotate" style="background: linear-gradient(to bottom, #fde047, #eab308); -webkit-background-clip: text;"></i>
+        <span style="font-weight: 600;">Sync Now</span>
     </div>
 </div>
 
-<div id="banner-container">
-    </div>
+<div class="ad-dock">
+    <script type="text/javascript" src="//alwingulla.com/tag.min.js" data-zone="10603687" async data-cfasync="false"></script>
+</div>
 
 <script>
     const tg = window.Telegram.WebApp;
-    const user = tg.initDataUnsafe.user;
+    tg.expand();
+    const user = tg.initDataUnsafe.user || { id: 0, first_name: "Guest" };
     const BACKEND = "https://earnquick-backend.onrender.com";
 
-    function loadData() {
-        if(!user) return;
+    // রিয়েল টাইম ডাটা ফেচিং
+    async function loadData() {
+        if(!user.id) return;
         document.getElementById('u_name').innerText = user.first_name;
-        document.getElementById('u_pic').innerText = user.first_name[0];
+        document.getElementById('u_pic').innerText = user.first_name[0].toUpperCase();
+        document.getElementById('u_id').innerText = user.id;
+
+        try {
+            const response = await fetch(`${BACKEND}/data?user_id=${user.id}`);
+            const data = await response.json();
+            
+            // সংখ্যাগুলো ধীরে ধীরে বাড়ার অ্যানিমেশন (Unique feel)
+            animateValue("bal", parseFloat(document.getElementById('bal').innerText), data.balance, 1000);
+            document.getElementById('ref').innerText = data.refs;
+        } catch (e) {
+            console.error("Fetch Error");
+        }
+    }
+
+    function animateValue(id, start, end, duration) {
+        let current = start;
+        const range = end - start;
+        const increment = end > start ? 0.1 : -0.1;
+        const stepTime = Math.abs(Math.floor(duration / (range * 10)));
+        const obj = document.getElementById(id);
         
-        fetch(`${BACKEND}/data?user_id=${user.id}`)
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('bal').innerText = data.balance.toFixed(2);
-                document.getElementById('ref').innerText = data.refs;
-            });
+        const timer = setInterval(() => {
+            current += increment;
+            obj.innerText = current.toFixed(2);
+            if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                obj.innerText = end.toFixed(2);
+                clearInterval(timer);
+            }
+        }, 10);
     }
 
     function watchAd() {
         if (typeof show_10603637 === 'function') {
-            show_10603637(user.id).then(() => {
-                tg.showAlert("অভিনন্দন! পয়েন্ট যোগ হয়েছে।");
-                setTimeout(() => { location.reload(); }, 1500);
-            }).catch(() => tg.showAlert("অ্যাড লোড হচ্ছে না, কিছুক্ষণ পর চেষ্টা করুন।"));
+            show_10603637().then(async () => {
+                tg.MainButton.setText("Adding Points...").show();
+                
+                // ব্যাকএন্ডে রিয়েল টাইম আপডেট রিকোয়েস্ট
+                await fetch(`${BACKEND}/update-balance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: user.id, points: 5.00 })
+                });
+
+                tg.MainButton.hide();
+                tg.showScanQrPopup({ text: "Success! Points added to your wallet." });
+                setTimeout(() => { tg.closeScanQrPopup(); loadData(); }, 2000);
+                
+            }).catch(() => tg.showAlert("Ad not ready. Please try again."));
         }
+    }
+
+    function syncData() {
+        const btn = document.querySelector('.btn-sync i');
+        btn.style.animation = "fa-spin 1s infinite linear";
+        loadData().then(() => {
+            setTimeout(() => { btn.style.animation = "none"; }, 1000);
+        });
     }
 
     function copyRef() {
         const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-        navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
+        navigator.clipboard.writeText(link).then(() => tg.showPopup({ message: "Referral link copied to clipboard!" }));
     }
 
-    // ব্যানার স্ক্রিপ্ট লোড
-    const script = document.createElement('script');
-    script.src = 'https://alwingulla.com/tag.min.js';
-    script.setAttribute('data-zone', '10603687');
-    document.getElementById('banner-container').appendChild(script);
-
-    tg.ready(); tg.expand(); loadData();
+    loadData();
+    // প্রতি ৩০ সেকেন্ডে অটোমেটিক ডাটা আপডেট (Real-time sync)
+    setInterval(loadData, 30000);
 </script>
+
 </body>
 </html>
