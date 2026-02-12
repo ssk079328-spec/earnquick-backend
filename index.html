@@ -3,109 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Pro</title>
-    
+    <title>EarnQuick Ultimate Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script src="https://hathomeynapoleon.com/99/2d/d2/992dd2ea233a764ef41edc1fbe0657dd.js"></script>
 
     <style>
-        :root {
-            --primary: #00d2ff;
-            --bg: #0b0f19;
-            --card: rgba(255, 255, 255, 0.06);
-            --bkash: #e2136e;
-            --nagad: #f7941d;
-            --rocket: #8c3494;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: var(--bg);
-            color: #fff;
-            margin: 0;
-            padding-bottom: 120px;
-        }
-
-        .header { padding: 30px 20px; text-align: center; }
-        .user-pic { width: 75px; height: 75px; border-radius: 50%; border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 10px; background: rgba(0, 210, 255, 0.1); }
-
-        .balance-card {
-            background: linear-gradient(135deg, #1e293b, #0f172a);
-            margin: 0 20px 20px;
-            padding: 20px;
-            border-radius: 20px;
-            display: flex;
-            justify-content: space-around;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .balance-card b { font-size: 24px; color: var(--primary); display: block; }
-
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; }
-        .btn {
-            background: var(--card);
-            padding: 20px 10px;
-            border-radius: 18px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.05);
-            cursor: pointer;
-        }
-
-        .btn i { font-size: 28px; margin-bottom: 8px; display: block; }
+        :root { --p: #00d2ff; --bg: #050a18; --bkash: #e2136e; --nagad: #f7941d; --rocket: #8c3494; --card: rgba(255,255,255,0.06); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
         
-        /* পেমেন্ট মেথড কালার */
-        .bkash { border-bottom: 4px solid var(--bkash); }
-        .nagad { border-bottom: 4px solid var(--nagad); }
-        .rocket { border-bottom: 4px solid var(--rocket); }
+        /* Navbar & Menu */
+        .navbar { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .side-menu { position: fixed; left: -100%; top: 0; width: 80%; height: 100%; background: #0f172a; z-index: 10000; transition: 0.4s; padding: 25px; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
+        .side-menu.active { left: 0; }
+        .menu-item { padding: 15px; border-radius: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 15px; cursor: pointer; }
 
-        /* ব্যানার অ্যাড সেটআপ */
-        .ad-footer {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.9);
-            padding: 10px 0;
-            text-align: center;
-            z-index: 9999;
-        }
-        /* ব্যানারকে মোবাইলে ফিট করা */
-        .ad-footer iframe { max-width: 100% !important; height: auto !important; transform: scale(0.9); }
+        /* Dashboard */
+        .balance-card { background: linear-gradient(135deg, #1e293b, #0f172a); margin: 20px; padding: 25px; border-radius: 25px; text-align: center; border: 1px solid rgba(0,210,255,0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .balance-card h1 { font-size: 36px; margin: 10px 0; color: var(--p); }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
+        .btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; transition: 0.3s; position: relative; border-bottom: 4px solid var(--p); }
+        .btn:active { transform: scale(0.95); }
+        .btn i { font-size: 32px; margin-bottom: 10px; display: block; }
+
+        /* Admin Panel Section */
+        #admin-section { display: none; padding: 20px; background: #1e293b; margin: 20px; border-radius: 20px; border: 2px dashed var(--p); }
+
+        /* Banner Ad Footer */
+        .ad-footer { position: fixed; bottom: 0; width: 100%; background: #000; text-align: center; padding: 5px 0; z-index: 999; border-top: 1px solid var(--p); }
+        iframe { max-width: 100%; height: 90px; }
     </style>
 </head>
 <body>
 
-<div style="background: var(--primary); color: #000; padding: 8px; font-weight: bold;">
-    <marquee>১০০% পেমেন্ট গ্যারান্টি! বিকাশ, নগদ ও রকেটে টাকা নিন। রেফার করে আয় বাড়ান।</marquee>
+<div id="sideMenu" class="side-menu">
+    <div style="text-align: right;" onclick="toggleMenu()"><i class="fas fa-times fa-2x"></i></div>
+    <div class="menu-item" onclick="location.reload()"><i class="fas fa-home"></i> হোম পেজ</div>
+    <div class="menu-item" id="adminToggle" style="display:none;" onclick="showAdmin()"><i class="fas fa-user-shield"></i> অ্যাডমিন প্যানেল</div>
+    <div class="menu-item" onclick="tg.showAlert('সাপোর্ট আইডি: @YourTelegram')"><i class="fas fa-headset"></i> কাস্টমার সাপোর্ট</div>
+    <div class="menu-item" onclick="tg.close()"><i class="fas fa-sign-out-alt"></i> অ্যাপ বন্ধ করুন</div>
 </div>
 
-<div class="header">
-    <div id="u_pic" class="user-pic">?</div>
-    <div id="u_name" style="font-weight: bold; font-size: 18px;">Loading...</div>
+<div class="navbar">
+    <i class="fas fa-bars fa-lg" onclick="toggleMenu()"></i>
+    <b style="color: var(--p);">EARNQUICK PRO</b>
+    <i class="fas fa-sync" onclick="loadData()"></i>
 </div>
 
 <div class="balance-card">
-    <div><span>ব্যালেন্স</span><b id="bal">0.00</b></div>
-    <div><span>রেফার</span><b id="ref">0</b></div>
+    <span style="opacity: 0.7; letter-spacing: 1px;">MY BALANCE</span>
+    <h1 id="bal">0.00</h1>
+    <div style="font-size: 12px; opacity: 0.5;">User ID: <span id="u_id">---</span></div>
 </div>
 
-<div class="menu-grid">
-    <div class="btn" onclick="showAd()" style="border-bottom: 4px solid #ff4b2b;">
+<div id="admin-section">
+    <h3 style="margin-top:0;"><i class="fas fa-tools"></i> Admin Control</h3>
+    <button onclick="viewUsers()" style="width:100%; padding:10px; margin-bottom:10px; background:var(--p); border:none; border-radius:5px; font-weight:bold;">View All Users</button>
+    <div id="user-list" style="font-size:12px; max-height:200px; overflow-y:auto;"></div>
+</div>
+
+<div class="grid">
+    <div class="btn" onclick="watchAd()" style="border-color: #ff4b2b;">
         <i class="fas fa-play-circle" style="color: #ff4b2b;"></i>
-        <span>অ্যাড দেখুন</span>
+        <b>অ্যাড দেখুন</b>
     </div>
-    <div class="btn bkash" onclick="tg.showAlert('বিকাশ নম্বর দিন')">
-        <i class="fas fa-wallet" style="color: var(--bkash);"></i>
-        <span>বিকাশ</span>
+    <div class="btn" onclick="withdraw('Bikash')" style="border-color: var(--bkash);">
+        <i class="fas fa-mobile-alt" style="color: var(--bkash);"></i>
+        <b>বিকাশ</b>
     </div>
-    <div class="btn nagad" onclick="tg.showAlert('নগদ নম্বর দিন')">
-        <i class="fas fa-money-bill-wave" style="color: var(--nagad);"></i>
-        <span>নগদ</span>
+    <div class="btn" onclick="withdraw('Nagad')" style="border-color: var(--nagad);">
+        <i class="fas fa-wallet" style="color: var(--nagad);"></i>
+        <b>নগদ</b>
     </div>
-    <div class="btn rocket" onclick="tg.showAlert('রকেট নম্বর দিন')">
-        <i class="fas fa-mobile-alt" style="color: var(--rocket);"></i>
-        <span>রকেট</span>
+    <div class="btn" onclick="withdraw('Rocket')" style="border-color: var(--rocket);">
+        <i class="fas fa-university" style="color: var(--rocket);"></i>
+        <b>রকেট</b>
     </div>
 </div>
 
@@ -118,31 +92,62 @@
 
 <script>
     const tg = window.Telegram.WebApp;
-    tg.expand();
     const user = tg.initDataUnsafe.user || { id: 8145444675, first_name: "Admin" };
     const BACKEND = "https://earnquick-backend.onrender.com";
+    const ADMIN_ID = 8145444675;
+
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); }
 
     async function loadData() {
-        document.getElementById('u_name').innerText = user.first_name;
-        document.getElementById('u_pic').innerText = user.first_name[0];
+        document.getElementById('u_id').innerText = user.id;
+        if(user.id == ADMIN_ID) document.getElementById('adminToggle').style.display = 'flex';
+
         try {
             const res = await fetch(`${BACKEND}/data?user_id=${user.id}`);
             const data = await res.json();
             document.getElementById('bal').innerText = data.balance.toFixed(2);
-            document.getElementById('ref').innerText = data.refs;
-        } catch(e) { console.error("Load Error"); }
+        } catch(e) { console.log("Error loading data"); }
     }
 
-    function showAd() {
-        // পয়েন্ট যোগ করার রিকোয়েস্ট
-        fetch(`${BACKEND}/update-balance`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ user_id: user.id, points: 5.00 })
-        }).then(() => {
-            tg.showAlert("অ্যাড দেখার জন্য ৫ পয়েন্ট যোগ হয়েছে!");
-            loadData();
+    function watchAd() {
+        tg.showConfirm("ভিডিও অ্যাড লোড হচ্ছে, ৫ পয়েন্ট পাবেন। দেখতে চান?", (ok) => {
+            if(ok) {
+                fetch(`${BACKEND}/update-balance`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ user_id: user.id, points: 5.00 })
+                }).then(() => {
+                    tg.showAlert("সফল! ৫ পয়েন্ট যোগ হয়েছে।");
+                    loadData();
+                });
+            }
         });
+    }
+
+    function withdraw(method) {
+        tg.showPopup({
+            title: method + ' উইথড্র',
+            message: 'আপনার নম্বর এবং পরিমাণ লিখে কনফার্ম করুন।',
+            buttons: [{text: 'পাঠান', type: 'ok'}, {text: 'বাতিল', type: 'cancel'}]
+        }, (btn) => {
+            if(btn == 'ok') tg.showAlert("রিকোয়েস্ট পাঠানো হয়েছে। অ্যাডমিন চেক করবে।");
+        });
+    }
+
+    function showAdmin() {
+        toggleMenu();
+        document.getElementById('admin-section').style.display = 'block';
+        tg.showAlert("অ্যাডমিন প্যানেল সক্রিয়!");
+    }
+
+    async function viewUsers() {
+        const res = await fetch(`${BACKEND}/admin/users?admin_id=${user.id}`);
+        const data = await res.json();
+        let html = "<b>Users List:</b><br>";
+        data.users.forEach(u => {
+            html += `ID: ${u.user_id} - Bal: ${u.balance.toFixed(2)} <button onclick="cancelWithdraw(${u.user_id})" style="background:red; color:#fff; border:none; padding:2px 5px; cursor:pointer;">Cancel</button><br>`;
+        });
+        document.getElementById('user-list').innerHTML = html;
     }
 
     loadData();
