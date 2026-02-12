@@ -25,7 +25,7 @@ def init():
         CREATE TABLE IF NOT EXISTS history (id SERIAL PRIMARY KEY, user_id BIGINT, type TEXT, amount NUMERIC, date TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
     """)
     conn.commit(); cur.close(); conn.close()
-    return "🚀 EarnQuick Pro Live!"
+    return "🚀 EarnQuick Pro Full System Live!"
 
 @app.route("/postback")
 def postback():
@@ -65,7 +65,7 @@ def add_point():
     d = request.json
     uid, p = d.get('user_id'), d.get('point')
     conn = get_db(); cur = conn.cursor()
-    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (uid,))
+    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (p, uid))
     cur.execute("INSERT INTO history (user_id, type, amount) VALUES (%s, 'Ad View', %s)", (uid, p))
     conn.commit(); cur.close(); conn.close()
     return "ok"
