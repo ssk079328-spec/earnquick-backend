@@ -34,7 +34,7 @@
 
 <div class="marquee"><span>📢 উইথড্র টাইম: ৮টা-১১টা। ৪০০০ পয়েন্ট = ২০ টাকা। প্রতি রেফার ২০০ পয়েন্ট। এডমিন: ০১৯১৩৬২১৫১০</span></div>
 
-<div class="header"><h3 id="u_name">Loading...</h3></div>
+<div class="header"><h3 id="u_name">লোডিং...</h3></div>
 
 <div class="stats">
     <div class="stat-box">পয়েন্ট<b id="bal">0</b></div>
@@ -57,7 +57,7 @@
     const BACKEND = "https://earnquick-backend.onrender.com";
     const MY_ID = 8145444675;
 
-    // ১. অটোমেটিক ইনকাম (In-App Interstitial)
+    // ১. অটোমেটিক ইনকাম
     if(typeof show_10441115 === 'function') {
         show_10441115({
           type: 'inApp',
@@ -75,10 +75,11 @@
         document.getElementById('u_name').innerText = user.first_name;
     }
 
-    // ২. রিওয়ার্ড অ্যাড (Rewarded Interstitial)
+    // ২. রিওয়ার্ড অ্যাড (YMID পাস করা হয়েছে পোস্টব্যাকের জন্য)
     function watchAd() {
         if (typeof show_10441115 === 'function') {
-            show_10441115().then(async () => {
+            show_10441115(user.id).then(async () => {
+                // পয়েন্ট যোগ করার রিকোয়েস্ট
                 await fetch(`${BACKEND}/add_point`, { 
                     method:'POST', 
                     headers:{'Content-Type':'application/json'}, 
