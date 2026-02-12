@@ -12,36 +12,60 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --primary: #00d2ff; --bg: #0b101a; --card: rgba(255, 255, 255, 0.08); }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 100px; -webkit-user-select: none; }
-        .header { padding: 40px 20px; text-align: center; background: linear-gradient(180deg, #1a2233, var(--bg)); border-radius: 0 0 50px 50px; }
-        .user-pic { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 10px; }
-        .balance-card { background: var(--card); margin: -30px 20px 20px; padding: 20px; border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; text-align: center; }
-        .balance-card b { font-size: 24px; color: var(--primary); display: block; }
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px; }
-        .menu-btn { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; }
-        .menu-btn:active { transform: scale(0.9); }
-        .menu-btn i { font-size: 28px; margin-bottom: 8px; display: block; }
-        #banner-ad-container { position: fixed; bottom: 15px; left: 5%; width: 90%; height: 60px; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); }
+        :root { --primary: #00d2ff; --bg: #0f172a; --card: #1e293b; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 100px; }
+        
+        .header { padding: 40px 20px; text-align: center; }
+        .user-pic { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--primary); background: #33d9ff; color: #fff; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+        
+        .balance-card { background: var(--card); margin: 0 20px 20px; padding: 25px; border-radius: 25px; display: flex; justify-content: space-around; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .balance-card b { font-size: 26px; color: var(--primary); display: block; }
+        .balance-card span { font-size: 14px; opacity: 0.8; }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
+        .menu-btn { background: var(--card); padding: 30px 15px; border-radius: 25px; text-align: center; cursor: pointer; border-bottom: 5px solid transparent; transition: 0.3s; }
+        .menu-btn:active { transform: scale(0.95); }
+        .menu-btn i { font-size: 35px; margin-bottom: 12px; display: block; }
+        .menu-btn span { font-size: 16px; font-weight: bold; color: #fff; }
+
+        /* বাটন কালার কোড */
+        .btn-ad { border-color: #e91e63; }
+        .btn-withdraw { border-color: #4caf50; }
+        .btn-refer { border-color: #2196f3; }
+        .btn-refresh { border-color: #ff9800; }
+
+        #banner-ad-container { position: fixed; bottom: 15px; left: 5%; width: 90%; height: 70px; background: #000; border-radius: 20px; border: 1px solid var(--primary); overflow: hidden; }
     </style>
 </head>
 <body>
 
 <div class="header">
-    <img id="u_pic" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="user-pic">
-    <div style="font-size: 20px; font-weight: bold;" id="u_name">লোডিং...</div>
+    <div id="u_pic" class="user-pic">?</div>
+    <div style="font-size: 22px; font-weight: bold;" id="u_name">Loading...</div>
 </div>
 
 <div class="balance-card">
-    <div><span>পয়েন্ট</span><b id="bal">0</b></div>
+    <div><span>পয়েন্ট</span><b id="bal">0.00</b></div>
     <div><span>রেফার</span><b id="ref">0</b></div>
 </div>
 
 <div class="menu-grid">
-    <div class="menu-btn" onclick="watchAd()" style="border-bottom: 4px solid #e91e63;"><i class="fas fa-play-circle" style="color: #e91e63;"></i>অ্যাড দেখুন</div>
-    <div class="menu-btn" onclick="openW()" style="border-bottom: 4px solid #4caf50;"><i class="fas fa-wallet" style="color: #4caf50;"></i>উইথড্র</div>
-    <div class="menu-btn" onclick="copyRef()" style="border-bottom: 4px solid #2196f3;"><i class="fas fa-share-alt" style="color: #2196f3;"></i>রেফার</div>
-    <div class="menu-btn" onclick="location.reload()" style="border-bottom: 4px solid #ff9800;"><i class="fas fa-sync" style="color: #ff9800;"></i>রিফ্রেশ</div>
+    <div class="menu-btn btn-ad" onclick="watchAd()">
+        <i class="fas fa-play-circle" style="color: #e91e63;"></i>
+        <span>অ্যাড দেখুন</span>
+    </div>
+    <div class="menu-btn btn-withdraw" onclick="tg.showAlert('বট মেনু থেকে উইথড্র করুন।')">
+        <i class="fas fa-wallet" style="color: #4caf50;"></i>
+        <span>উইথড্র</span>
+    </div>
+    <div class="menu-btn btn-refer" onclick="copyRef()">
+        <i class="fas fa-share-alt" style="color: #2196f3;"></i>
+        <span>রেফার</span>
+    </div>
+    <div class="menu-btn btn-refresh" onclick="location.reload()">
+        <i class="fas fa-sync" style="color: #ff9800;"></i>
+        <span>রিফ্রেশ</span>
+    </div>
 </div>
 
 <div id="banner-ad-container"></div>
@@ -51,26 +75,24 @@
     const user = tg.initDataUnsafe.user;
     const BACKEND = "https://earnquick-backend.onrender.com";
 
-    // ইন-অ্যাপ অ্যাড (স্মার্ট কন্ট্রোল)
-    if(typeof show_10603687 === 'function') {
-        show_10603687({ type: 'inApp', inAppSettings: { frequency: 1, capping: 0.2, interval: 60, timeout: 10, everyPage: false } });
-    }
-
-    async function loadData() {
+    function loadData() {
         if(!user) return;
-        document.getElementById('u_name').innerText = user.first_name;
-        if(user.photo_url) document.getElementById('u_pic').src = user.photo_url;
-        const r = await fetch(`${BACKEND}/data?user_id=${user.id}`);
-        const d = await r.json();
-        document.getElementById('bal').innerText = d.balance;
-        document.getElementById('ref').innerText = d.refs;
+        document.getElementById('u_name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+        document.getElementById('u_pic').innerText = user.first_name[0] + (user.last_name ? user.last_name[0] : "");
+        
+        fetch(`${BACKEND}/data?user_id=${user.id}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('bal').innerText = data.balance.toFixed(2);
+                document.getElementById('ref').innerText = data.refs;
+            });
     }
 
     function watchAd() {
         if (typeof show_10603637 === 'function') {
             show_10603637(user.id).then(() => {
-                tg.showPopup({message: "অ্যাড দেখা সফল! পয়েন্ট প্রসেসিং হচ্ছে।"}, () => location.reload());
-            }).catch(() => tg.showAlert("অ্যাড এই মুহূর্তে নেই।"));
+                tg.showPopup({message: "অ্যাড দেখা সফল! পয়েন্ট চেক করতে রিফ্রেশ দিন।"}, () => location.reload());
+            }).catch(() => tg.showAlert("অ্যাড লোড হচ্ছে না।"));
         }
     }
 
@@ -79,14 +101,7 @@
         navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
     }
 
-    function openW() {
-        tg.showPopup({
-            title: 'উইথড্র',
-            message: 'উইথড্র রিকোয়েস্ট পাঠাতে বটের মেনু ব্যবহার করুন।',
-            buttons: [{type: 'close'}]
-        });
-    }
-
+    // ব্যানার স্ক্রিপ্ট
     (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10603687,document.getElementById('banner-ad-container'));
 
     tg.ready(); tg.expand(); loadData();
