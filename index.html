@@ -8,170 +8,110 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <script src="https://hathomeynapoleon.com/1b/df/db/1bdfdbcd7aca5ef4e2890826a8c56e14.js"></script>
-    
     <script src='//libtl.com/sdk.js' data-zone='10070523' data-sdk='show_10070523'></script>
 
     <style>
-        :root { --bg: #0b0e14; --card: #161b22; --accent: #00d2ff; --neon: #3a7bd5; --text: #ffffff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; overflow-x: hidden; }
-        
-        .welcome-overlay { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .welcome-box { background: var(--card); padding: 35px; border-radius: 30px; border: 1px solid var(--accent); width: 85%; box-shadow: 0 0 30px rgba(0,210,255,0.2); }
-
-        .header { padding: 40px 20px 60px; background: radial-gradient(circle at top right, var(--neon), transparent), radial-gradient(circle at top left, var(--accent), transparent); border-radius: 0 0 40px 40px; text-align: center; }
-        .user-avatar { width: 85px; height: 85px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 20px var(--accent); margin-bottom: 15px; }
-
-        .stat-grid { display: flex; gap: 15px; margin: -40px 20px 20px; }
-        .stat-box { flex: 1; background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #30363d; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
-        .stat-box span { font-size: 24px; font-weight: bold; color: var(--accent); display: block; }
-
-        .banner-ad { margin: 10px 20px; border-radius: 15px; overflow: hidden; background: #000; display: flex; justify-content: center; min-height: 90px; }
-
+        :root { --bg: #0b0e14; --card: #161b22; --accent: #00d2ff; --text: #ffffff; }
+        body { font-family: sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; text-align: center; }
+        .welcome { position: fixed; inset: 0; background: #000; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .header { padding: 40px 20px; background: linear-gradient(135deg, #00d2ff, #3a7bd5); border-radius: 0 0 30px 30px; }
+        .user-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fff; }
+        .stats { display: flex; gap: 10px; padding: 20px; margin-top: -30px; }
+        .stat-box { flex: 1; background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #333; }
+        .stat-box b { font-size: 20px; color: var(--accent); }
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .nav-item { background: var(--card); padding: 25px 15px; border-radius: 24px; text-align: center; border: 1px solid #30363d; transition: 0.3s; }
-        .nav-item i { font-size: 32px; margin-bottom: 12px; display: block; color: var(--accent); }
-        .nav-item:active { transform: scale(0.95); background: #1c2128; }
-
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; padding: 20px; align-items: center; }
-        .modal-content { background: var(--card); width: 100%; border-radius: 30px; padding: 30px; border: 1px solid var(--accent); }
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px; background: #0d1117; color: white; border: 1px solid #30363d; box-sizing: border-box; }
-        .submit-btn { background: linear-gradient(90deg, var(--accent), var(--neon)); color: #fff; border: none; padding: 18px; width: 100%; border-radius: 15px; font-weight: bold; font-size: 18px; margin-top: 10px; cursor: pointer; }
+        .btn { background: var(--card); padding: 20px; border-radius: 20px; border: 1px solid #444; color: #fff; text-decoration: none; cursor: pointer; }
+        .btn i { font-size: 25px; color: var(--accent); margin-bottom: 10px; display: block; }
+        .btn:active { transform: scale(0.95); }
+        .footer { font-size: 11px; color: #666; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div id="welcomeScreen" class="welcome-overlay">
-    <div class="welcome-box">
-        <h2 id="greetUser" style="margin-bottom: 10px;">হ্যালো!</h2>
-        <p style="opacity: 0.8; font-size: 14px; margin-bottom: 25px;">EarnQuick Pro-তে আপনাকে স্বাগতম। আপনার আয় শুরু করতে প্রস্তুত?</p>
-        <button class="submit-btn" style="width: 200px;" onclick="closeWelcome()">শুরু করুন</button>
-    </div>
+<div id="welcome" class="welcome">
+    <h2>হ্যালো, <span id="w_name">ইউজার</span>!</h2>
+    <p>EarnQuick-এ আপনাকে স্বাগতম</p>
+    <button onclick="startApp()" style="padding: 12px 30px; border-radius: 10px; border: none; background: var(--accent); font-weight: bold;">শুরু করুন</button>
 </div>
 
-<div id="appContainer" style="display:none;">
+<div id="main" style="display:none">
     <div class="header">
-        <img id="userImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-        <h2 id="userName" style="margin:0;">Najmul Hoque Forhad</h2>
-        <p style="font-size:12px; opacity:0.8;">৪০০০ পয়েন্ট = ২০ টাকা</p>
+        <img id="u_img" class="user-img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+        <h3 id="u_name">Najmul Hoque Forhad</h3>
     </div>
 
-    <div class="stat-grid">
-        <div class="stat-box">পয়েন্ট<span id="bal_text">0</span></div>
-        <div class="stat-box">রেফার<span id="ref_text">0</span></div>
-    </div>
-
-    <div class="banner-ad">
-        <script type="text/javascript">
-            atOptions = { 'key' : '36047257ef54bf70facf3cdb98c2c150', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-        </script>
-        <script type="text/javascript" src="https://hathomeynapoleon.com/36047257ef54bf70facf3cdb98c2c150/invoke.js"></script>
+    <div class="stats">
+        <div class="stat-box">পয়েন্ট<br><b id="bal">0</b></div>
+        <div class="stat-box">রেফার<br><b id="ref">0</b></div>
     </div>
 
     <div class="nav-grid">
-        <div class="nav-item" onclick="watchAd()">
-            <i class="fas fa-play-circle"></i>
-            <div>অ্যাড দেখুন (+৫)</div>
+        <div class="btn" onclick="watchAd()">
+            <i class="fas fa-play-circle"></i>অ্যাড দেখুন (+৫)
         </div>
-        <div class="nav-item" onclick="copyRef()">
-            <i class="fas fa-gift"></i>
-            <div>রেফার করুন (+২০০)</div>
+        <div class="btn" onclick="copyRef()">
+            <i class="fas fa-user-plus"></i>রেফার (+২০০)
         </div>
-        <div class="nav-item" onclick="openW()">
-            <i class="fas fa-wallet"></i>
-            <div>উইথড্র</div>
+        <div class="btn" onclick="tg.showAlert('মিনিমাম ৪০০০ পয়েন্ট লাগবে')">
+            <i class="fas fa-wallet"></i>উইথড্র
         </div>
-        <div class="nav-item" onclick="location.reload()">
-            <i class="fas fa-sync-alt"></i>
-            <div>রিফ্রেশ</div>
+        <div class="btn" onclick="location.reload()">
+            <i class="fas fa-sync"></i>রিফ্রেশ
         </div>
     </div>
 
-    <center style="font-size: 11px; color: #555; margin: 20px 0 60px;">
-        Owner: Najmul Hoque Forhad<br>01913621510 | najmulh112233@gmail.com
-    </center>
-</div>
-
-<div id="wModal" class="modal">
-    <div class="modal-content">
-        <h3 style="text-align:center; margin-top:0;">উইথড্র রিকোয়েস্ট</h3>
-        <select id="method">
-            <option value="bKash">বিকাশ (bKash)</option>
-            <option value="Nagad">নগদ (Nagad)</option>
-            <option value="Rocket">রকেট (Rocket)</option>
-        </select>
-        <input type="number" id="w_taka" placeholder="টাকার পরিমাণ (২০ - ২৫০০০)">
-        <input type="text" id="w_num" placeholder="একাউন্ট নাম্বার">
-        <button class="submit-btn" onclick="sendW()">সাবমিট করুন</button>
-        <p onclick="closeW()" style="text-align:center; color:#ff4b2b; margin-top:15px; cursor:pointer;">বন্ধ করুন</p>
+    <div class="footer">
+        Owner: Najmul Hoque Forhad<br>
+        01913621510 | najmulh112233@gmail.com
     </div>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     const user = tg.initDataUnsafe.user;
-    const BACKEND = "https://earnquick-backend.onrender.com";
+    const URL = "https://earnquick-backend.onrender.com";
 
-    if(user) {
-        document.getElementById('greetUser').innerText = `হ্যালো, ${user.first_name}!`;
-        document.getElementById('userName').innerText = user.first_name;
-        if(user.photo_url) document.getElementById('userImg').src = user.photo_url;
+    document.getElementById('w_name').innerText = user.first_name;
+    document.getElementById('u_name').innerText = user.first_name;
+    if(user.photo_url) document.getElementById('u_img').src = user.photo_url;
+
+    function startApp() {
+        document.getElementById('welcome').style.display = 'none';
+        document.getElementById('main').style.display = 'block';
     }
 
-    function closeWelcome() {
-        document.getElementById('welcomeScreen').style.display = 'none';
-        document.getElementById('appContainer').style.display = 'block';
-    }
-
-    async function loadData() {
+    async function load() {
         try {
-            const r = await fetch(`${BACKEND}/data?user_id=${user.id}`);
+            const r = await fetch(`${URL}/data?user_id=${user.id}`);
             const d = await r.json();
-            document.getElementById('bal_text').innerText = d.balance;
-            document.getElementById('ref_text').innerText = d.refs;
-        } catch(e) { console.log("Load Failed"); }
+            document.getElementById('bal').innerText = d.balance;
+            document.getElementById('ref').innerText = d.refs;
+        } catch(e) {}
     }
 
     function watchAd() {
         if (typeof show_10070523 === 'function') {
-            show_10070523().then(() => {
-                tg.sendData(JSON.stringify({action: 'ad'}));
-                tg.showPopup({message: "আপনি ৫ পয়েন্ট পেয়েছেন!"});
-            }).catch(() => {
-                tg.showPopup({message: "অ্যাড লোড হয়নি, আবার চেষ্টা করুন।"});
-            });
+            show_10070523().then(async () => {
+                // সরাসরি ব্যাক-এন্ডে পয়েন্ট যোগ করার রিকোয়েস্ট
+                await fetch(`${URL}/add_point`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({user_id: user.id, point: 5})
+                });
+                tg.showPopup({message: "অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।"}, () => location.reload());
+            }).catch(() => tg.showAlert("অ্যাড লোড হয়নি!"));
         }
     }
 
     function copyRef() {
         const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-        const input = document.createElement('textarea');
-        input.value = link;
-        document.body.appendChild(input);
-        input.select();
-        document.execCommand('copy');
-        document.body.removeChild(input);
-        tg.showPopup({message: "রেফার লিঙ্ক কপি হয়েছে!"});
+        const i = document.createElement('input'); i.value = link;
+        document.body.appendChild(i); i.select();
+        document.execCommand('copy'); document.body.removeChild(i);
+        tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!");
     }
 
-    function openW() { document.getElementById('wModal').style.display = 'flex'; }
-    function closeW() { document.getElementById('wModal').style.display = 'none'; }
-
-    function sendW() {
-        const taka = document.getElementById('w_taka').value;
-        const num = document.getElementById('w_num').value;
-        const method = document.getElementById('method').value;
-        if(taka >= 20 && taka <= 25000 && num) {
-            tg.sendData(JSON.stringify({action:'withdraw', amt: taka*200, num: num, method: method}));
-            tg.showPopup({message: "রিকোয়েস্ট সফল হয়েছে!"});
-            closeW();
-        } else {
-            tg.showAlert("সঠিক তথ্য দিন (২০ - ২৫০০০ টাকা)");
-        }
-    }
-
-    tg.ready();
-    tg.expand();
-    loadData();
+    tg.ready(); tg.expand(); load();
 </script>
 </body>
 </html>
