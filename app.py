@@ -25,7 +25,39 @@ def init():
         CREATE TABLE IF NOT EXISTS history (id SERIAL PRIMARY KEY, user_id BIGINT, type TEXT, amount NUMERIC, date TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
     """)
     conn.commit(); cur.close(); conn.close()
-    return "🚀 EarnQuick Pro Full System Live!"
+    return "🚀 EarnQuick Pro Live & Fixed!"
+
+# --- এডমিন প্যানেল ফিক্স ---
+@app.route("/admin/all_data")
+def admin_data():
+    admin_id = request.args.get('admin_id')
+    if str(admin_id) != str(ADMIN_ID): return jsonify({"error": "Denied"}), 403
+    try:
+        conn = get_db(); cur = conn.cursor()
+        cur.execute("SELECT id, balance, refs FROM users ORDER BY balance DESC LIMIT 50")
+        u_list = cur.fetchall()
+        cur.execute("SELECT id, user_id, amount, method, num FROM withdrawals WHERE status = 'Pending'")
+        w_list = cur.fetchall()
+        cur.close(); conn.close()
+        return jsonify({
+            "users": [{"id":r[0], "bal":float(r[1]), "ref":r[2]} for r in u_list],
+            "withdrawals": [{"id":r[0], "uid":r[1], "amt":float(r[2]), "method":r[3], "num":r[4]} for r in w_list]
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# --- পয়েন্ট জমা হওয়া ফিক্স ---
+@app.route("/add_point", methods=['POST'])
+def add_point():
+    d = request.json
+    uid, p = d.get('user_id'), d.get('point')
+    if not uid: return "Missing ID", 400
+    conn = get_db(); cur = conn.cursor()
+    # এখানে ভুল ছিল, এখন ঠিক করা হয়েছে
+    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (p, uid))
+    cur.execute("INSERT INTO history (user_id, type, amount) VALUES (%s, 'Ad View', %s)", (uid, p))
+    conn.commit(); cur.close(); conn.close()
+    return "ok"
 
 @app.route("/postback")
 def postback():
@@ -50,25 +82,12 @@ def data():
     
     if row[2] and row[3]: 
         cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (row[3],))
-        cur.execute("SELECT parent_id FROM users WHERE id = %s", (row[3],))
-        gp = cur.fetchone()
-        if gp and gp[0]: cur.execute("UPDATE users SET balance = balance + 50 WHERE id = %s", (gp[0],))
         cur.execute("UPDATE users SET is_new = False WHERE id = %s", (uid,))
         conn.commit()
     
     cur.execute("SELECT balance, refs FROM users WHERE id = %s", (uid,))
     res = cur.fetchone(); cur.close(); conn.close()
     return jsonify({"balance": float(res[0]), "refs": res[1]})
-
-@app.route("/add_point", methods=['POST'])
-def add_point():
-    d = request.json
-    uid, p = d.get('user_id'), d.get('point')
-    conn = get_db(); cur = conn.cursor()
-    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (p, uid))
-    cur.execute("INSERT INTO history (user_id, type, amount) VALUES (%s, 'Ad View', %s)", (uid, p))
-    conn.commit(); cur.close(); conn.close()
-    return "ok"
 
 @app.route("/claim_bonus", methods=['POST'])
 def claim_bonus():
@@ -83,18 +102,6 @@ def claim_bonus():
     cur.execute("INSERT INTO history (user_id, type, amount) VALUES (%s, 'Daily Bonus', 50)", (uid,))
     conn.commit(); cur.close(); conn.close()
     return jsonify({"success": True, "message": "৫০ পয়েন্ট পেয়েছেন!"})
-
-@app.route("/admin/all_data")
-def admin_data():
-    admin_id = request.args.get('admin_id')
-    if str(admin_id) != str(ADMIN_ID): return "Denied", 403
-    conn = get_db(); cur = conn.cursor()
-    cur.execute("SELECT id, balance, refs FROM users ORDER BY balance DESC LIMIT 50")
-    u_list = cur.fetchall()
-    cur.execute("SELECT id, user_id, amount, method, num FROM withdrawals WHERE status = 'Pending'")
-    w_list = cur.fetchall()
-    cur.close(); conn.close()
-    return jsonify({"users": [{"id":r[0], "bal":float(r[1]), "ref":r[2]} for r in u_list], "withdrawals": [{"id":r[0], "uid":r[1], "amt":float(r[2]), "method":r[3], "num":r[4]} for r in w_list]})
 
 @app.route("/admin/approve", methods=['POST'])
 def approve_payment():
