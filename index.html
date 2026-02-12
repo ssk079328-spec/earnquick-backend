@@ -7,11 +7,13 @@
     
     <script src='//libtl.com/sdk.js' data-zone='10441115' data-sdk='show_10441115'></script>
     
+    <script src='//libtl.com/sdk.js' data-zone='10070523' data-sdk='show_10070523'></script>
+    
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root { --bg: #0b101a; --card: #1a2233; --accent: #00d2ff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 70px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 80px; }
         .marquee { background: linear-gradient(90deg, #ff0055, #ff5e00); padding: 10px 0; font-weight: bold; overflow: hidden; white-space: nowrap; }
         .marquee span { display: inline-block; animation: scroll 20s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -29,8 +31,8 @@
         .modal-content { background: var(--card); width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #000; color: #fff; border: 1px solid #444; box-sizing: border-box; }
         .item { background: #000; padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; }
-        /* Banner Ad Container */
-        .banner-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; text-align: center; z-index: 999; border-top: 1px solid #333; }
+        /* Banner Container Fixed at Bottom */
+        #banner-ad-container { position: fixed; bottom: 0; left: 0; width: 100%; min-height: 60px; background: #000; text-align: center; z-index: 9999; border-top: 1px solid #333; }
     </style>
 </head>
 <body>
@@ -53,8 +55,7 @@
     <button id="adminBtn" class="btn" style="display:none; background:#673ab7;" onclick="openAdmin()"><i class="fas fa-user-shield"></i> এডমিন প্যানেল</button>
 </div>
 
-<div class="banner-container" id="banner-ad">
-    </div>
+<div id="banner-ad-container"></div>
 
 <div id="modal" class="modal"><div id="modal-body" class="modal-content"></div></div>
 
@@ -63,9 +64,9 @@
     const BACKEND = "https://earnquick-backend.onrender.com";
     const MY_ID = 8145444675;
 
-    // ১. অটোমেটিক ইনকাম (In-App Interstitial)
-    if(typeof show_10441115 === 'function') {
-        show_10441115({
+    // অটোমেটিক ব্যানার অ্যাড লোড (নতুন জোন আইডি)
+    if(typeof show_10070523 === 'function') {
+        show_10070523({
           type: 'inApp',
           inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false }
         });
@@ -81,7 +82,7 @@
         document.getElementById('u_name').innerText = user.first_name;
     }
 
-    // ২. রিওয়ার্ড অ্যাড
+    // রিওয়ার্ড অ্যাড (পুরানো জোন আইডি)
     function watchAd() {
         if (typeof show_10441115 === 'function') {
             show_10441115().then(async () => {
@@ -140,5 +141,10 @@
     function closeModal() { document.getElementById('modal').style.display='none'; }
     tg.ready(); tg.expand(); loadData();
 </script>
+
+<script>
+    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10070523,document.getElementById('banner-ad-container'));
+</script>
+
 </body>
 </html>
