@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarnQuick Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #111; color: white; text-align: center; padding: 20px; }
+        .card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
+        .btn { background: #e74c3c; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; background: #333; color: white; border: none; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p>বর্তমান ব্যালেন্স</p>
+        <h1 id="bal" style="color:#f1c40f">0.00</h1>
+    </div>
+
+    <div id="main">
+        <button class="btn" id="adBtn" onclick="watchAd()">বিজ্ঞাপন দেখুন (২০ পয়েন্ট)</button>
+        <p>রেফার লিঙ্ক: <br><span id="ref" style="color:#3498db; font-size: 12px;">...</span></p>
+    </div>
+
+    <div class="card">
+        <h3>পয়েন্ট উইথড্র</h3>
+        <input type="number" id="amt" placeholder="পয়েন্টের পরিমাণ (মিনিমাম ৫০০০০)">
+        <input type="text" id="num" placeholder="বিকাশ/নগদ নাম্বার">
+        <button class="btn" style="background:#27ae60" onclick="withdraw()">সাবমিট করুন</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        // ⭐ এখানে আপনার Render সার্ভারের লিঙ্ক দিন (ডিপ্লয় করার পর পাবেন)
+        const URL = "https://earnquick-backend.onrender.com";
+        const uid = tg.initDataUnsafe.user.id;
+
+        async function load() {
+            try {
+                const res = await fetch(`${URL}/data?user_id=${uid}`);
+                const d = await res.json();
+                document.getElementById('bal').innerText = d.balance;
+                document.getElementById('ref').innerText = `https://t.me/EarnQuick_Official_bot?start=${uid}`;
+                if(d.ads >= 10) {
+                    document.getElementById('adBtn').innerText = "আজকের লিমিট শেষ";
+                    document.getElementById('adBtn').disabled = true;
+                }
+            } catch(e) { console.log("Error loading data"); }
+        }
+
+        function watchAd() {
+            let s = 15;
+            const b = document.getElementById('adBtn');
+            const t = setInterval(() => {
+                b.innerText = `অপেক্ষা করুন ${s}s`;
+                if(s <= 0) {
+                    clearInterval(t);
+                    tg.sendData(JSON.stringify({action: 'ad'}));
+                    tg.close();
+                }
+                s--;
+            }, 1000);
+        }
+
+        function withdraw() {
+            const amt = document.getElementById('amt').value;
+            const num = document.getElementById('num').value;
+            if(amt >= 50000) {
+                tg.sendData(JSON.stringify({action:'withdraw', amt, method:'General', num}));
+                tg.close();
+            } else { alert("মিনিমাম ৫০০০০ পয়েন্ট প্রয়োজন!"); }
+        }
+
+        tg.ready();
+        tg.expand();
+        load();
+    </script>
+</body>
+</html>
