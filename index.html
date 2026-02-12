@@ -1,80 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnQuick Mini App</title>
+    <title>EarnQuick Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://hathomeynapoleon.com/99/2d/d2/992dd2ea233a764ef41edc1fbe0657dd.js"></script>
+
     <style>
-        body { font-family: sans-serif; background: #111; color: white; text-align: center; padding: 20px; }
-        .card { background: #222; padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid #333; }
-        .btn { background: #e74c3c; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; margin-top: 10px; }
-        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; background: #333; color: white; border: none; }
+        :root { --main-bg: #0f172a; --card-bg: #1e293b; --accent: #38bdf8; --text: #f1f5f9; }
+        body { font-family: 'Hind Siliguri', sans-serif; background: var(--main-bg); color: var(--text); margin: 0; padding: 0; }
+        
+        /* ইউনিক গ্লাস মফিজম ডিজাইন */
+        .welcome-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .welcome-box { background: var(--card-bg); padding: 30px; border-radius: 20px; text-align: center; border: 1px solid var(--accent); width: 80%; }
+
+        .profile-header { padding: 25px; background: linear-gradient(180deg, #0ea5e9 0%, var(--main-bg) 100%); text-align: center; }
+        .user-avatar { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--accent); margin-bottom: 10px; }
+        
+        .stat-container { display: flex; justify-content: space-around; margin: -30px 15px 15px; }
+        .stat-box { background: var(--card-bg); padding: 15px; border-radius: 15px; flex: 1; margin: 0 5px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .stat-box span { display: block; font-size: 20px; font-weight: bold; color: var(--accent); }
+
+        .banner-ad { margin: 15px; background: #000; border-radius: 10px; overflow: hidden; display: flex; justify-content: center; }
+
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 15px; }
+        .nav-item { background: var(--card-bg); padding: 20px; border-radius: 18px; text-align: center; border: 1px solid #334155; }
+        .nav-item i { font-size: 28px; color: var(--accent); margin-bottom: 8px; }
+
+        .withdraw-modal { display: none; padding: 20px; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; border-radius: 12px; background: #334155; color: white; border: none; }
+        .btn-action { background: var(--accent); color: #000; font-weight: bold; padding: 15px; width: 100%; border-radius: 12px; border: none; font-size: 16px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <p>বর্তমান ব্যালেন্স</p>
-        <h1 id="bal" style="color:#f1c40f">0.00</h1>
+
+<div id="welcomeScreen" class="welcome-overlay">
+    <div class="welcome-box">
+        <h2 id="greetName">স্বাগতম!</h2>
+        <p>EarnQuick Pro-তে আপনার আয় শুরু করুন।</p>
+        <button class="btn-action" onclick="closeWelcome()">শুরু করুন</button>
+    </div>
+</div>
+
+<div id="appContent" style="display:none;">
+    <div class="profile-header">
+        <img id="userImg" class="user-avatar" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+        <h3 id="profileName" style="margin:0;">ইউজার নাম</h3>
+        <p style="font-size:12px; opacity:0.7;">৪০০০ পয়েন্ট = ২০ টাকা</p>
     </div>
 
-    <div id="main">
-        <button class="btn" id="adBtn" onclick="watchAd()">বিজ্ঞাপন দেখুন (২০ পয়েন্ট)</button>
-        <p>রেফার লিঙ্ক: <br><span id="ref" style="color:#3498db; font-size: 12px;">...</span></p>
+    <div class="stat-container">
+        <div class="stat-box">পয়েন্ট<span id="bal">0</span></div>
+        <div class="stat-box">রেফার<span id="refCount">0</span></div>
     </div>
 
-    <div class="card">
-        <h3>পয়েন্ট উইথড্র</h3>
-        <input type="number" id="amt" placeholder="পয়েন্টের পরিমাণ (মিনিমাম ৫০০০০)">
-        <input type="text" id="num" placeholder="বিকাশ/নগদ নাম্বার">
-        <button class="btn" style="background:#27ae60" onclick="withdraw()">সাবমিট করুন</button>
+    <div class="banner-ad">
+        <script>
+            atOptions = {
+                'key' : '36047257ef54bf70facf3cdb98c2c150',
+                'format' : 'iframe',
+                'height' : 90,
+                'width' : 728, // মোবাইল অনুযায়ী অটো অ্যাডজাস্ট হবে
+                'params' : {}
+            };
+        </script>
+        <script src="https://hathomeynapoleon.com/36047257ef54bf70facf3cdb98c2c150/invoke.js"></script>
     </div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        // ⭐ এখানে আপনার Render সার্ভারের লিঙ্ক দিন (ডিপ্লয় করার পর পাবেন)
-        const URL = "https://earnquick-backend.onrender.com";
-        const uid = tg.initDataUnsafe.user.id;
+    <div class="nav-grid">
+        <div class="nav-item" onclick="watchAd()">
+            <i class="fas fa-play-circle"></i>
+            <div>অ্যাড দেখুন (+৫)</div>
+        </div>
+        <div class="nav-item" onclick="copyRef()">
+            <i class="fas fa-share-nodes"></i>
+            <div>রেফার করুন (+২০০)</div>
+        </div>
+        <div class="nav-item" onclick="showWithdraw()">
+            <i class="fas fa-wallet"></i>
+            <div>উইথড্র</div>
+        </div>
+        <div class="nav-item" onclick="location.reload()">
+            <i class="fas fa-sync"></i>
+            <div>রিফ্রেশ</div>
+        </div>
+    </div>
+</div>
 
-        async function load() {
-            try {
-                const res = await fetch(`${URL}/data?user_id=${uid}`);
-                const d = await res.json();
-                document.getElementById('bal').innerText = d.balance;
-                document.getElementById('ref').innerText = `https://t.me/EarnQuick_Official_bot?start=${uid}`;
-                if(d.ads >= 10) {
-                    document.getElementById('adBtn').innerText = "আজকের লিমিট শেষ";
-                    document.getElementById('adBtn').disabled = true;
-                }
-            } catch(e) { console.log("Error loading data"); }
+<div id="withdrawPage" class="withdraw-modal">
+    <h3>উইথড্র (২০ - ২৫০০০ টাকা)</h3>
+    <p style="font-size:12px;">৪০০০ পয়েন্ট = ২০ টাকা</p>
+    <select id="method">
+        <option value="bKash">বিকাশ</option>
+        <option value="Nagad">নগদ</option>
+        <option value="Rocket">রকেট</option>
+    </select>
+    <input type="number" id="w_amount" placeholder="টাকার পরিমাণ (২০ - ২৫০০০)">
+    <input type="text" id="w_number" placeholder="একাউন্ট নাম্বার">
+    <button class="btn-action" onclick="submitWithdraw()">রিকোয়েস্ট পাঠান</button>
+    <p onclick="hideWithdraw()" style="text-align:center; margin-top:15px; color:var(--accent);">পেছনে যান</p>
+</div>
+
+<script>
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
+    const BACKEND = "https://earnquick-backend.onrender.com";
+
+    // নাম সেট করা
+    document.getElementById('greetName').innerText = `হ্যালো, ${user.first_name}!`;
+    document.getElementById('profileName').innerText = user.first_name;
+    if(user.photo_url) document.getElementById('userImg').src = user.photo_url;
+
+    function closeWelcome() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('appContent').style.display = 'block';
+        // পপ-আন্ডার অ্যাড এখানে অটোমেটিক লোড হবে স্ক্রিপ্ট অনুযায়ী
+    }
+
+    async function loadData() {
+        const res = await fetch(`${BACKEND}/data?user_id=${user.id}`);
+        const data = await res.json();
+        document.getElementById('bal').innerText = data.balance;
+        document.getElementById('refCount').innerText = data.refs;
+    }
+
+    function watchAd() {
+        // আপনার অ্যাড SDK ফাংশন এখানে কল করুন
+        tg.showPopup({ message: 'অ্যাড লোড হচ্ছে...' });
+        // সফল হলে ৫ পয়েন্ট যোগ হবে ব্যাক-এন্ডে
+        tg.sendData(JSON.stringify({action: 'ad'}));
+    }
+
+    function showWithdraw() {
+        document.getElementById('appContent').style.display = 'none';
+        document.getElementById('withdrawPage').style.display = 'block';
+    }
+
+    function hideWithdraw() {
+        document.getElementById('appContent').style.display = 'block';
+        document.getElementById('withdrawPage').style.display = 'none';
+    }
+
+    function submitWithdraw() {
+        const taka = document.getElementById('w_amount').value;
+        const points = taka * 200; // ৪০০০ পয়েন্ট = ২০ টাকা হিসেবে হিসাব
+        const num = document.getElementById('w_number').value;
+        
+        if(taka >= 20 && taka <= 25000 && num) {
+            tg.sendData(JSON.stringify({action:'withdraw', amt: points, num: num}));
+            tg.close();
+        } else {
+            tg.showAlert("২০ থেকে ২৫০০০ টাকার মধ্যে পরিমাণ দিন!");
         }
+    }
 
-        function watchAd() {
-            let s = 15;
-            const b = document.getElementById('adBtn');
-            const t = setInterval(() => {
-                b.innerText = `অপেক্ষা করুন ${s}s`;
-                if(s <= 0) {
-                    clearInterval(t);
-                    tg.sendData(JSON.stringify({action: 'ad'}));
-                    tg.close();
-                }
-                s--;
-            }, 1000);
-        }
-
-        function withdraw() {
-            const amt = document.getElementById('amt').value;
-            const num = document.getElementById('num').value;
-            if(amt >= 50000) {
-                tg.sendData(JSON.stringify({action:'withdraw', amt, method:'General', num}));
-                tg.close();
-            } else { alert("মিনিমাম ৫০০০০ পয়েন্ট প্রয়োজন!"); }
-        }
-
-        tg.ready();
-        tg.expand();
-        load();
-    </script>
+    tg.ready();
+    tg.expand();
+    loadData();
+</script>
 </body>
 </html>
