@@ -1,81 +1,89 @@
 import os
-import telebot
 import psycopg2
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from telebot import types
-import threading
 
-TOKEN = os.environ.get("BOT_TOKEN") 
-DB_URL = os.environ.get("DATABASE_URL")
-
-bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
+# এটি আপনার মিনি অ্যাপ থেকে ডাটা আসার অনুমতি দেবে
 CORS(app)
 
-def get_db():
-    return psycopg2.connect(DB_URL)
+# আপনার ডাটাবেস ইউআরএল
+DATABASE_URL = "postgresql://earnquick_backend_user:nxsBqFbwGhoq5ryV3AkYssb0QsdkBZXT@dpg-d66lfvumcj7s73dlip5g-a/earnquick_backend"
+
+def get_db_connection():
+    # রেন্ডারের জন্য sslmode='require' জরুরি
+    return psycopg2.connect(DATABASE_URL, sslmode='require')
 
 def init_db():
-    try:
-        conn = get_db(); cur = conn.cursor()
-        cur.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id BIGINT PRIMARY KEY,
-                name TEXT,
-                balance FLOAT DEFAULT 0,
-                refs INT DEFAULT 0
-            );
-        """)
-        conn.commit(); cur.close(); conn.close()
-    except: pass
+    """অটোমেটিক টেবিল তৈরি করার ফাংশন"""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            user_id BIGINT PRIMARY KEY,
+            balance FLOAT DEFAULT 0.0,
+            refs INTEGER DEFAULT 0,
+            username TEXT
+        );
+    ''')
+    conn.commit()
+    cur.close()
+    conn.close()
+    print("Database Initialized!")
 
-@app.route("/")
+# অ্যাপ চালুর সময় টেবিল চেক করা
+init_db()
+
+@app.route('/')
 def home():
-    return "<h1>EarnQuick Backend is Live!</h1>", 200
+    return "EarnQuick Backend is Running!"
 
-@app.route("/data")
+# ইউজার ডাটা লোড করা
+@app.route('/data', methods=['GET'])
 def get_data():
-    uid = request.args.get('user_id')
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User ID missing"}), 400
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # ইউজার না থাকলে নতুন করে তৈরি করা
+    cur.execute("INSERT INTO users (user_id) VALUES (%s) ON CONFLICT (user_id) DO NOTHING", (user_id,))
+    conn.commit()
+    
+    cur.execute("SELECT balance, refs FROM users WHERE user_id = %s", (user_id,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    
+    return jsonify({
+        "balance": row[0] if row else 0.0,
+        "refs": row[1] if row else 0
+    })
+
+# রিয়েল টাইম ব্যালেন্স আপডেট
+@app.route('/update-balance', methods=['POST'])
+def update_balance():
+    data = request.json
+    user_id = data.get('user_id')
+    points_to_add = data.get('points', 5.0) # ডিফল্ট ৫ পয়েন্ট
+
+    if not user_id:
+        return jsonify({"success": False, "message": "User ID missing"}), 400
+
     try:
-        conn = get_db(); cur = conn.cursor()
-        cur.execute("SELECT balance, refs FROM users WHERE id = %s", (uid,))
-        res = cur.fetchone()
-        cur.close(); conn.close()
-        return jsonify({"balance": res[0], "refs": res[1]}) if res else jsonify({"balance": 0, "refs": 0})
-    except: return jsonify({"balance": 0, "refs": 0})
-
-@app.route("/postback")
-def postback():
-    uid = request.args.get('user_id')
-    if uid:
-        conn = get_db(); cur = conn.cursor()
-        cur.execute("UPDATE users SET balance = balance + 5 WHERE id = %s", (int(uid),))
-        conn.commit(); cur.close(); conn.close()
-        return "OK", 200
-    return "Error", 400
-
-@bot.message_handler(commands=['start'])
-def start(message):
-    uid = message.from_user.id
-    name = message.from_user.first_name
-    ref_id = message.text.split()[1] if len(message.text.split()) > 1 else None
-    
-    conn = get_db(); cur = conn.cursor()
-    cur.execute("SELECT id FROM users WHERE id = %s", (uid,))
-    if not cur.fetchone():
-        cur.execute("INSERT INTO users (id, name, balance, refs) VALUES (%s, %s, 0, 0)", (uid, name))
-        if ref_id and ref_id.isdigit() and int(ref_id) != uid:
-            cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (int(ref_id),))
-            bot.send_message(ref_id, f"🎊 {name} জয়েন করেছে! আপনি ২০০ পয়েন্ট পেয়েছেন।")
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("UPDATE users SET balance = balance + %s WHERE user_id = %s", (points_to_add, user_id))
         conn.commit()
-    cur.close(); conn.close()
-    
-    markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("📱 ওপেন অ্যাপ", web_app=types.WebAppInfo("https://newsnetwork24.42web.io/")))
-    bot.send_message(message.chat.id, f"স্বাগতম {name}!", reply_markup=markup)
+        cur.close()
+        conn.close()
+        return jsonify({"success": True, "message": "Points Added Successfully"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
-if __name__ == "__main__":
-    init_db()
-    threading.Thread(target=bot.infinity_polling).start()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+if __name__ == '__main__':
+    # Render-এর পোর্টের জন্য
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
