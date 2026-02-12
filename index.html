@@ -17,46 +17,41 @@
         .marquee div { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
-        .ad-container { width: 100%; max-width: 320px; margin: 15px auto; overflow: hidden; display: flex; justify-content: center; }
-
         .header { padding: 20px; background: linear-gradient(180deg, #1e293b 0%, var(--bg) 100%); }
-        .stats { display: flex; gap: 10px; padding: 0 20px; }
+        .stats { display: flex; gap: 10px; padding: 0 20px; margin-top: -10px; }
         .stat-box { flex: 1; background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #333; }
         .stat-box span { display: block; font-size: 22px; font-weight: bold; color: var(--accent); }
 
         .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
-        .btn { border: none; border-radius: 15px; padding: 20px 10px; color: white; font-weight: bold; cursor: pointer; }
+        .btn { border: none; border-radius: 15px; padding: 20px 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn i { font-size: 25px; margin-bottom: 8px; display: block; }
-        
         .btn-ad { background: #e91e63; }
         .btn-ref { background: #2196f3; }
         .btn-wit { background: #4caf50; }
         .btn-rel { background: #9c27b0; }
 
-        /* পেমেন্ট মেথড কালার */
-        .bkash-opt { background-color: #e2136e !important; color: white; }
-        .nagad-opt { background-color: #f34123 !important; color: white; }
-        .rocket-opt { background-color: #8c3494 !important; color: white; }
-
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--card); width: 100%; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #000; color: #fff; border: 1px solid #444; }
-        .confirm-btn { background: var(--accent); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; }
+        
+        /* পেমেন্ট কালার ফিক্স */
+        #w_method option[value="bKash"] { background: #e2136e; color: white; }
+        #w_method option[value="Nagad"] { background: #f34123; color: white; }
+        #w_method option[value="Rocket"] { background: #8c3494; color: white; }
     </style>
 </head>
 <body>
 
 <div class="marquee">
-    <div>📢 উইথড্র টাইম: সকাল ৮টা - রাত ১১টা। যোগাযোগ: ০১৯১৩৬২১৫১০ (নাজমুল হক ফরহাদ) | প্রতি রেফারে ২০০ এবং লেভেল-২ কমিশন ৫০ পয়েন্ট!</div>
+    <div>📢 উইথড্র টাইম: সকাল ৮টা - রাত ১১টা। যোগাযোগ: ০১৯১৩৬২১৫১০ (নাজমুল হক ফরহাদ) | ৪০০০ পয়েন্ট = ২০ টাকা। প্রতি রেফার ২০০ পয়েন্ট!</div>
 </div>
 
-<div class="ad-container">
+<div style="margin: 10px 0;">
     <script src="https://hathomeynapoleon.com/1b/df/db/1bdfdbcd7aca5ef4e2890826a8c56e14.js"></script>
 </div>
 
 <div class="header">
     <h3 id="u_name">লোডিং...</h3>
-    <p style="font-size:12px; opacity:0.7;">৪০০০ পয়েন্ট = ২০ টাকা</p>
 </div>
 
 <div class="stats">
@@ -66,7 +61,7 @@
 
 <div class="nav-grid">
     <button class="btn btn-ad" onclick="watchAd()"><i class="fas fa-play-circle"></i>অ্যাড দেখুন (+৫)</button>
-    <button class="btn btn-ref" onclick="copyRef()"><i class="fas fa-user-plus"></i>রেফার করুন</button>
+    <button class="btn btn-ref" onclick="copyRef()"><i class="fas fa-copy"></i>রেফার করুন</button>
     <button class="btn btn-wit" onclick="openW()"><i class="fas fa-wallet"></i>উইথড্র</button>
     <button class="btn btn-rel" onclick="location.reload()"><i class="fas fa-sync-alt"></i>রিফ্রেশ</button>
 </div>
@@ -75,27 +70,20 @@
     <div class="modal-content">
         <h3>উইথড্র রিকোয়েস্ট</h3>
         <select id="w_method">
-            <option value="" disabled selected>পেমেন্ট মেথড সিলেক্ট করুন</option>
-            <option value="bKash" class="bkash-opt">বিকাশ (bKash)</option>
-            <option value="Nagad" class="nagad-opt">নগদ (Nagad)</option>
-            <option value="Rocket" class="rocket-opt">রকেট (Rocket)</option>
+            <option value="bKash">বিকাশ (bKash)</option>
+            <option value="Nagad">নগদ (Nagad)</option>
+            <option value="Rocket">রকেট (Rocket)</option>
         </select>
         <input type="number" id="w_taka" placeholder="টাকার পরিমাণ (২০ - ২৫০০০)">
         <input type="text" id="w_num" placeholder="একাউন্ট নাম্বার">
-        <button class="confirm-btn" onclick="sendWithdraw()">সাবমিট করুন</button>
+        <button onclick="sendWithdraw()" style="background:#00d2ff; border:none; padding:15px; width:100%; border-radius:10px; font-weight:bold;">সাবমিট</button>
         <p onclick="closeW()" style="color:red; margin-top:15px; cursor:pointer;">বন্ধ করুন</p>
     </div>
 </div>
 
-<div class="ad-container">
+<div style="margin: 20px 0;">
     <script type="text/javascript">
-      atOptions = {
-        'key' : '72bde95953ccee2589d833e907c735ab',
-        'format' : 'iframe',
-        'height' : 250,
-        'width' : 300,
-        'params' : {}
-      };
+      atOptions = {'key' : '72bde95953ccee2589d833e907c735ab', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {}};
     </script>
     <script src="https://hathomeynapoleon.com/72bde95953ccee2589d833e907c735ab/invoke.js"></script>
 </div>
@@ -112,7 +100,7 @@
             document.getElementById('bal').innerText = d.balance;
             document.getElementById('ref').innerText = d.refs;
             if(user) document.getElementById('u_name').innerText = user.first_name;
-        } catch(e) { console.error("Error"); }
+        } catch(e) { console.error("Data Load Error"); }
     }
 
     function watchAd() {
@@ -123,14 +111,16 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({user_id: user.id, point: 5})
                 });
-                tg.showPopup({message: "৫ পয়েন্ট যোগ হয়েছে!"}, () => location.reload());
+                tg.showPopup({message: "৫ পয়েন্ট পেয়েছেন!"}, () => location.reload());
             });
         }
     }
 
     function copyRef() {
         const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-        navigator.clipboard.writeText(link);
+        const i = document.createElement("input"); i.value = link;
+        document.body.appendChild(i); i.select(); document.execCommand("copy");
+        document.body.removeChild(i);
         tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!");
     }
 
@@ -141,12 +131,10 @@
         const taka = document.getElementById('w_taka').value;
         const num = document.getElementById('w_num').value;
         const method = document.getElementById('w_method').value;
-        if(taka >= 20 && num && method) {
+        if(taka >= 20 && num) {
             tg.sendData(JSON.stringify({action: 'withdraw', amt: taka*200, num: num, method: method}));
             closeW();
-        } else {
-            tg.showAlert("সব তথ্য সঠিকভাবে দিন!");
-        }
+        } else { tg.showAlert("সঠিক তথ্য দিন!"); }
     }
 
     tg.ready(); tg.expand(); loadData();
