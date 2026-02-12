@@ -7,17 +7,17 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://hathomeynapoleon.com/1b/df/db/1bdfdbcd7aca5ef4e2890826a8c56e14.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='10070523' data-sdk='show_10070523'></script>
 
     <style>
         :root { --bg: #0b101a; --card: #1a2233; --text: #ffffff; --accent: #00d2ff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; text-align: center; }
         
-        /* হেডলাইন */
         .marquee { background: linear-gradient(90deg, #ff0055, #ff5e00); color: white; padding: 10px 0; font-weight: bold; overflow: hidden; position: sticky; top: 0; z-index: 100; }
         .marquee div { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        .ad-container { width: 100%; max-width: 320px; margin: 15px auto; overflow: hidden; display: flex; justify-content: center; }
 
         .header { padding: 20px; background: linear-gradient(180deg, #1e293b 0%, var(--bg) 100%); }
         .stats { display: flex; gap: 10px; padding: 0 20px; }
@@ -33,10 +33,10 @@
         .btn-wit { background: #4caf50; }
         .btn-rel { background: #9c27b0; }
 
-        /* পেমেন্ট মেথড অফিসিয়াল কালার */
-        .bkash-bg { background-color: #e2136e !important; color: white !important; }
-        .nagad-bg { background-color: #f34123 !important; color: white !important; }
-        .rocket-bg { background-color: #8c3494 !important; color: white !important; }
+        /* পেমেন্ট মেথড কালার */
+        .bkash-opt { background-color: #e2136e !important; color: white; }
+        .nagad-opt { background-color: #f34123 !important; color: white; }
+        .rocket-opt { background-color: #8c3494 !important; color: white; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--card); width: 100%; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); }
@@ -47,15 +47,15 @@
 <body>
 
 <div class="marquee">
-    <div>📢 উইথড্র টাইম: সকাল ৮টা - রাত ১১টা। যোগাযোগ: ০১৯১৩৬২১৫১০ (নাজমুল হক ফরহাদ) | najmulh219653@gmail.com | প্রতি রেফারে ২০০ এবং লেভেল-২ কমিশন ৫০ পয়েন্ট!</div>
+    <div>📢 উইথড্র টাইম: সকাল ৮টা - রাত ১১টা। যোগাযোগ: ০১৯১৩৬২১৫১০ (নাজমুল হক ফরহাদ) | প্রতি রেফারে ২০০ এবং লেভেল-২ কমিশন ৫০ পয়েন্ট!</div>
 </div>
 
-<div style="margin: 10px 0;">
+<div class="ad-container">
     <script src="https://hathomeynapoleon.com/1b/df/db/1bdfdbcd7aca5ef4e2890826a8c56e14.js"></script>
 </div>
 
 <div class="header">
-    <h3 id="u_name">Najmul Hoque Forhad</h3>
+    <h3 id="u_name">লোডিং...</h3>
     <p style="font-size:12px; opacity:0.7;">৪০০০ পয়েন্ট = ২০ টাকা</p>
 </div>
 
@@ -74,11 +74,11 @@
 <div id="witModal" class="modal">
     <div class="modal-content">
         <h3>উইথড্র রিকোয়েস্ট</h3>
-        <select id="w_method" onchange="updateMethodColor(this)">
+        <select id="w_method">
             <option value="" disabled selected>পেমেন্ট মেথড সিলেক্ট করুন</option>
-            <option value="bKash" class="bkash-bg">বিকাশ (bKash)</option>
-            <option value="Nagad" class="nagad-bg">নগদ (Nagad)</option>
-            <option value="Rocket" class="rocket-bg">রকেট (Rocket)</option>
+            <option value="bKash" class="bkash-opt">বিকাশ (bKash)</option>
+            <option value="Nagad" class="nagad-opt">নগদ (Nagad)</option>
+            <option value="Rocket" class="rocket-opt">রকেট (Rocket)</option>
         </select>
         <input type="number" id="w_taka" placeholder="টাকার পরিমাণ (২০ - ২৫০০০)">
         <input type="text" id="w_num" placeholder="একাউন্ট নাম্বার">
@@ -87,21 +87,23 @@
     </div>
 </div>
 
-<div style="margin-top:20px; padding-bottom: 20px;">
-    <script src="https://hathomeynapoleon.com/1b/df/db/1bdfdbcd7aca5ef4e2890826a8c56e14.js"></script>
+<div class="ad-container">
+    <script type="text/javascript">
+      atOptions = {
+        'key' : '72bde95953ccee2589d833e907c735ab',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://hathomeynapoleon.com/72bde95953ccee2589d833e907c735ab/invoke.js"></script>
 </div>
 
 <script>
     const tg = window.Telegram.WebApp;
     const user = tg.initDataUnsafe.user;
     const BACKEND = "https://earnquick-backend.onrender.com";
-
-    function updateMethodColor(select) {
-        select.className = ''; 
-        if(select.value === 'bKash') select.classList.add('bkash-bg');
-        if(select.value === 'Nagad') select.classList.add('nagad-bg');
-        if(select.value === 'Rocket') select.classList.add('rocket-bg');
-    }
 
     async function loadData() {
         try {
