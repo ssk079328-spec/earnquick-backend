@@ -16,7 +16,7 @@ RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
 WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
 
 # ⭐ আপনার GitHub Pages-এর লিঙ্ক (তৈরি করার পর এখানে বসাবেন)
-WEB_APP_URL = "https://ssk079328-spec.github.io/earnquick-frontend/"
+WEB_APP_URL = "https://ssk079328-spec.github.io/earnquick-backend/"
 BOT_USERNAME = "@EarnQuick_Official_bot"
 
 bot = telegram.Bot(token=BOT_TOKEN)
