@@ -27,7 +27,6 @@ def init():
     conn.commit(); cur.close(); conn.close()
     return "🚀 EarnQuick Pro Live!"
 
-# --- Monetag Postback ---
 @app.route("/postback")
 def postback():
     uid = request.args.get('user_id')
@@ -49,7 +48,7 @@ def data():
         cur.execute("INSERT INTO users (id) VALUES (%s)", (uid,))
         conn.commit(); row = (0, 0, True, None)
     
-    if row[2] and row[3]: # Referral
+    if row[2] and row[3]: 
         cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (row[3],))
         cur.execute("SELECT parent_id FROM users WHERE id = %s", (row[3],))
         gp = cur.fetchone()
@@ -66,7 +65,7 @@ def add_point():
     d = request.json
     uid, p = d.get('user_id'), d.get('point')
     conn = get_db(); cur = conn.cursor()
-    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (p, uid))
+    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (uid,))
     cur.execute("INSERT INTO history (user_id, type, amount) VALUES (%s, 'Ad View', %s)", (uid, p))
     conn.commit(); cur.close(); conn.close()
     return "ok"
