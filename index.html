@@ -14,8 +14,9 @@
         :root { --bg: #0b101a; --card: #1a2233; --text: #ffffff; --accent: #00d2ff; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; text-align: center; }
         
+        /* চলমান হেডলাইন */
         .marquee { background: linear-gradient(90deg, #ff0055, #ff5e00); color: white; padding: 10px 0; font-weight: bold; overflow: hidden; position: sticky; top: 0; z-index: 100; }
-        .marquee div { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; padding-left: 100%; }
+        .marquee div { display: inline-block; white-space: nowrap; animation: marquee 25s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 
         .header { padding: 30px 20px; background: linear-gradient(180deg, #1e293b 0%, var(--bg) 100%); }
@@ -27,16 +28,15 @@
         .btn { border: none; border-radius: 15px; padding: 20px 10px; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn i { font-size: 25px; margin-bottom: 8px; display: block; }
         
-        /* বাটন কালার */
         .btn-ad { background: #e91e63; }
         .btn-ref { background: #2196f3; }
         .btn-wit { background: #4caf50; }
         .btn-rel { background: #9c27b0; }
 
-        /* পেমেন্ট মেথড কালার */
-        .bkash { background: #e2136e !important; color: white; }
-        .nagad { background: #f34123 !important; color: white; }
-        .rocket { background: #8c3494 !important; color: white; }
+        /* উইথড্র মেথড কালার */
+        #w_method option[value="bKash"] { background: #e2136e; color: white; }
+        #w_method option[value="Nagad"] { background: #f34123; color: white; }
+        #w_method option[value="Rocket"] { background: #8c3494; color: white; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
         .modal-content { background: var(--card); width: 100%; padding: 25px; border-radius: 20px; border: 1px solid var(--accent); }
@@ -51,7 +51,8 @@
 </div>
 
 <div class="header">
-    <h3 id="u_name" style="margin:0;">লোডিং...</h3>
+    <h3 id="u_name" style="margin:0;">Najmul Hoque Forhad</h3>
+    <p style="font-size:12px; opacity:0.7;">৪০০০ পয়েন্ট = ২০ টাকা</p>
 </div>
 
 <div class="stats">
@@ -60,23 +61,23 @@
 </div>
 
 <div class="nav-grid">
-    <button class="btn btn-ad" onclick="watchAd()"><i class="fas fa-play"></i>অ্যাড দেখুন</button>
-    <button class="btn btn-ref" onclick="copyRef()"><i class="fas fa-users"></i>রেফার</button>
+    <button class="btn btn-ad" onclick="watchAd()"><i class="fas fa-play-circle"></i>অ্যাড দেখুন (+৫)</button>
+    <button class="btn btn-ref" onclick="copyRef()"><i class="fas fa-user-plus"></i>রেফার করুন</button>
     <button class="btn btn-wit" onclick="openW()"><i class="fas fa-wallet"></i>উইথড্র</button>
-    <button class="btn btn-rel" onclick="location.reload()"><i class="fas fa-sync"></i>রিফ্রেশ</button>
+    <button class="btn btn-rel" onclick="location.reload()"><i class="fas fa-sync-alt"></i>রিফ্রেশ</button>
 </div>
 
 <div id="witModal" class="modal">
     <div class="modal-content">
-        <h3>উইথড্র পদ্ধতি</h3>
-        <select id="w_method" onchange="changeColor(this)">
-            <option value="bKash" class="bkash">বিকাশ (bKash)</option>
-            <option value="Nagad" class="nagad">নগদ (Nagad)</option>
-            <option value="Rocket" class="rocket">রকেট (Rocket)</option>
+        <h3>উইথড্র রিকোয়েস্ট</h3>
+        <select id="w_method">
+            <option value="bKash" style="background:#e2136e;color:white;">বিকাশ (bKash)</option>
+            <option value="Nagad" style="background:#f34123;color:white;">নগদ (Nagad)</option>
+            <option value="Rocket" style="background:#8c3494;color:white;">রকেট (Rocket)</option>
         </select>
         <input type="number" id="w_taka" placeholder="টাকার পরিমাণ (২০ - ২৫০০০)">
-        <input type="text" id="w_num" placeholder="নাম্বার দিন">
-        <button class="confirm-btn" onclick="sendWithdraw()">সাবমিট</button>
+        <input type="text" id="w_num" placeholder="একাউন্ট নাম্বার দিন">
+        <button class="confirm-btn" onclick="sendWithdraw()">সাবমিট করুন</button>
         <p onclick="closeW()" style="color:red; margin-top:15px; cursor:pointer;">বন্ধ করুন</p>
     </div>
 </div>
@@ -90,16 +91,15 @@
     const user = tg.initDataUnsafe.user;
     const BACKEND = "https://earnquick-backend.onrender.com";
 
-    function changeColor(select) {
-        select.className = select.value.toLowerCase();
-    }
+    if(user) document.getElementById('u_name').innerText = user.first_name;
 
     async function loadData() {
-        const r = await fetch(`${BACKEND}/data?user_id=${user.id}`);
-        const d = await r.json();
-        document.getElementById('bal').innerText = d.balance;
-        document.getElementById('ref').innerText = d.refs;
-        document.getElementById('u_name').innerText = user.first_name;
+        try {
+            const r = await fetch(`${BACKEND}/data?user_id=${user.id}`);
+            const d = await r.json();
+            document.getElementById('bal').innerText = d.balance;
+            document.getElementById('ref').innerText = d.refs;
+        } catch(e) { console.error("Error loading data"); }
     }
 
     function watchAd() {
@@ -110,8 +110,8 @@
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({user_id: user.id, point: 5})
                 });
-                tg.showPopup({message: "৫ পয়েন্ট পেয়েছেন!"}, () => location.reload());
-            });
+                tg.showPopup({message: "৫ পয়েন্ট যোগ হয়েছে!"}, () => location.reload());
+            }).catch(() => tg.showAlert("অ্যাড লোড হয়নি!"));
         }
     }
 
@@ -130,7 +130,10 @@
         const method = document.getElementById('w_method').value;
         if(taka >= 20 && num) {
             tg.sendData(JSON.stringify({action: 'withdraw', amt: taka*200, num: num, method: method}));
+            tg.showPopup({message: "রিকোয়েস্ট পাঠানো হয়েছে!"});
             closeW();
+        } else {
+            tg.showAlert("সঠিক তথ্য দিন!");
         }
     }
 
