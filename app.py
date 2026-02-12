@@ -7,7 +7,7 @@ from telebot import types
 import threading
 
 # --- কনফিগারেশন (সঠিক তথ্য দিন) ---
-TOKEN = "YOUR_BOT_TOKEN" 
+TOKEN = "8320840106:AAGOxeIAsdafNclsmiH5E9pZb1iegBgjd-c" 
 DB_URL = "postgresql://earnquick_backend_user:nxsBqFbwGhoq5ryV3AkYssb0QsdkBZXT@dpg-d66lfvumcj7s73dlip5g-a.singapore-postgres.render.com/earnquick_backend"
 ADMIN_ID = 8145444675 # আপনার টেলিগ্রাম আইডি
 
