@@ -1,8 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import telegram
-import os
-import psycopg2
+import os, json, psycopg2
 from datetime import date
 
 app = Flask(__name__)
@@ -11,7 +10,6 @@ CORS(app)
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 DATABASE_URL = os.environ.get("DATABASE_URL")
 RENDER_URL = os.environ.get("RENDER_EXTERNAL_URL")
-
 bot = telegram.Bot(token=BOT_TOKEN)
 
 def get_db():
@@ -23,63 +21,73 @@ def init():
     cur = conn.cursor()
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
-            id BIGINT PRIMARY KEY, balance NUMERIC DEFAULT 0, refs INTEGER DEFAULT 0, last_date DATE
+            id BIGINT PRIMARY KEY, balance NUMERIC DEFAULT 0, refs INTEGER DEFAULT 0, 
+            parent_id BIGINT, is_new BOOLEAN DEFAULT TRUE
+        );
+        CREATE TABLE IF NOT EXISTS withdrawals (
+            id SERIAL PRIMARY KEY, user_id BIGINT, amount NUMERIC, method TEXT, num TEXT, status TEXT DEFAULT 'Pending'
         );
     """)
     conn.commit()
-    cur.close()
-    conn.close()
-    return "Backend is Active!"
+    cur.close(); conn.close()
+    return "System Ready!"
 
-@app.route("/data", methods=['GET'])
+@app.route("/data")
 def data():
     uid = request.args.get('user_id')
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("SELECT balance, refs FROM users WHERE id = %s", (uid,))
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("SELECT balance, refs, is_new, parent_id FROM users WHERE id = %s", (uid,))
     row = cur.fetchone()
-    if not row:
-        cur.execute("INSERT INTO users (id) VALUES (%s)", (uid,))
+    
+    # ২-লেভেল কমিশন লজিক
+    if row and row[2]:
+        parent = row[3]
+        if parent:
+            cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (parent,))
+            cur.execute("SELECT parent_id FROM users WHERE id = %s", (parent,))
+            g_parent = cur.fetchone()
+            if g_parent and g_parent[0]:
+                cur.execute("UPDATE users SET balance = balance + 50 WHERE id = %s", (g_parent[0],))
+        cur.execute("UPDATE users SET is_new = False WHERE id = %s", (uid,))
         conn.commit()
-        res = {"balance": 0, "refs": 0}
-    else:
-        res = {"balance": float(row[0]), "refs": row[1]}
-    cur.close()
-    conn.close()
-    return jsonify(res)
+    
+    cur.execute("SELECT balance, refs FROM users WHERE id = %s", (uid,))
+    res = cur.fetchone()
+    cur.close(); conn.close()
+    return jsonify({"balance": float(res[0]), "refs": res[1]})
 
 @app.route("/add_point", methods=['POST'])
 def add_point():
     d = request.json
-    uid = d.get('user_id')
-    point = d.get('point')
-    conn = get_db()
-    cur = conn.cursor()
-    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (point, uid))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({"status": "ok"})
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("UPDATE users SET balance = balance + %s WHERE id = %s", (d['point'], d['user_id']))
+    conn.commit(); cur.close(); conn.close()
+    return "ok"
 
 @app.route(f"/webhook/{BOT_TOKEN}", methods=['POST'])
 def webhook():
     update = telegram.Update.de_json(request.get_json(force=True), bot)
-    if update.message and update.message.text:
+    if update.message:
         uid = update.message.from_user.id
-        text = update.message.text
-        if "/start" in text:
-            msg = text.split()
-            if len(msg) > 1: # রেফারেল চেক
-                ref_id = msg[1]
-                conn = get_db()
-                cur = conn.cursor()
-                cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (ref_id,))
+        if update.message.text and "/start" in update.message.text:
+            conn = get_db(); cur = conn.cursor()
+            cur.execute("SELECT id FROM users WHERE id = %s", (uid,))
+            if not cur.fetchone():
+                p_id = None
+                msg = update.message.text.split()
+                if len(msg) > 1: p_id = msg[1]
+                cur.execute("INSERT INTO users (id, parent_id) VALUES (%s, %s)", (uid, p_id))
                 conn.commit()
-                cur.close()
-                conn.close()
-            
             btn = [[telegram.InlineKeyboardButton("🚀 অ্যাপ ওপেন করুন", web_app=telegram.WebAppInfo(url="https://ssk079328-spec.github.io/earnquick-frontend/"))]]
             update.message.reply_text("স্বাগতম!", reply_markup=telegram.InlineKeyboardMarkup(btn))
+        elif update.message.web_app_data:
+            d = json.loads(update.message.web_app_data.data)
+            if d['action'] == 'withdraw':
+                conn = get_db(); cur = conn.cursor()
+                cur.execute("INSERT INTO withdrawals (user_id, amount, method, num) VALUES (%s, %s, %s, %s)", (uid, d['amt'], d['method'], d['num']))
+                cur.execute("UPDATE users SET balance = balance - %s WHERE id = %s", (d['amt'], uid))
+                conn.commit(); cur.close(); conn.close()
+                update.message.reply_text(f"✅ উইথড্র রিকোয়েস্ট জমা হয়েছে! পরিমাণ: {float(d['amt'])/200} টাকা।")
     return "ok"
 
 if __name__ == "__main__":
