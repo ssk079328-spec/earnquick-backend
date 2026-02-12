@@ -6,8 +6,9 @@ from flask_cors import CORS
 from telebot import types
 import threading
 
-TOKEN = "আপনার_বট_টোকেন"
-DB_URL = "আপনার_ডাটাবেস_ইউআরএল"
+# --- সিকিউর কনফিগারেশন (Render Dashboard থেকে আসবে) ---
+TOKEN = os.environ.get("BOT_TOKEN") 
+DB_URL = os.environ.get("DATABASE_URL")
 
 bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
@@ -16,17 +17,21 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL)
 
+# অটোমেটিক টেবিল তৈরি
 def init_db():
-    conn = get_db(); cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS users (
-            id BIGINT PRIMARY KEY,
-            name TEXT,
-            balance FLOAT DEFAULT 0,
-            refs INT DEFAULT 0
-        );
-    """)
-    conn.commit(); cur.close(); conn.close()
+    try:
+        conn = get_db(); cur = conn.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id BIGINT PRIMARY KEY,
+                name TEXT,
+                balance FLOAT DEFAULT 0,
+                refs INT DEFAULT 0
+            );
+        """)
+        conn.commit(); cur.close(); conn.close()
+    except Exception as e:
+        print(f"DB Error: {e}")
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -39,9 +44,8 @@ def start(message):
     if not cur.fetchone():
         cur.execute("INSERT INTO users (id, name, balance, refs) VALUES (%s, %s, 0, 0)", (uid, name))
         if ref_id and ref_id.isdigit() and int(ref_id) != uid:
-            cur.execute("UPDATE users SET balance = balance + 200 WHERE id = %s", (int(ref_id),))
-            cur.execute("UPDATE users SET refs = refs + 1 WHERE id = %s", (int(ref_id),))
-            bot.send_message(ref_id, f"🎊 {name} আপনার রেফারে জয়েন করেছে! ২০০ পয়েন্ট বোনাস।")
+            cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE id = %s", (int(ref_id),))
+            bot.send_message(ref_id, f"🎊 {name} জয়েন করেছে! ২০০ পয়েন্ট বোনাস।")
         conn.commit()
     cur.close(); conn.close()
     
