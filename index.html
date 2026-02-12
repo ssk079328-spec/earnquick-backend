@@ -2,149 +2,94 @@
 <html lang="bn">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EarnQuick Pro</title>
     
-    <script src='//libtl.com/sdk.js' data-zone='10441115' data-sdk='show_10441115'></script>
-    
-    <script src='//libtl.com/sdk.js' data-zone='10070523' data-sdk='show_10070523'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10603687' data-sdk='show_10603687'></script>
     
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
     <style>
-        :root { --bg: #0b101a; --card: #1a2233; --accent: #00d2ff; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 80px; }
-        .marquee { background: linear-gradient(90deg, #ff0055, #ff5e00); padding: 10px 0; font-weight: bold; overflow: hidden; white-space: nowrap; }
-        .marquee span { display: inline-block; animation: scroll 20s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .header { padding: 25px; text-align: center; background: linear-gradient(180deg, #1e293b, var(--bg)); }
-        .stats { display: flex; gap: 10px; padding: 0 15px; margin-top: -15px; }
-        .stat-box { flex: 1; background: var(--card); padding: 15px; border-radius: 15px; border: 1px solid #333; text-align: center; }
-        .stat-box b { display: block; font-size: 22px; color: var(--accent); }
-        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 15px; }
-        .btn { border: none; border-radius: 12px; padding: 15px 5px; color: #fff; font-weight: bold; cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-        .btn i { font-size: 20px; }
-        .btn:active { transform: scale(0.95); }
-        .btn-bonus { background: #ff9800; } .btn-ad { background: #e91e63; }
-        .btn-his { background: #607d8b; } .btn-wit { background: #4caf50; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; align-items: center; justify-content: center; padding: 15px; }
-        .modal-content { background: var(--card); width: 100%; max-height: 85vh; overflow-y: auto; padding: 20px; border-radius: 20px; border: 1px solid var(--accent); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; background: #000; color: #fff; border: 1px solid #444; box-sizing: border-box; }
-        .item { background: #000; padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; }
-        /* Banner Container Fixed at Bottom */
-        #banner-ad-container { position: fixed; bottom: 0; left: 0; width: 100%; min-height: 60px; background: #000; text-align: center; z-index: 9999; border-top: 1px solid #333; }
+        :root { --primary: #00d2ff; --bg: #0b101a; --card: rgba(255, 255, 255, 0.08); }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 100px; -webkit-user-select: none; }
+        .header { padding: 40px 20px; text-align: center; background: linear-gradient(180deg, #1a2233, var(--bg)); border-radius: 0 0 50px 50px; }
+        .user-pic { width: 85px; height: 85px; border-radius: 50%; border: 4px solid var(--primary); margin-bottom: 10px; }
+        .balance-card { background: var(--card); margin: -30px 20px 20px; padding: 20px; border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; text-align: center; }
+        .balance-card b { font-size: 24px; color: var(--primary); display: block; }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px 20px; }
+        .menu-btn { background: var(--card); padding: 20px; border-radius: 25px; text-align: center; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s; cursor: pointer; }
+        .menu-btn:active { transform: scale(0.9); }
+        .menu-btn i { font-size: 28px; margin-bottom: 8px; display: block; }
+        #banner-ad-container { position: fixed; bottom: 15px; left: 5%; width: 90%; height: 60px; background: #000; border-radius: 20px; overflow: hidden; border: 1px solid var(--primary); }
     </style>
 </head>
 <body>
 
-<div class="marquee"><span>📢 উইথড্র টাইম: ৮টা-১১টা। ৪০০০ পয়েন্ট = ২০ টাকা। প্রতি রেফার ২০০ পয়েন্ট। এডমিন: ০১৯১৩৬২১৫১০</span></div>
-
-<div class="header"><h3 id="u_name">লোডিং...</h3></div>
-
-<div class="stats">
-    <div class="stat-box">পয়েন্ট<b id="bal">0</b></div>
-    <div class="stat-box">রেফার<b id="ref">0</b></div>
+<div class="header">
+    <img id="u_pic" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="user-pic">
+    <div style="font-size: 20px; font-weight: bold;" id="u_name">লোডিং...</div>
 </div>
 
-<div class="nav-grid">
-    <button class="btn btn-bonus" onclick="claimBonus()"><i class="fas fa-gift"></i> ডেইলি বোনাস</button>
-    <button class="btn btn-ad" onclick="watchAd()"><i class="fas fa-play"></i> অ্যাড দেখুন</button>
-    <button class="btn btn-his" onclick="openHistory()"><i class="fas fa-history"></i> হিস্টরি</button>
-    <button class="btn btn-wit" onclick="openW()"><i class="fas fa-wallet"></i> উইথড্র</button>
-    <button class="btn" style="background:#2196f3;" onclick="copyRef()"><i class="fas fa-copy"></i> রেফার লিঙ্ক</button>
-    <button id="adminBtn" class="btn" style="display:none; background:#673ab7;" onclick="openAdmin()"><i class="fas fa-user-shield"></i> এডমিন প্যানেল</button>
+<div class="balance-card">
+    <div><span>পয়েন্ট</span><b id="bal">0</b></div>
+    <div><span>রেফার</span><b id="ref">0</b></div>
+</div>
+
+<div class="menu-grid">
+    <div class="menu-btn" onclick="watchAd()" style="border-bottom: 4px solid #e91e63;"><i class="fas fa-play-circle" style="color: #e91e63;"></i>অ্যাড দেখুন</div>
+    <div class="menu-btn" onclick="openW()" style="border-bottom: 4px solid #4caf50;"><i class="fas fa-wallet" style="color: #4caf50;"></i>উইথড্র</div>
+    <div class="menu-btn" onclick="copyRef()" style="border-bottom: 4px solid #2196f3;"><i class="fas fa-share-alt" style="color: #2196f3;"></i>রেফার</div>
+    <div class="menu-btn" onclick="location.reload()" style="border-bottom: 4px solid #ff9800;"><i class="fas fa-sync" style="color: #ff9800;"></i>রিফ্রেশ</div>
 </div>
 
 <div id="banner-ad-container"></div>
 
-<div id="modal" class="modal"><div id="modal-body" class="modal-content"></div></div>
-
 <script>
-    const tg = window.Telegram.WebApp; const user = tg.initDataUnsafe.user;
+    const tg = window.Telegram.WebApp;
+    const user = tg.initDataUnsafe.user;
     const BACKEND = "https://earnquick-backend.onrender.com";
-    const MY_ID = 8145444675;
 
-    // অটোমেটিক ব্যানার অ্যাড লোড (নতুন জোন আইডি)
-    if(typeof show_10070523 === 'function') {
-        show_10070523({
-          type: 'inApp',
-          inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false }
-        });
+    // ইন-অ্যাপ অ্যাড (স্মার্ট কন্ট্রোল)
+    if(typeof show_10603687 === 'function') {
+        show_10603687({ type: 'inApp', inAppSettings: { frequency: 1, capping: 0.2, interval: 60, timeout: 10, everyPage: false } });
     }
 
-    if(user && user.id == MY_ID) document.getElementById('adminBtn').style.display = 'block';
-
     async function loadData() {
+        if(!user) return;
+        document.getElementById('u_name').innerText = user.first_name;
+        if(user.photo_url) document.getElementById('u_pic').src = user.photo_url;
         const r = await fetch(`${BACKEND}/data?user_id=${user.id}`);
         const d = await r.json();
         document.getElementById('bal').innerText = d.balance;
         document.getElementById('ref').innerText = d.refs;
-        document.getElementById('u_name').innerText = user.first_name;
     }
 
-    // রিওয়ার্ড অ্যাড (পুরানো জোন আইডি)
     function watchAd() {
-        if (typeof show_10441115 === 'function') {
-            show_10441115().then(async () => {
-                await fetch(`${BACKEND}/add_point`, { 
-                    method:'POST', 
-                    headers:{'Content-Type':'application/json'}, 
-                    body:JSON.stringify({user_id:user.id, point:5}) 
-                });
-                tg.showPopup({message:"৫ পয়েন্ট যোগ হয়েছে!"}, () => location.reload());
-            }).catch(e => tg.showAlert("অ্যাড লোড হচ্ছে না!"));
-        } else {
-            tg.showAlert("SDK লোড হয়নি!");
+        if (typeof show_10603637 === 'function') {
+            show_10603637(user.id).then(() => {
+                tg.showPopup({message: "অ্যাড দেখা সফল! পয়েন্ট প্রসেসিং হচ্ছে।"}, () => location.reload());
+            }).catch(() => tg.showAlert("অ্যাড এই মুহূর্তে নেই।"));
         }
     }
 
-    async function claimBonus() {
-        const r = await fetch(`${BACKEND}/claim_bonus`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:user.id}) });
-        const d = await r.json(); tg.showAlert(d.message); if(d.success) location.reload();
-    }
-
-    function openHistory() {
-        showModal('<h3>লেনদেনের ইতিহাস</h3><div id="list">লোডিং...</div>');
-        fetch(`${BACKEND}/history?user_id=${user.id}`).then(r=>r.json()).then(data=>{
-            document.getElementById('list').innerHTML = data.map(i=>`<div class="item"><div>${i.type}<br><small>${i.amount} Pts</small></div><div style="color:${i.status=='Success'?'#4af':'#fa0'}">${i.status}</div></div>`).join('') || 'তথ্য নেই।';
-        });
+    function copyRef() {
+        const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
+        navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
     }
 
     function openW() {
-        showModal(`<h3>উইথড্র রিকোয়েস্ট</h3>
-            <select id="m"><option value="bKash">বিকাশ</option><option value="Nagad">নগদ</option><option value="Rocket">রকেট</option></select>
-            <input id="a" type="number" placeholder="টাকার পরিমাণ (২০-২৫০০০)">
-            <input id="n" type="text" placeholder="নাম্বার">
-            <button class="btn" style="background:var(--accent); width:100%; color:#000;" onclick="sendW()">সাবমিট</button>`);
-    }
-
-    function sendW() {
-        const a = document.getElementById('a').value; const n = document.getElementById('n').value;
-        if(a >= 20 && n) { tg.sendData(JSON.stringify({action:'withdraw', amt:a*200, num:n, method:document.getElementById('m').value})); closeModal(); }
-        else tg.showAlert("সঠিক তথ্য দিন!");
-    }
-
-    function openAdmin() {
-        showModal('<h3>অ্যাডমিন প্যানেল</h3><div id="aList">লোডিং ডাটা...</div>');
-        fetch(`${BACKEND}/admin/all_data?admin_id=${user.id}`).then(r=>r.json()).then(d=>{
-            let h = '<b>পেন্ডিং উইথড্রাল:</b><br>';
-            h += d.withdrawals.map(w=>`<div class="item">${w.method}: ${w.num} (${w.amt/200}TK)<br><button onclick="approve(${w.id})" style="background:green;border:none;color:#fff;border-radius:5px;padding:5px;">Approve</button></div>`).join('') || 'নেই';
-            h += '<br><b>ইউজার লিস্ট:</b><br>';
-            h += d.users.map(u=>`<div class="item" style="font-size:12px;">ID: ${u.id} | Bal: ${u.bal} | Ref: ${u.ref}</div>`).join('');
-            document.getElementById('aList').innerHTML = h;
+        tg.showPopup({
+            title: 'উইথড্র',
+            message: 'উইথড্র রিকোয়েস্ট পাঠাতে বটের মেনু ব্যবহার করুন।',
+            buttons: [{type: 'close'}]
         });
     }
 
-    function approve(id) { fetch(`${BACKEND}/admin/approve`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({admin_id:user.id, w_id:id}) }).then(()=>openAdmin()); }
-    function copyRef() { const i = document.createElement("input"); i.value=`https://t.me/EarnQuick_Official_bot?start=${user.id}`; document.body.appendChild(i); i.select(); document.execCommand("copy"); document.body.removeChild(i); tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"); }
-    function showModal(content) { document.getElementById('modal-body').innerHTML = content + '<button onclick="closeModal()" style="background:red;width:100%;padding:10px;border:none;color:#fff;border-radius:10px;margin-top:15px;">বন্ধ করুন</button>'; document.getElementById('modal').style.display='flex'; }
-    function closeModal() { document.getElementById('modal').style.display='none'; }
+    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10603687,document.getElementById('banner-ad-container'));
+
     tg.ready(); tg.expand(); loadData();
 </script>
-
-<script>
-    (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10070523,document.getElementById('banner-ad-container'));
-</script>
-
 </body>
 </html>
