@@ -5,112 +5,128 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EarnQuick Pro - Official</title>
     
-    <script src='//libtl.com/sdk.js' data-zone='10603687' data-sdk='show_10603687'></script>
+    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0b0f19; --card: #161d2f; --text: #fff; --accent: #ff007a; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; overflow-x: hidden; }
         
         /* Headline */
         .headline { background: rgba(255, 0, 122, 0.1); color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--accent); }
-        .headline span { display: inline-block; animation: scroll 15s linear infinite; }
+        .headline span { display: inline-block; animation: scroll 20s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Sections */
-        .page { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        /* Navigation */
+        .page { display: none; padding: 15px; animation: fadeIn 0.4s; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Profile Card */
-        .profile-card { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 30px; border-radius: 30px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2); }
-        .user-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 25px; color: var(--primary); font-weight: bold; }
+        /* Profile & Stats */
+        .header { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 25px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; text-align: center; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .user-avatar { width: 75px; height: 75px; border-radius: 50%; border: 3px solid #fff; margin: 0 auto 10px; overflow: hidden; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; color: var(--primary); }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Stats Grid */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
-        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-box b { display: block; font-size: 20px; color: var(--primary); }
+        .glass-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-bottom: 15px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .menu-btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; transition: 0.2s; }
+        .menu-btn:active { transform: scale(0.95); }
+        .menu-btn i { font-size: 25px; margin-bottom: 8px; display: block; color: var(--primary); }
 
-        /* Menu Grid */
-        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .menu-item { background: var(--card); padding: 25px; border-radius: 25px; text-align: center; border-bottom: 4px solid var(--primary); }
-        .menu-item i { font-size: 30px; margin-bottom: 10px; display: block; color: var(--primary); }
+        /* Ads */
+        .banner-ad { background: rgba(255,255,255,0.03); border: 1px dashed var(--secondary); border-radius: 15px; padding: 15px; text-align: center; margin: 15px 0; cursor: pointer; color: var(--secondary); font-weight: bold; font-size: 14px; }
 
-        /* Form Style */
-        .form-group { margin-bottom: 15px; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #1f2937; color: #fff; box-sizing: border-box; }
-        .btn-submit { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-        /* Bottom Nav */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { color: #888; font-size: 22px; cursor: pointer; }
+        /* Nav Bar */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; border-radius: 25px 25px 0 0; }
+        .nav-item { color: #666; font-size: 20px; text-align: center; cursor: pointer; }
+        .nav-item span { display: block; font-size: 10px; margin-top: 4px; }
         .nav-item.active { color: var(--primary); }
+
+        input, select { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #333; background: #0f172a; color: #fff; margin-bottom: 15px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-    <div class="headline"><span>📢 প্রতি রেফারে ২০০ পয়েন্ট এবং প্রতি অ্যাডে ৫ পয়েন্ট! নিয়ম মেনে কাজ করলে ১০০% পেমেন্ট পাবেন।</span></div>
+    <div class="headline"><span>📢 স্বাগতম Najmul Hoque Forhad-এর অফিসিয়াল অ্যাপে! নিয়ম মেনে কাজ করলে ১০০% পেমেন্ট গ্যারান্টি।</span></div>
 
     <div id="home" class="page active">
-        <div class="profile-card">
-            <div id="u_pic" class="user-img">?</div>
-            <h2 id="u_name" style="margin:0">Loading...</h2>
-            <p style="font-size:12px; opacity:0.8">Verified Member ✔️</p>
+        <div class="header">
+            <div id="u_pic" class="user-avatar">?</div>
+            <h2 id="u_name" style="margin:0; font-size: 20px;">Loading...</h2>
+            <p style="font-size:11px; opacity:0.8">প্রিমিয়াম মেম্বার ✔️</p>
         </div>
-        <div class="stats-grid">
-            <div class="stat-box"><b>💰 <span id="bal">0.00</span></b><span>পয়েন্ট</span></div>
-            <div class="stat-box"><b>👥 <span id="ref">0</span></b><span>রেফার</span></div>
+
+        <div style="text-align: center; margin-bottom: 15px;">
+            <span onclick="loadData()" style="color: var(--primary); cursor: pointer; font-size: 13px;"><i class="fas fa-sync"></i> রিফ্রেশ করুন</span>
         </div>
-        <div class="menu-grid">
-            <div class="menu-item" onclick="watchAd()"><i class="fas fa-play-circle"></i><span>অ্যাড দেখুন</span></div>
-            <div class="menu-item" onclick="copyRef()"><i class="fas fa-share-alt"></i><span>রেফার লিঙ্ক</span></div>
+
+        <div class="grid">
+            <div class="glass-card"><b>💰 <span id="bal">0.00</span></b><br><small>পয়েন্ট</small></div>
+            <div class="glass-card"><b>👥 <span id="ref">0</span></b><br><small>রেফার</small></div>
         </div>
-        <div id="ad-banner" style="margin-top:20px; text-align:center;"></div>
+
+        <div class="banner-ad" onclick="openPop()">🚀 স্পেশাল বোনাস অফার (ক্লিক করুন)</div>
+
+        <div class="grid">
+            <div class="menu-btn" onclick="watchAd()" style="border-color: var(--accent);"><i class="fas fa-play-circle" style="color: var(--accent);"></i><span>ভিডিও অ্যাড</span></div>
+            <div class="menu-btn" onclick="copyRef()"><i class="fas fa-share-nodes"></i><span>রেফার লিঙ্ক</span></div>
+        </div>
     </div>
 
     <div id="withdraw" class="page">
-        <h3>💰 টাকা তুলুন</h3>
-        <div class="stat-box" style="margin-bottom:20px"><b><span id="bal2">0.00</span></b><span>আপনার ব্যালেন্স</span></div>
-        <div class="form-group">
-            <label>মেথড সিলেক্ট করুন</label>
-            <select id="method">
-                <option value="Bkash">বিকাশ (২০০০ পয়েন্ট = ২০ টাকা)</option>
-                <option value="Nagad">নগদ (২০০০ পয়েন্ট = ২০ টাকা)</option>
-                <option value="Recharge">রিচার্জ (১০০০ পয়েন্ট = ১০ টাকা)</option>
-            </select>
+        <h3 style="text-align:center">💰 পেমেন্ট রিকোয়েস্ট</h3>
+        <div class="banner-ad" onclick="openPop()">🎁 দ্রুত পেমেন্ট পেতে এখানে ক্লিক করুন</div>
+        <div class="glass-card">
+            <small>আপনার ব্যালেন্স</small>
+            <h2 id="bal2" style="margin:5px 0; color:var(--primary)">0.00</h2>
         </div>
-        <div class="form-group">
-            <input type="number" id="phone" placeholder="আপনার নাম্বার দিন">
-        </div>
-        <div class="form-group">
-            <input type="number" id="amount" placeholder="পয়েন্টের পরিমাণ দিন">
-        </div>
-        <button class="btn-submit" onclick="submitWithdraw()">রিকোয়েস্ট পাঠান</button>
+        <select id="method">
+            <option value="Bkash">বিকাশ</option>
+            <option value="Nagad">নগদ</option>
+            <option value="Recharge">রিচার্জ</option>
+        </select>
+        <input type="number" id="phone" placeholder="নাম্বার দিন">
+        <input type="number" id="amount" placeholder="পয়েন্ট (মিনিমাম ১০০০)">
+        <button onclick="submitWithdraw()" style="width:100%; padding:16px; border-radius:12px; background:var(--primary); color:#000; border:none; font-weight:bold;">রিকোয়েস্ট পাঠান</button>
     </div>
 
-    <div id="history" class="page">
-        <h3>📜 পেমেন্ট হিস্টোরি</h3>
-        <div id="history-list">পেন্ডিং রিকোয়েস্ট দেখার জন্য রিফ্রেশ দিন।</div>
+    <div id="bio" class="page">
+        <div class="glass-card" style="padding: 30px; border: 1px solid var(--primary); margin-top: 10px;">
+            <div class="user-avatar" style="width:100px; height:100px; border: 3px solid var(--primary);">
+                <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" alt="Najmul">
+            </div>
+            <h3 style="margin:5px 0">Najmul Hoque Forhad</h3>
+            <p style="font-size:12px; color:var(--primary); margin-bottom:15px">Content Creator & Lead Editor</p>
+            <p style="font-size:13px; opacity:0.8; line-height:1.6; text-align: justify;">
+                আমি খবরের দুনিয়ার একজন কন্টেন্ট ক্রিয়েটর। বাংলাদেশি রাজনীতি থেকে শুরু করে জীবনযাত্রার মানোন্নয়ন—সবকিছুই আমার লেখায় ফুটে ওঠে।
+            </p>
+            <div style="display:flex; justify-content:center; gap:25px; margin-top:20px; font-size:24px;">
+                <a href="https://x.com/Najmulh112" style="color:var(--primary)"><i class="fab fa-x-twitter"></i></a>
+                <a href="https://www.linkedin.com/in/najmul-hoque-806900389" style="color:var(--primary)"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:najmulh219653@gmail.com" style="color:var(--primary)"><i class="fas fa-envelope"></i></a>
+            </div>
+        </div>
+        <div class="banner-ad" onclick="openPop()">🔗 ভিজিট করুন অফিসিয়াল ওয়েবসাইট</div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i></div>
-        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fas fa-wallet"></i></div>
-        <div class="nav-item" onclick="showPage('history', this)"><i class="fas fa-history"></i></div>
+        <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i><span>হোম</span></div>
+        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fas fa-wallet"></i><span>উইথড্র</span></div>
+        <div class="nav-item" onclick="showPage('bio', this)"><i class="fas fa-user-tie"></i><span>প্রোফাইল</span></div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         const user = tg.initDataUnsafe.user;
-        const BACKEND = "https://earnquick-backend.onrender.com";
+        const BACKEND = "https://earnquick-backend.onrender.com"; // আপনার রেন্ডার ইউআরএল
 
         function showPage(pageId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById(pageId).classList.add('active');
             el.classList.add('active');
-            if(pageId === 'home') loadData();
         }
 
         function loadData() {
@@ -121,26 +137,29 @@
                 document.getElementById('bal').innerText = data.balance.toFixed(2);
                 document.getElementById('bal2').innerText = data.balance.toFixed(2);
                 document.getElementById('ref').innerText = data.refs;
-            });
+            }).catch(() => tg.showAlert("সার্ভার কানেকশন এরর!"));
         }
 
         function watchAd() {
-            if (typeof show_10603687 === 'function') {
-                show_10603687().then(() => {
+            if (typeof show_10603637 === 'function') {
+                show_10603637('pop').then(() => {
                     fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                        tg.showAlert("অভিনন্দন! ৫ পয়েন্ট পেয়েছেন।");
+                        tg.showAlert("সফল! ৫ পয়েন্ট যোগ হয়েছে।");
                         loadData();
                     });
-                }).catch(() => tg.showAlert("অ্যাড পাওয়া যায়নি।"));
+                }).catch(() => tg.showAlert("অ্যাড ব্যর্থ হয়েছে।"));
+            } else {
+                tg.showAlert("অ্যাড লোড হচ্ছে...");
             }
         }
+
+        function openPop() { window.open("https://omg10.com/4/10606058", "_blank"); }
 
         function submitWithdraw() {
             const method = document.getElementById('method').value;
             const phone = document.getElementById('phone').value;
             const amount = document.getElementById('amount').value;
-            if(!phone || !amount) return tg.showAlert("সবগুলো ঘর পূরণ করুন!");
-            
+            if(!phone || !amount) return tg.showAlert("সব তথ্য দিন!");
             fetch(`${BACKEND}/withdraw`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -153,16 +172,12 @@
 
         function copyRef() {
             const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-            navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
+            navigator.clipboard.writeText(link).then(() => tg.showAlert("লিঙ্ক কপি হয়েছে!"));
         }
 
-        // Monetag Banner
-        const script = document.createElement('script');
-        script.src = 'https://alwingulla.com/tag.min.js';
-        script.setAttribute('data-zone', '10603687');
-        document.getElementById('ad-banner').appendChild(script);
-
         tg.ready(); tg.expand(); loadData();
+        // অটো পপ-আন্ডার
+        (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10606058,document.body);
     </script>
 </body>
 </html>
