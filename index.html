@@ -5,11 +5,12 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; }
-        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 20px; }
+        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; padding-bottom: 80px; }
+        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 15px; }
         .profile-img { width: 65px; border-radius: 50%; border: 3px solid #0088cc; }
         .balance { font-size: 32px; font-weight: bold; color: #2c3e50; margin: 10px 0; }
-        .btn { width: 100%; padding: 15px; border-radius: 50px; border: none; color: #fff; font-weight: bold; font-size: 16px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        .btn { width: 100%; padding: 14px; border-radius: 50px; border: none; color: #fff; font-weight: bold; font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px; cursor: pointer; }
+        input, select { width: 90%; padding: 10px; margin: 5px 0; border-radius: 10px; border: 1px solid #ddd; }
         .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
         .nav-item { font-size: 10px; color: #95a5a6; text-align: center; text-decoration: none; }
     </style>
@@ -17,33 +18,62 @@
 <body>
     <div class="card">
         <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" class="profile-img">
-        <div id="uName" style="font-weight:bold;">User Name</div>
+        <div id="uName" style="font-weight:bold;">Loading...</div>
         <div style="color:#f1c40f; font-size:12px;">Level: Gold Member ✨</div>
         <div class="balance">💰 <span id="pts">0</span> Pts</div>
         <div style="font-size:12px; color:#95a5a6;">Approx. ৳ <span id="tk">0.00</span></div>
     </div>
+
     <button class="btn" style="background:#0088cc;" onclick="watchAd()"><i class="fa fa-play-circle"></i> Watch Ad (5 Pts)</button>
-    <button class="btn" style="background:#2ecc71;"><i class="fa fa-gift"></i> Daily Bonus</button>
+    
+    <div class="card" id="wBox" style="display:none; text-align: left;">
+        <h4 style="margin:0 0 10px 0;">Withdraw Points</h4>
+        <select id="method"><option>bKash</option><option>Nagad</option></select>
+        <input type="number" id="amt" placeholder="Min 500 Pts">
+        <input type="text" id="phn" placeholder="017XXXXXXXX">
+        <button class="btn" style="background:#e67e22; margin-top:10px;" onclick="doWithdraw()">Confirm</button>
+    </div>
+    
+    <button class="btn" id="wBtn" style="background:#e67e22;" onclick="document.getElementById('wBox').style.display='block'; this.style.display='none';"><i class="fa fa-paper-plane"></i> Withdraw Now</button>
+
     <div class="nav">
         <a class="nav-item"><i class="fa fa-home" style="font-size:20px; display:block; color:#0088cc;"></i>Home</a>
         <a class="nav-item"><i class="fa fa-tasks" style="font-size:20px; display:block;"></i>Tasks</a>
-        <a class="nav-item"><i class="fa fa-trophy" style="font-size:20px; display:block;"></i>Leaderboard</a>
         <a class="nav-item"><i class="fa fa-user" style="font-size:20px; display:block;"></i>Profile</a>
     </div>
+
     <script>
-        let tg = window.Telegram.WebApp; tg.expand();
-        let user = tg.initDataUnsafe.user || {id: 8145444675, first_name: "Admin"};
-        document.getElementById('uName').innerText = user.first_name;
+        let tg = window.Telegram.WebApp;
+        let user = tg.initDataUnsafe.user || {id: 8145444675, first_name: "User"};
+        let BASE = "https://earnquick-backend.onrender.com";
+
         async function load() {
-            let r = await fetch(`https://earnquick-backend.onrender.com/data?user_id=${user.id}&name=${user.first_name}`);
+            let r = await fetch(`${BASE}/data?user_id=${user.id}&name=${user.first_name}`);
             let d = await r.json();
+            document.getElementById('uName').innerText = d.name;
             document.getElementById('pts').innerText = d.balance;
             document.getElementById('tk').innerText = (d.balance / 100).toFixed(2);
         }
+
         function watchAd() {
-            fetch(`https://earnquick-backend.onrender.com/postback?user_id=${user.id}`).then(() => {
+            fetch(`${BASE}/postback?user_id=${user.id}`).then(() => {
                 tg.showAlert("৫ পয়েন্ট যোগ হয়েছে!"); load();
             });
+        }
+
+        async function doWithdraw() {
+            let a = document.getElementById('amt').value;
+            let p = document.getElementById('phn').value;
+            let m = document.getElementById('method').value;
+            if(a < 500) return tg.showAlert("মিনিমাম ৫০০ পয়েন্ট!");
+            let r = await fetch(`${BASE}/withdraw`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user.id, amount: a, method: m, phone: p, name: user.first_name})
+            });
+            let res = await r.json();
+            tg.showAlert(res.message);
+            if(res.status==='success') location.reload();
         }
         load();
     </script>
