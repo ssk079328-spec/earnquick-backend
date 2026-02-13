@@ -19,14 +19,15 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
+# ডাটাবেজ অটো-রিসেট এবং টেবিল সেটআপ
 def init_db():
     conn = get_db(); cur = conn.cursor()
-    # ডাটাবেজে 'name' কলাম আছে কি না চেক করা হচ্ছে
     try:
+        # 'name' কলাম আছে কি না পরীক্ষা
         cur.execute("SELECT name FROM users LIMIT 1;")
     except psycopg2.errors.UndefinedColumn:
         conn.rollback()
-        # কলাম না থাকলে টেবিলটি ডিলিট করে নতুনভাবে সঠিক কলামসহ তৈরি করা হবে
+        # কলাম না থাকলে টেবিল রিসেট (আপনার এরর ফিক্স করতে এটি জরুরি)
         cur.execute("DROP TABLE IF EXISTS users CASCADE;")
         cur.execute("""
             CREATE TABLE users (
@@ -36,10 +37,8 @@ def init_db():
                 refs INT DEFAULT 0
             )
         """)
-        print("Table recreated with 'name' column.")
-    except Exception as e:
+    except Exception:
         conn.rollback()
-        # যদি টেবিল একদমই না থাকে তবে তৈরি করবে
         cur.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 user_id BIGINT PRIMARY KEY, 
@@ -50,34 +49,50 @@ def init_db():
         """)
     conn.commit(); cur.close(); conn.close()
 
-@app.route("/")
-def home(): return "EarnQuick Backend Active"
+# --- বটের রেফারেল লজিক ---
+@bot.message_handler(commands=['start'])
+def start(message):
+    uid = message.from_user.id
+    name = message.from_user.first_name
+    args = message.text.split()
+    referrer_id = args[1] if len(args) > 1 else None
 
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("SELECT user_id FROM users WHERE user_id = %s", (uid,))
+    if not cur.fetchone():
+        # নতুন ইউজার রেজিস্ট্রেশন
+        cur.execute("INSERT INTO users (user_id, name, balance, refs) VALUES (%s, %s, 0, 0)", (uid, name))
+        # রেফারেল বোনাস (২০০ পয়েন্ট)
+        if referrer_id and referrer_id.isdigit() and int(referrer_id) != uid:
+            cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE user_id = %s", (referrer_id,))
+            try:
+                bot.send_message(referrer_id, "🎉 কেউ আপনার লিঙ্কে যোগ দিয়েছে! ২০০ পয়েন্ট বোনাস পেয়েছেন।")
+            except: pass
+        conn.commit()
+    
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton("Open App 🚀", url="https://t.me/EarnQuick_Official_bot/app"))
+    bot.reply_to(message, f"স্বাগতম {name}!", reply_markup=markup)
+    cur.close(); conn.close()
+
+# --- API রুটেস ---
 @app.route("/data")
 def get_data():
     uid = request.args.get('user_id')
     name = request.args.get('name', 'User')
-    if not uid: return jsonify({"error": "Missing ID"}), 400
-    
     conn = get_db(); cur = conn.cursor()
     cur.execute("SELECT balance, refs FROM users WHERE user_id = %s", (uid,))
     res = cur.fetchone()
-    
     if not res:
-        # নতুন ইউজারদের ডাটাবেজে যুক্ত করা (এটি পয়েন্ট জমার জন্য বাধ্যতামূলক)
         cur.execute("INSERT INTO users (user_id, name, balance, refs) VALUES (%s, %s, 0, 0)", (uid, name))
-        conn.commit()
-        res = (0, 0)
-    
+        conn.commit(); res = (0, 0)
     cur.close(); conn.close()
     return jsonify({"balance": res[0], "refs": res[1]})
 
 @app.route("/postback")
 def postback():
     uid = request.args.get('user_id')
-    if not uid: return "Error", 400
     conn = get_db(); cur = conn.cursor()
-    # পয়েন্ট আপডেট করার মূল কুয়েরি
     cur.execute("UPDATE users SET balance = balance + 5 WHERE user_id = %s", (uid,))
     conn.commit(); cur.close(); conn.close()
     return "Success"
@@ -86,16 +101,15 @@ def postback():
 def withdraw():
     data = request.json
     uid, amount = data['user_id'], int(data['amount'])
-    method, phone = data['method'], data['phone']
     conn = get_db(); cur = conn.cursor()
     cur.execute("SELECT balance FROM users WHERE user_id = %s", (uid,))
     res = cur.fetchone()
     if res and res[0] >= amount:
         cur.execute("UPDATE users SET balance = balance - %s WHERE user_id = %s", (amount, uid))
         conn.commit()
-        bot.send_message(ADMIN_ID, f"💰 **Withdraw!**\nUser: {data['name']}\nAmt: {amount}\nPh: {phone}\nVia: {method}")
-        return jsonify({"status": "success", "message": "উইথড্র রিকোয়েস্ট সফল!"})
-    return jsonify({"status": "error", "message": "ব্যালেন্স পর্যাপ্ত নয়!"})
+        bot.send_message(ADMIN_ID, f"💰 Withdraw: {amount} Pts\nUser: {data['name']}\nPhone: {data['phone']}")
+        return jsonify({"status": "success", "message": "সফল হয়েছে!"})
+    return jsonify({"status": "error", "message": "পয়েন্ট কম!"})
 
 if __name__ == "__main__":
     init_db()
