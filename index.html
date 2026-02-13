@@ -3,154 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Ultimate Pro</title>
+    <title>EarnQuick Pro - Official</title>
+    
+    <script src='//libtl.com/sdk.js' data-zone='10603687' data-sdk='show_10603687'></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <script src="https://hathomeynapoleon.com/99/2d/d2/992dd2ea233a764ef41edc1fbe0657dd.js"></script>
-
     <style>
-        :root { --p: #00d2ff; --bg: #050a18; --bkash: #e2136e; --nagad: #f7941d; --rocket: #8c3494; --card: rgba(255,255,255,0.06); }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding-bottom: 120px; overflow-x: hidden; }
+        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0b0f19; --card: #161d2f; --text: #fff; --accent: #ff007a; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* Navbar & Menu */
-        .navbar { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .side-menu { position: fixed; left: -100%; top: 0; width: 80%; height: 100%; background: #0f172a; z-index: 10000; transition: 0.4s; padding: 25px; box-shadow: 5px 0 20px rgba(0,0,0,0.8); }
-        .side-menu.active { left: 0; }
-        .menu-item { padding: 15px; border-radius: 10px; margin-bottom: 10px; background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        /* Headline */
+        .headline { background: rgba(255, 0, 122, 0.1); color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--accent); }
+        .headline span { display: inline-block; animation: scroll 15s linear infinite; }
+        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* Dashboard */
-        .balance-card { background: linear-gradient(135deg, #1e293b, #0f172a); margin: 20px; padding: 25px; border-radius: 25px; text-align: center; border: 1px solid rgba(0,210,255,0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
-        .balance-card h1 { font-size: 36px; margin: 10px 0; color: var(--p); }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 0 20px; }
-        .btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; transition: 0.3s; position: relative; border-bottom: 4px solid var(--p); }
-        .btn:active { transform: scale(0.95); }
-        .btn i { font-size: 32px; margin-bottom: 10px; display: block; }
+        /* Sections */
+        .page { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Admin Panel Section */
-        #admin-section { display: none; padding: 20px; background: #1e293b; margin: 20px; border-radius: 20px; border: 2px dashed var(--p); }
+        /* Profile Card */
+        .profile-card { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 30px; border-radius: 30px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 20px rgba(0, 242, 254, 0.2); }
+        .user-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 25px; color: var(--primary); font-weight: bold; }
 
-        /* Banner Ad Footer */
-        .ad-footer { position: fixed; bottom: 0; width: 100%; background: #000; text-align: center; padding: 5px 0; z-index: 999; border-top: 1px solid var(--p); }
-        iframe { max-width: 100%; height: 90px; }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-box b { display: block; font-size: 20px; color: var(--primary); }
+
+        /* Menu Grid */
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .menu-item { background: var(--card); padding: 25px; border-radius: 25px; text-align: center; border-bottom: 4px solid var(--primary); }
+        .menu-item i { font-size: 30px; margin-bottom: 10px; display: block; color: var(--primary); }
+
+        /* Form Style */
+        .form-group { margin-bottom: 15px; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #1f2937; color: #fff; box-sizing: border-box; }
+        .btn-submit { background: var(--primary); color: #000; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+        /* Bottom Nav */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
+        .nav-item { color: #888; font-size: 22px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
     </style>
 </head>
 <body>
 
-<div id="sideMenu" class="side-menu">
-    <div style="text-align: right;" onclick="toggleMenu()"><i class="fas fa-times fa-2x"></i></div>
-    <div class="menu-item" onclick="location.reload()"><i class="fas fa-home"></i> হোম পেজ</div>
-    <div class="menu-item" id="adminToggle" style="display:none;" onclick="showAdmin()"><i class="fas fa-user-shield"></i> অ্যাডমিন প্যানেল</div>
-    <div class="menu-item" onclick="tg.showAlert('সাপোর্ট আইডি: @YourTelegram')"><i class="fas fa-headset"></i> কাস্টমার সাপোর্ট</div>
-    <div class="menu-item" onclick="tg.close()"><i class="fas fa-sign-out-alt"></i> অ্যাপ বন্ধ করুন</div>
-</div>
+    <div class="headline"><span>📢 প্রতি রেফারে ২০০ পয়েন্ট এবং প্রতি অ্যাডে ৫ পয়েন্ট! নিয়ম মেনে কাজ করলে ১০০% পেমেন্ট পাবেন।</span></div>
 
-<div class="navbar">
-    <i class="fas fa-bars fa-lg" onclick="toggleMenu()"></i>
-    <b style="color: var(--p);">EARNQUICK PRO</b>
-    <i class="fas fa-sync" onclick="loadData()"></i>
-</div>
-
-<div class="balance-card">
-    <span style="opacity: 0.7; letter-spacing: 1px;">MY BALANCE</span>
-    <h1 id="bal">0.00</h1>
-    <div style="font-size: 12px; opacity: 0.5;">User ID: <span id="u_id">---</span></div>
-</div>
-
-<div id="admin-section">
-    <h3 style="margin-top:0;"><i class="fas fa-tools"></i> Admin Control</h3>
-    <button onclick="viewUsers()" style="width:100%; padding:10px; margin-bottom:10px; background:var(--p); border:none; border-radius:5px; font-weight:bold;">View All Users</button>
-    <div id="user-list" style="font-size:12px; max-height:200px; overflow-y:auto;"></div>
-</div>
-
-<div class="grid">
-    <div class="btn" onclick="watchAd()" style="border-color: #ff4b2b;">
-        <i class="fas fa-play-circle" style="color: #ff4b2b;"></i>
-        <b>অ্যাড দেখুন</b>
+    <div id="home" class="page active">
+        <div class="profile-card">
+            <div id="u_pic" class="user-img">?</div>
+            <h2 id="u_name" style="margin:0">Loading...</h2>
+            <p style="font-size:12px; opacity:0.8">Verified Member ✔️</p>
+        </div>
+        <div class="stats-grid">
+            <div class="stat-box"><b>💰 <span id="bal">0.00</span></b><span>পয়েন্ট</span></div>
+            <div class="stat-box"><b>👥 <span id="ref">0</span></b><span>রেফার</span></div>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-item" onclick="watchAd()"><i class="fas fa-play-circle"></i><span>অ্যাড দেখুন</span></div>
+            <div class="menu-item" onclick="copyRef()"><i class="fas fa-share-alt"></i><span>রেফার লিঙ্ক</span></div>
+        </div>
+        <div id="ad-banner" style="margin-top:20px; text-align:center;"></div>
     </div>
-    <div class="btn" onclick="withdraw('Bikash')" style="border-color: var(--bkash);">
-        <i class="fas fa-mobile-alt" style="color: var(--bkash);"></i>
-        <b>বিকাশ</b>
+
+    <div id="withdraw" class="page">
+        <h3>💰 টাকা তুলুন</h3>
+        <div class="stat-box" style="margin-bottom:20px"><b><span id="bal2">0.00</span></b><span>আপনার ব্যালেন্স</span></div>
+        <div class="form-group">
+            <label>মেথড সিলেক্ট করুন</label>
+            <select id="method">
+                <option value="Bkash">বিকাশ (২০০০ পয়েন্ট = ২০ টাকা)</option>
+                <option value="Nagad">নগদ (২০০০ পয়েন্ট = ২০ টাকা)</option>
+                <option value="Recharge">রিচার্জ (১০০০ পয়েন্ট = ১০ টাকা)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="number" id="phone" placeholder="আপনার নাম্বার দিন">
+        </div>
+        <div class="form-group">
+            <input type="number" id="amount" placeholder="পয়েন্টের পরিমাণ দিন">
+        </div>
+        <button class="btn-submit" onclick="submitWithdraw()">রিকোয়েস্ট পাঠান</button>
     </div>
-    <div class="btn" onclick="withdraw('Nagad')" style="border-color: var(--nagad);">
-        <i class="fas fa-wallet" style="color: var(--nagad);"></i>
-        <b>নগদ</b>
+
+    <div id="history" class="page">
+        <h3>📜 পেমেন্ট হিস্টোরি</h3>
+        <div id="history-list">পেন্ডিং রিকোয়েস্ট দেখার জন্য রিফ্রেশ দিন।</div>
     </div>
-    <div class="btn" onclick="withdraw('Rocket')" style="border-color: var(--rocket);">
-        <i class="fas fa-university" style="color: var(--rocket);"></i>
-        <b>রকেট</b>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fas fa-wallet"></i></div>
+        <div class="nav-item" onclick="showPage('history', this)"><i class="fas fa-history"></i></div>
     </div>
-</div>
 
-<div class="ad-footer">
-    <script type="text/javascript">
-        atOptions = { 'key' : '36047257ef54bf70facf3cdb98c2c150', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
-    </script>
-    <script src="https://hathomeynapoleon.com/36047257ef54bf70facf3cdb98c2c150/invoke.js"></script>
-</div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        const user = tg.initDataUnsafe.user;
+        const BACKEND = "https://earnquick-backend.onrender.com";
 
-<script>
-    const tg = window.Telegram.WebApp;
-    const user = tg.initDataUnsafe.user || { id: 8145444675, first_name: "Admin" };
-    const BACKEND = "https://earnquick-backend.onrender.com";
-    const ADMIN_ID = 8145444675;
+        function showPage(pageId, el) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            el.classList.add('active');
+            if(pageId === 'home') loadData();
+        }
 
-    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); }
+        function loadData() {
+            if(!user) return;
+            document.getElementById('u_name').innerText = user.first_name;
+            document.getElementById('u_pic').innerText = user.first_name[0].toUpperCase();
+            fetch(`${BACKEND}/data?user_id=${user.id}`).then(res => res.json()).then(data => {
+                document.getElementById('bal').innerText = data.balance.toFixed(2);
+                document.getElementById('bal2').innerText = data.balance.toFixed(2);
+                document.getElementById('ref').innerText = data.refs;
+            });
+        }
 
-    async function loadData() {
-        document.getElementById('u_id').innerText = user.id;
-        if(user.id == ADMIN_ID) document.getElementById('adminToggle').style.display = 'flex';
-
-        try {
-            const res = await fetch(`${BACKEND}/data?user_id=${user.id}`);
-            const data = await res.json();
-            document.getElementById('bal').innerText = data.balance.toFixed(2);
-        } catch(e) { console.log("Error loading data"); }
-    }
-
-    function watchAd() {
-        tg.showConfirm("ভিডিও অ্যাড লোড হচ্ছে, ৫ পয়েন্ট পাবেন। দেখতে চান?", (ok) => {
-            if(ok) {
-                fetch(`${BACKEND}/update-balance`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ user_id: user.id, points: 5.00 })
-                }).then(() => {
-                    tg.showAlert("সফল! ৫ পয়েন্ট যোগ হয়েছে।");
-                    loadData();
-                });
+        function watchAd() {
+            if (typeof show_10603687 === 'function') {
+                show_10603687().then(() => {
+                    fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
+                        tg.showAlert("অভিনন্দন! ৫ পয়েন্ট পেয়েছেন।");
+                        loadData();
+                    });
+                }).catch(() => tg.showAlert("অ্যাড পাওয়া যায়নি।"));
             }
-        });
-    }
+        }
 
-    function withdraw(method) {
-        tg.showPopup({
-            title: method + ' উইথড্র',
-            message: 'আপনার নম্বর এবং পরিমাণ লিখে কনফার্ম করুন।',
-            buttons: [{text: 'পাঠান', type: 'ok'}, {text: 'বাতিল', type: 'cancel'}]
-        }, (btn) => {
-            if(btn == 'ok') tg.showAlert("রিকোয়েস্ট পাঠানো হয়েছে। অ্যাডমিন চেক করবে।");
-        });
-    }
+        function submitWithdraw() {
+            const method = document.getElementById('method').value;
+            const phone = document.getElementById('phone').value;
+            const amount = document.getElementById('amount').value;
+            if(!phone || !amount) return tg.showAlert("সবগুলো ঘর পূরণ করুন!");
+            
+            fetch(`${BACKEND}/withdraw`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user.id, name: user.first_name, method, phone, amount})
+            }).then(res => res.json()).then(data => {
+                tg.showAlert(data.message);
+                loadData();
+            });
+        }
 
-    function showAdmin() {
-        toggleMenu();
-        document.getElementById('admin-section').style.display = 'block';
-        tg.showAlert("অ্যাডমিন প্যানেল সক্রিয়!");
-    }
+        function copyRef() {
+            const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
+            navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
+        }
 
-    async function viewUsers() {
-        const res = await fetch(`${BACKEND}/admin/users?admin_id=${user.id}`);
-        const data = await res.json();
-        let html = "<b>Users List:</b><br>";
-        data.users.forEach(u => {
-            html += `ID: ${u.user_id} - Bal: ${u.balance.toFixed(2)} <button onclick="cancelWithdraw(${u.user_id})" style="background:red; color:#fff; border:none; padding:2px 5px; cursor:pointer;">Cancel</button><br>`;
-        });
-        document.getElementById('user-list').innerHTML = html;
-    }
+        // Monetag Banner
+        const script = document.createElement('script');
+        script.src = 'https://alwingulla.com/tag.min.js';
+        script.setAttribute('data-zone', '10603687');
+        document.getElementById('ad-banner').appendChild(script);
 
-    loadData();
-</script>
+        tg.ready(); tg.expand(); loadData();
+    </script>
 </body>
 </html>
