@@ -5,12 +5,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
 
-# পরিবেশ ভেরিয়েবল থেকে তথ্য গ্রহণ
 TOKEN = os.environ.get("BOT_TOKEN")
 DB_URL = os.environ.get("DATABASE_URL")
 ADMIN_ID = 8145444675 
 
-# Postgres URL ফিক্স (Render এর জন্য)
 if DB_URL and DB_URL.startswith("postgres://"):
     DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
 
@@ -21,7 +19,6 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
-# ডাটাবেজ অটো-সেটআপ (টেবিল না থাকলে নিজে তৈরি হবে)
 def init_db():
     conn = get_db(); cur = conn.cursor()
     cur.execute("""
@@ -35,14 +32,16 @@ def init_db():
     conn.commit(); cur.close(); conn.close()
 
 @app.route("/")
-def home(): return "EarnQuick Pro Backend is Live!"
+def home(): return "Backend Active"
 
 @app.route("/data")
 def get_data():
     uid = request.args.get('user_id')
     name = request.args.get('name', 'User')
-    if not uid: return jsonify({"balance": 0, "refs": 0})
+    if not uid: return jsonify({"error": "Missing ID"}), 400
+    
     conn = get_db(); cur = conn.cursor()
+    # এখানে লগের এরর অনুযায়ী user_id নিশ্চিত করা হয়েছে
     cur.execute("SELECT balance, refs FROM users WHERE user_id = %s", (uid,))
     res = cur.fetchone()
     if not res:
@@ -71,10 +70,9 @@ def withdraw():
     if res and res[0] >= amount:
         cur.execute("UPDATE users SET balance = balance - %s WHERE user_id = %s", (amount, uid))
         conn.commit()
-        # অ্যাডমিনকে টেলিগ্রামে মেসেজ পাঠানো
-        bot.send_message(ADMIN_ID, f"💰 **নতুন উইথড্র রিকোয়েস্ট!**\n\n👤 ইউজার: {data['name']}\n💵 পরিমাণ: {amount}\n💳 মেথড: {method}\n📞 নাম্বার: {phone}")
-        return jsonify({"status": "success", "message": "উইথড্র রিকোয়েস্ট সফল!"})
-    return jsonify({"status": "error", "message": "ব্যালেন্স পর্যাপ্ত নয়!"})
+        bot.send_message(ADMIN_ID, f"💰 **Withdraw!**\nUser: {data['name']}\nAmt: {amount}\nPh: {phone}\nVia: {method}")
+        return jsonify({"status": "success", "message": "Request Sent!"})
+    return jsonify({"status": "error", "message": "Low Balance!"})
 
 if __name__ == "__main__":
     init_db()
