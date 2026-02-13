@@ -3,160 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Pro - Official</title>
+    <title>EarnQuick Pro</title>
     
     <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --primary: #00f2fe; --card: rgba(22, 29, 47, 0.95); --text: #fff; }
-        body { font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 90px; background: linear-gradient(-45deg, #0b0f19, #1a2a6c, #b21f1f, #0b0f19); background-size: 400% 400%; animation: moveBG 15s ease infinite; color: var(--text); overflow-x: hidden; }
-        @keyframes moveBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .page { display: none; padding: 20px; animation: fadeIn 0.5s; }
+        :root { --primary: #00f2fe; --bg: #0b0f19; --card: rgba(22, 29, 47, 0.95); }
+        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: #fff; padding-bottom: 160px; overflow-x: hidden; }
+        
+        .page { display: none; padding: 20px; animation: fadeIn 0.4s; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Header */
-        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; text-align: center; border-radius: 0 0 40px 40px; border-bottom: 2px solid var(--primary); margin-bottom: 20px; }
+        .header { background: rgba(255,255,255,0.05); padding: 30px; text-align: center; border-radius: 0 0 40px 40px; border-bottom: 2px solid var(--primary); }
         .user-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; box-shadow: 0 0 15px var(--primary); }
 
-        /* Stats Card */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
+        .stat-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
+        
+        .btn-main { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; transition: 0.3s; }
+        .btn-main:active { transform: scale(0.95); }
 
-        /* Buttons */
-        .action-btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; transition: 0.3s; margin-top: 15px; }
-        .action-btn:active { transform: scale(0.95); }
+        /* Sticky Bottom Banner Ad */
+        .bottom-ad { position: fixed; bottom: 70px; left: 0; width: 100%; min-height: 100px; background: #000; z-index: 999; display: flex; justify-content: center; align-items: center; border-top: 1px solid #333; }
 
-        /* Withdraw Form */
-        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; box-sizing: border-box; }
-        .submit-btn { width: 100%; padding: 18px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: #000; font-size: 16px; cursor: pointer; }
-
-        /* Nav */
         .nav { position: fixed; bottom: 0; width: 100%; background: #161d2f; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
-        .nav-item { color: #666; font-size: 11px; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 4px; }
+        .nav div { color: #555; font-size: 12px; text-align: center; cursor: pointer; }
+        .nav .active { color: var(--primary); }
+        .nav i { font-size: 22px; display: block; }
     </style>
 </head>
 <body>
 
-    <div id="home_page" class="page active">
+    <div id="home" class="page active">
         <div class="header">
-            <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" class="user-img">
-            <h2 id="u_name" style="margin:10px 0 5px;">User Name</h2>
-            <span style="color:var(--primary); font-size:12px; font-weight:bold;">OFFICIAL MEMBER ✔️</span>
+            <img id="u_img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="user-img">
+            <h2 id="u_name" style="margin-top:10px;">User</h2>
+            <span style="color:var(--primary); font-size:12px;">Premium Member ✔️</span>
         </div>
 
-        <div class="stats-grid">
+        <div class="grid">
             <div class="stat-card">💰 <span id="bal" style="font-size:20px;">0.00</span><br><small>Balance</small></div>
             <div class="stat-card">👥 <span id="ref" style="font-size:20px;">0</span><br><small>Referrals</small></div>
         </div>
 
-        <div style="margin: 20px 0; border-radius: 15px; overflow: hidden; text-align: center;">
-            <script async="async" data-cfasync="false" src="https://hathomeynapoleon.com/2aa3ba4ae91eac742e7fc4fb1768ac28/invoke.js"></script>
-            <div id="container-2aa3ba4ae91eac742e7fc4fb1768ac28"></div>
-        </div>
-
-        <div class="stats-grid">
-            <div class="action-btn" onclick="watchAd()"><i class="fas fa-play-circle" style="color:var(--primary); font-size:28px;"></i><br>Watch Ad</div>
-            <div class="action-btn" onclick="copyRef()"><i class="fas fa-share-alt" style="color:var(--primary); font-size:28px;"></i><br>Invite</div>
+        <div class="btn-main" onclick="watchAd()">
+            <i class="fas fa-play-circle" style="font-size:30px; color:var(--primary);"></i><br>Watch Video (Earn 5 Pts)
         </div>
     </div>
 
-    <div id="wallet_page" class="page">
-        <h2 style="text-align: center;">💰 Withdraw Money</h2>
-        <div class="stat-card" style="margin-bottom: 20px; border: 1px solid var(--primary);">
-            <small>Total Earnings</small>
-            <h1 id="bal_wallet" style="color:var(--primary); margin: 5px 0;">0.00</h1>
-        </div>
-        
+    <div id="wallet" class="page">
+        <h2 style="text-align:center;">Withdraw</h2>
         <div class="stat-card">
-            <select id="method">
-                <option value="Bkash">Bkash</option>
-                <option value="Nagad">Nagad</option>
-                <option value="Recharge">Mobile Recharge</option>
-            </select>
-            <input type="number" id="phone" placeholder="Account Number">
-            <input type="number" id="amount" placeholder="Min Amount 1000">
-            <button class="submit-btn" onclick="submitWithdraw()">SUBMIT REQUEST</button>
+            <h1 id="bal2" style="color:var(--primary);">0.00</h1>
+            <input type="number" id="phone" placeholder="Phone Number" style="width:90%; padding:12px; margin:5px; border-radius:10px;">
+            <input type="number" id="amount" placeholder="Min 1000 Pts" style="width:90%; padding:12px; margin:5px; border-radius:10px;">
+            <button onclick="submitWithdraw()" style="width:95%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; margin-top:10px;">Submit Request</button>
         </div>
     </div>
 
-    <div id="profile_page" class="page">
+    <div id="profile" class="page">
         <div class="stat-card" style="padding: 40px 20px;">
-            <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" style="width:110px; border-radius:50%; border:3px solid var(--primary);">
-            <h2>Najmul Hoque Forhad</h2>
-            <p style="color:var(--primary); font-weight: bold;">Lead Editor & Developer</p>
-            <hr style="opacity: 0.1; margin: 20px 0;">
-            <p style="font-size:14px; opacity:0.8; line-height:1.6; text-align: justify;">আমি খবরের দুনিয়ার একজন কন্টেন্ট ক্রিয়েটর। বাংলাদেশি রাজনীতি থেকে শুরু করে জীবনযাত্রার মানোন্নয়ন—সবকিছুই আমার লেখায় ফুটে ওঠে।</p>
+            <img id="u_img_profile" src="" class="user-img">
+            <h2 id="p_name">User</h2>
+            <p style="color:var(--primary); font-weight:bold;">Najmul Hoque Forhad (Admin)</p>
+            <p style="font-size:13px; opacity:0.8;">Content Creator & App Lead Developer</p>
         </div>
+    </div>
+
+    <div class="bottom-ad">
+        <script async="async" data-cfasync="false" src="https://hathomeynapoleon.com/2aa3ba4ae91eac742e7fc4fb1768ac28/invoke.js"></script>
+        <div id="container-2aa3ba4ae91eac742e7fc4fb1768ac28"></div>
     </div>
 
     <div class="nav">
-        <div id="nav_home" class="nav-item active" onclick="showPage('home_page', this)"><i class="fas fa-home"></i>Home</div>
-        <div id="nav_wallet" class="nav-item" onclick="showPage('wallet_page', this)"><i class="fas fa-wallet"></i>Wallet</div>
-        <div id="nav_profile" class="nav-item" onclick="showPage('profile_page', this)"><i class="fas fa-user-tie"></i>Profile</div>
+        <div onclick="showPage('home', this)" class="active"><i class="fas fa-home"></i>Home</div>
+        <div onclick="showPage('wallet', this)"><i class="fas fa-wallet"></i>Wallet</div>
+        <div onclick="showPage('profile', this)"><i class="fas fa-user-tie"></i>Profile</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user || {id: 12345, first_name: "User"};
+        const user = tg.initDataUnsafe.user;
         const BACKEND = "https://earnquick-backend.onrender.com";
 
-        function showPage(pageId, el) {
+        function showPage(pId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav div').forEach(n => n.classList.remove('active'));
+            document.getElementById(pId).classList.add('active');
             el.classList.add('active');
-            tg.HapticFeedback.impactOccurred('light');
         }
 
-        function loadData() {
+        function load() {
+            if(!user) return;
+            // ছবি সেট করা
+            const pUrl = user.photo_url || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            document.getElementById('u_img').src = pUrl;
+            document.getElementById('u_img_profile').src = pUrl;
+            document.getElementById('u_name').innerText = user.first_name;
+            document.getElementById('p_name').innerText = user.first_name;
+
             fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`)
-            .then(res => res.json()).then(data => {
-                document.getElementById('u_name').innerText = user.first_name;
-                document.getElementById('bal').innerText = data.balance.toFixed(2);
-                document.getElementById('bal_wallet').innerText = data.balance.toFixed(2);
-                document.getElementById('ref').innerText = data.refs;
-            });
+                .then(r => r.json()).then(d => {
+                    document.getElementById('bal').innerText = d.balance.toFixed(2);
+                    document.getElementById('bal2').innerText = d.balance.toFixed(2);
+                    document.getElementById('ref').innerText = d.refs;
+                });
         }
 
         function watchAd() {
             if (typeof show_10603637 === 'function') {
                 show_10603637('pop').then(() => {
+                    // ভিডিও শেষ হলে ব্যাকএন্ডে পয়েন্ট পাঠাবে
                     fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
                         tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
-                        loadData();
+                        load();
                     });
-                }).catch(() => tg.showAlert("Ad Error! Try later."));
-            } else { tg.showAlert("Ad is loading..."); }
+                }).catch(() => tg.showAlert("Ad not finished."));
+            } else { tg.showAlert("Ad loading..."); }
         }
 
-        function submitWithdraw() {
-            const method = document.getElementById('method').value;
-            const phone = document.getElementById('phone').value;
-            const amount = document.getElementById('amount').value;
-            if(!phone || !amount) return tg.showAlert("সব তথ্য দিন!");
-            
-            fetch(`${BACKEND}/withdraw`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user.id, name: user.first_name, method, phone, amount})
-            }).then(res => res.json()).then(data => {
-                tg.showAlert(data.message);
-                loadData();
-            });
-        }
-
-        function copyRef() {
-            const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-            navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
-        }
-
-        tg.ready(); tg.expand(); loadData();
+        tg.ready(); tg.expand(); load();
     </script>
 </body>
 </html>
