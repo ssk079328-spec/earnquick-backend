@@ -1,6 +1,5 @@
 flask
 flask-cors
-pyTelegramBotAPI
 psycopg2-binary
+pyTelegramBotAPI
 gunicorn
-requests
