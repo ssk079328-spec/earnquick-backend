@@ -3,87 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnQuick Pro</title>
+    <title>EarnQuick Pro - User</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --primary: #0088cc; --bg: #f4f7f6; --card: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 500px; margin: auto; }
-        .card { background: var(--card); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
-        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
-        h2 { margin: 10px 0; color: var(--primary); }
-        .balance-box { font-size: 24px; font-weight: bold; color: #2ecc71; margin: 15px 0; }
-        .btn { display: block; width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        .btn:active { transform: scale(0.98); }
-        .about-link { font-size: 14px; color: #666; text-decoration: none; display: inline-block; margin-top: 15px; }
-        .stats { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
+        :root { --blue: #0088cc; --green: #2ecc71; --orange: #e67e22; --bg: #f0f4f8; }
+        body { font-family: 'Poppins', sans-serif; background: var(--bg); margin: 0; padding: 15px; }
+        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        
+        /* Profile Section */
+        .profile-img { width: 70px; height: 70px; border-radius: 50%; border: 3px solid var(--blue); }
+        .level-tag { color: #f1c40f; font-size: 14px; font-weight: bold; }
+        
+        /* Balance */
+        .balance-title { color: #7f8c8d; font-size: 14px; margin-top: 15px; }
+        .balance-value { font-size: 32px; font-weight: 800; color: #2c3e50; }
+        .approx { font-size: 12px; color: #95a5a6; }
+
+        /* Buttons */
+        .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 15px; border-radius: 50px; border: none; color: white; font-weight: bold; margin-bottom: 12px; cursor: pointer; font-size: 16px; }
+        .btn-blue { background: var(--blue); }
+        .btn-green { background: var(--green); }
+        .btn-orange { background: var(--orange); }
+
+        /* Stats Grid */
+        .mini-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .leader-box { background: #fff; border-radius: 15px; padding: 10px; font-size: 12px; text-align: left; border: 1px solid #eee; }
+
+        /* Bottom Nav */
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
+        .nav-item { font-size: 11px; color: #95a5a6; text-align: center; text-decoration: none; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 2px; }
+        .nav-active { color: var(--blue); }
     </style>
 </head>
 <body>
 
-<div class="container">
     <div class="card">
-        <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" alt="Admin" class="profile-img">
-        <h2 id="userName">Loading...</h2>
-        <div class="balance-box">💰 <span id="balance">0.00</span> Pts</div>
-        <div class="stats">
-            <div><strong>Refs:</strong> <span id="refs">0</span></div>
-            <div><strong>Status:</strong> <span style="color:green">Active</span></div>
+        <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" class="profile-img">
+        <div id="userName" style="font-weight:bold; margin-top:5px;">User Name</div>
+        <div class="level-tag">Level: Gold Member ✨</div>
+
+        <div class="balance-title">Balance</div>
+        <div class="balance-value">💰 <span id="balance">0.00</span> Pts</div>
+        <div class="approx">Approx. ৳ <span id="taka">0.00</span> BDT</div>
+    </div>
+
+    <button class="btn btn-blue" onclick="watchAd()"><i class="fa fa-play-circle"></i> Watch Ad (5 Pts)</button>
+    <button class="btn btn-green" onclick="dailyBonus()"><i class="fa fa-gift"></i> Daily Bonus</button>
+
+    <div class="mini-grid">
+        <div class="leader-box">
+            <strong>🏆 Top 3 Earners:</strong><br>
+            🥇 User1: 5000 Pts<br>
+            🥈 User2: 4500 Pts
         </div>
+        <button class="btn btn-orange" onclick="spinWheel()" style="font-size:14px;"><i class="fa fa-sync"></i> Lucky Spin</button>
     </div>
 
-    <div class="card">
-        <h3>Watch & Earn</h3>
-        <button class="btn" onclick="watchAd()">🎥 Watch Ad (5 Pts)</button>
-        <button class="btn" style="background: #27ae60;" onclick="copyRef()">🔗 Copy Invite Link</button>
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="https://gravatar.com/dazzlingf43ad20761" style="color: #95a5a6; font-size: 12px; text-decoration: none;">ℹ️ About Developer</a>
     </div>
 
-    <div class="card">
-        <button class="btn" style="background: #e67e22;" onclick="showWithdraw()">📤 Withdraw Points</button>
-        <a href="https://gravatar.com/dazzlingf43ad20761" target="_blank" class="about-link">ℹ️ About Developer</a>
+    <div style="height: 70px;"></div> <div class="nav">
+        <a class="nav-item nav-active"><i class="fa fa-home"></i>Home</a>
+        <a class="nav-item"><i class="fa fa-tasks"></i>Tasks</a>
+        <a class="nav-item"><i class="fa fa-trophy"></i>Leaderboard</a>
+        <a class="nav-item"><i class="fa fa-user"></i>Profile</a>
     </div>
-</div>
 
 <script>
     let tg = window.Telegram.WebApp;
     tg.expand();
-    let user = tg.initDataUnsafe.user || { id: 8331578275, first_name: "Admin" }; // টেস্টের জন্য ডিফল্ট আইডি
-    let BACKEND = "https://earnquick-backend.onrender.com"; // আপনার রেন্ডার ইউআরএল নিশ্চিত করুন
+    let user = tg.initDataUnsafe.user || { id: 8331578275, first_name: "Guest" };
+    let BACKEND = "https://earnquick-backend.onrender.com";
 
     document.getElementById('userName').innerText = user.first_name;
 
     async function loadData() {
-        try {
-            let res = await fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`);
-            let data = await res.json();
-            document.getElementById('balance').innerText = data.balance.toFixed(2);
-            document.getElementById('refs').innerText = data.refs;
-        } catch (e) { console.log("Error loading data"); }
+        let res = await fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`);
+        let data = await res.json();
+        document.getElementById('balance').innerText = data.balance;
+        document.getElementById('taka').innerText = (data.balance / 100).toFixed(2);
     }
 
     function watchAd() {
-        const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }); // আপনার Adsgram ID দিন
-        AdController.show().then((result) => {
-            fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
-                loadData();
-            });
-        }).catch((err) => tg.showAlert("Ad failed to load. Try again."));
+        // Adsgram logic here
+        fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
+            tg.showAlert("৫ পয়েন্ট যোগ হয়েছে!");
+            loadData();
+        });
     }
 
-    function copyRef() {
-        let link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-        navigator.clipboard.writeText(link);
-        tg.showAlert("রেফারেল লিঙ্ক কপি হয়েছে!");
-    }
-
-    function showWithdraw() {
-        tg.showAlert("উইথড্র সিস্টেম শীঘ্রই আসছে!");
-    }
+    function dailyBonus() { tg.showAlert("আগামীকাল আবার চেষ্টা করুন!"); }
+    function spinWheel() { tg.showAlert("স্পিন শীঘ্রই আসছে!"); }
 
     loadData();
 </script>
-
 </body>
 </html>
