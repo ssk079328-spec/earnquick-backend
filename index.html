@@ -1,178 +1,89 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Pro - Official</title>
-    
-    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarnQuick Pro</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0b0f19; --card: #161d2f; --text: #fff; --accent: #ff007a; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; overflow-x: hidden; }
-        
-        /* Headline */
-        .headline { background: rgba(255, 0, 122, 0.1); color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--accent); }
-        .headline span { display: inline-block; animation: scroll 20s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        /* Page Layout */
-        .page { display: none; padding: 15px; animation: fadeIn 0.4s; }
-        .active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Banner Ad Container (Responsive) */
-        .special-offer-ad { margin: 15px 0; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 10px; background: rgba(255,255,255,0.05); min-height: 95px; }
-        .special-offer-ad iframe { max-width: 100%; border: none; }
-
-        .profile-header { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 25px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; text-align: center; margin-bottom: 20px; }
-        .user-avatar { width: 75px; height: 75px; border-radius: 50%; border: 3px solid #fff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 30px; color: var(--primary); font-weight: bold; overflow: hidden; }
-        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
-
-        .glass-card { background: var(--card); border-radius: 20px; padding: 15px; border: 1px solid rgba(255,255,255,0.05); text-align: center; }
-        .grid-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        
-        .menu-btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; }
-        .menu-btn i { font-size: 25px; margin-bottom: 8px; display: block; color: var(--primary); }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; border-radius: 25px 25px 0 0; }
-        .nav-item { color: #666; font-size: 20px; text-align: center; cursor: pointer; }
-        .nav-item span { display: block; font-size: 10px; margin-top: 4px; }
-        .nav-item.active { color: var(--primary); }
-
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #0f172a; color: #fff; margin-bottom: 15px; outline: none; box-sizing: border-box; }
+        :root { --primary: #0088cc; --bg: #f4f7f6; --card: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 500px; margin: auto; }
+        .card { background: var(--card); padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; text-align: center; }
+        .profile-img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin-bottom: 10px; }
+        h2 { margin: 10px 0; color: var(--primary); }
+        .balance-box { font-size: 24px; font-weight: bold; color: #2ecc71; margin: 15px 0; }
+        .btn { display: block; width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn:active { transform: scale(0.98); }
+        .about-link { font-size: 14px; color: #666; text-decoration: none; display: inline-block; margin-top: 15px; }
+        .stats { display: flex; justify-content: space-around; margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-    <div class="headline"><span>📢 স্বাগতম Najmul Hoque Forhad-এর অফিসিয়াল অ্যাপে! প্রতি ভিডিওতে ৫ পয়েন্ট এবং রেফারে ২০০ পয়েন্ট বোনাস!</span></div>
-
-    <div id="home" class="page active">
-        <div class="profile-header">
-            <div id="u_pic" class="user-avatar">?</div>
-            <h2 id="u_name" style="margin:0; font-size: 20px;">Loading...</h2>
-            <p style="font-size:11px; opacity:0.8">প্রিমিয়াম মেম্বার ✔️</p>
-        </div>
-
-        <div class="grid-buttons">
-            <div class="glass-card"><b>💰 <span id="bal">0.00</span></b><br><span style="font-size:12px; opacity:0.7">পয়েন্ট</span></div>
-            <div class="glass-card"><b>👥 <span id="ref">0</span></b><br><span style="font-size:12px; opacity:0.7">রেফার</span></div>
-        </div>
-
-        <div class="special-offer-ad">
-            <script type="text/javascript">
-                atOptions = {
-                    'key' : '36047257ef54bf70facf3cdb98c2c150',
-                    'format' : 'iframe',
-                    'height' : 90,
-                    'width' : 728,
-                    'params' : {}
-                };
-            </script>
-            <script type="text/javascript" src="https://hathomeynapoleon.com/36047257ef54bf70facf3cdb98c2c150/invoke.js"></script>
-        </div>
-
-        <div class="grid-buttons">
-            <div class="menu-btn" onclick="watchAd()" style="border-color: var(--accent);"><i class="fas fa-play-circle" style="color: var(--accent);"></i><span>ভিডিও অ্যাড</span></div>
-            <div class="menu-btn" onclick="copyRef()"><i class="fas fa-user-plus"></i><span>রেফার করুন</span></div>
+<div class="container">
+    <div class="card">
+        <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" alt="Admin" class="profile-img">
+        <h2 id="userName">Loading...</h2>
+        <div class="balance-box">💰 <span id="balance">0.00</span> Pts</div>
+        <div class="stats">
+            <div><strong>Refs:</strong> <span id="refs">0</span></div>
+            <div><strong>Status:</strong> <span style="color:green">Active</span></div>
         </div>
     </div>
 
-    <div id="withdraw" class="page">
-        <h3 style="text-align:center">💰 পেমেন্ট রিকোয়েস্ট</h3>
-        <div class="glass-card" style="margin-bottom: 15px;">
-            <span style="font-size:12px">বর্তমান ব্যালেন্স</span>
-            <h2 id="bal2" style="margin:5px 0; color:var(--primary)">0.00</h2>
-        </div>
-        <select id="method">
-            <option value="Bkash">বিকাশ</option>
-            <option value="Nagad">নগদ</option>
-            <option value="Recharge">রিচার্জ</option>
-        </select>
-        <input type="number" id="phone" placeholder="বিকাশ/নগদ নাম্বার">
-        <input type="number" id="amount" placeholder="পয়েন্ট (মিনিমাম ১০০০)">
-        <button onclick="submitWithdraw()" style="width:100%; padding:15px; border-radius:12px; background:var(--primary); color:#000; border:none; font-weight:bold;">সাবমিট</button>
+    <div class="card">
+        <h3>Watch & Earn</h3>
+        <button class="btn" onclick="watchAd()">🎥 Watch Ad (5 Pts)</button>
+        <button class="btn" style="background: #27ae60;" onclick="copyRef()">🔗 Copy Invite Link</button>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i><span>হোম</span></div>
-        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fas fa-wallet"></i><span>উইথড্র</span></div>
-        <div class="nav-item" onclick="showPage('bio', this)"><i class="fas fa-user-tie"></i><span>প্রোফাইল</span></div>
+    <div class="card">
+        <button class="btn" style="background: #e67e22;" onclick="showWithdraw()">📤 Withdraw Points</button>
+        <a href="https://gravatar.com/dazzlingf43ad20761" target="_blank" class="about-link">ℹ️ About Developer</a>
     </div>
+</div>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user;
-        const BACKEND = "https://earnquick-backend.onrender.com";
+<script>
+    let tg = window.Telegram.WebApp;
+    tg.expand();
+    let user = tg.initDataUnsafe.user || { id: 8331578275, first_name: "Admin" }; // টেস্টের জন্য ডিফল্ট আইডি
+    let BACKEND = "https://earnquick-backend.onrender.com"; // আপনার রেন্ডার ইউআরএল নিশ্চিত করুন
 
-        function showPage(pageId, el) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            el.classList.add('active');
-        }
+    document.getElementById('userName').innerText = user.first_name;
 
-        function loadData() {
-            if(!user) return;
-            document.getElementById('u_name').innerText = user.first_name;
-            document.getElementById('u_pic').innerText = user.first_name[0].toUpperCase();
-            fetch(`${BACKEND}/data?user_id=${user.id}`).then(res => res.json()).then(data => {
-                document.getElementById('bal').innerText = data.balance.toFixed(2);
-                document.getElementById('bal2').innerText = data.balance.toFixed(2);
-                document.getElementById('ref').innerText = data.refs;
-            });
-        }
+    async function loadData() {
+        try {
+            let res = await fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`);
+            let data = await res.json();
+            document.getElementById('balance').innerText = data.balance.toFixed(2);
+            document.getElementById('refs').innerText = data.refs;
+        } catch (e) { console.log("Error loading data"); }
+    }
 
-        /**
-         * Monetag Rewarded Ad Logic
-         * সাপোর্ট টিমের দেওয়া 'valued' ইভেন্ট চেক সিস্টেম যুক্ত করা হয়েছে
-         */
-        function watchAd() {
-            if (typeof show_10603637 === 'function') {
-                show_10603637({ ymid: user.id, requestVar: "reward_button" })
-                .then((event) => {
-                    // মনিট্যাগ যখন কনফার্ম করবে অ্যাডটি সম্পূর্ণ দেখা হয়েছে (valued)
-                    if (event.reward_event_type === "valued") {
-                        fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                            tg.showAlert("অভিনন্দন! ৫ পয়েন্ট জমা হয়েছে।");
-                            loadData();
-                        });
-                    } else {
-                        tg.showAlert("অ্যাডটি সম্পূর্ণ দেখা হয়নি। পয়েন্ট পেতে পুরো অ্যাড দেখুন।");
-                    }
-                })
-                .catch(() => {
-                    tg.showAlert("অ্যাড লোড হতে সমস্যা হয়েছে বা বন্ধ করা হয়েছে।");
-                });
-            } else {
-                tg.showAlert("অ্যাড সিস্টেম লোড হচ্ছে, ৫ সেকেন্ড পর চেষ্টা করুন।");
-            }
-        }
-
-        function submitWithdraw() {
-            const method = document.getElementById('method').value;
-            const phone = document.getElementById('phone').value;
-            const amount = document.getElementById('amount').value;
-            if(!phone || !amount) return tg.showAlert("সব তথ্য দিন!");
-            
-            fetch(`${BACKEND}/withdraw`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user.id, name: user.first_name, method, phone, amount})
-            }).then(res => res.json()).then(data => {
-                tg.showAlert(data.message);
+    function watchAd() {
+        const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID" }); // আপনার Adsgram ID দিন
+        AdController.show().then((result) => {
+            fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
+                tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
                 loadData();
             });
-        }
+        }).catch((err) => tg.showAlert("Ad failed to load. Try again."));
+    }
 
-        function copyRef() {
-            const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-            navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
-        }
+    function copyRef() {
+        let link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
+        navigator.clipboard.writeText(link);
+        tg.showAlert("রেফারেল লিঙ্ক কপি হয়েছে!");
+    }
 
-        tg.ready(); tg.expand(); loadData();
-    </script>
+    function showWithdraw() {
+        tg.showAlert("উইথড্র সিস্টেম শীঘ্রই আসছে!");
+    }
+
+    loadData();
+</script>
+
 </body>
 </html>
