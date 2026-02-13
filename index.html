@@ -13,13 +13,19 @@
         :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0b0f19; --card: #161d2f; --text: #fff; --accent: #ff007a; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding-bottom: 90px; overflow-x: hidden; }
         
+        /* Headline */
         .headline { background: rgba(255, 0, 122, 0.1); color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--accent); }
         .headline span { display: inline-block; animation: scroll 20s linear infinite; }
         @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
+        /* Page Layout */
         .page { display: none; padding: 15px; animation: fadeIn 0.4s; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Banner Ad Container (Responsive) */
+        .special-offer-ad { margin: 15px 0; overflow: hidden; display: flex; justify-content: center; align-items: center; border-radius: 10px; background: rgba(255,255,255,0.05); min-height: 95px; }
+        .special-offer-ad iframe { max-width: 100%; border: none; }
 
         .profile-header { background: linear-gradient(135deg, var(--secondary), var(--primary)); padding: 25px; border-bottom-left-radius: 40px; border-bottom-right-radius: 40px; text-align: center; margin-bottom: 20px; }
         .user-avatar { width: 75px; height: 75px; border-radius: 50%; border: 3px solid #fff; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: var(--card); font-size: 30px; color: var(--primary); font-weight: bold; overflow: hidden; }
@@ -30,8 +36,6 @@
         
         .menu-btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; }
         .menu-btn i { font-size: 25px; margin-bottom: 8px; display: block; color: var(--primary); }
-
-        .ad-banner-link { width: 100%; padding: 15px; background: rgba(255,255,255,0.05); border: 1px dashed var(--secondary); border-radius: 15px; text-align: center; margin: 15px 0; cursor: pointer; color: var(--secondary); font-size: 14px; font-weight: bold; }
 
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; border-radius: 25px 25px 0 0; }
         .nav-item { color: #666; font-size: 20px; text-align: center; cursor: pointer; }
@@ -52,17 +56,22 @@
             <p style="font-size:11px; opacity:0.8">প্রিমিয়াম মেম্বার ✔️</p>
         </div>
 
-        <div style="text-align: center; margin-bottom: 10px;">
-            <div onclick="loadData()" style="color: var(--primary); font-size: 13px; cursor: pointer;"><i class="fas fa-sync"></i> রিফ্রেশ ডাটা</div>
-        </div>
-
         <div class="grid-buttons">
             <div class="glass-card"><b>💰 <span id="bal">0.00</span></b><br><span style="font-size:12px; opacity:0.7">পয়েন্ট</span></div>
             <div class="glass-card"><b>👥 <span id="ref">0</span></b><br><span style="font-size:12px; opacity:0.7">রেফার</span></div>
         </div>
 
-        <div class="ad-banner-link" onclick="openPopUnder()">
-            🚀 স্পেশাল বোনাস অফার - এখানে ক্লিক করুন
+        <div class="special-offer-ad">
+            <script type="text/javascript">
+                atOptions = {
+                    'key' : '36047257ef54bf70facf3cdb98c2c150',
+                    'format' : 'iframe',
+                    'height' : 90,
+                    'width' : 728,
+                    'params' : {}
+                };
+            </script>
+            <script type="text/javascript" src="https://hathomeynapoleon.com/36047257ef54bf70facf3cdb98c2c150/invoke.js"></script>
         </div>
 
         <div class="grid-buttons">
@@ -73,7 +82,6 @@
 
     <div id="withdraw" class="page">
         <h3 style="text-align:center">💰 পেমেন্ট রিকোয়েস্ট</h3>
-        <div class="ad-banner-link" onclick="openPopUnder()">🎁 দ্রুত পেমেন্ট পেতে এখানে ক্লিক করুন</div>
         <div class="glass-card" style="margin-bottom: 15px;">
             <span style="font-size:12px">বর্তমান ব্যালেন্স</span>
             <h2 id="bal2" style="margin:5px 0; color:var(--primary)">0.00</h2>
@@ -86,25 +94,6 @@
         <input type="number" id="phone" placeholder="বিকাশ/নগদ নাম্বার">
         <input type="number" id="amount" placeholder="পয়েন্ট (মিনিমাম ১০০০)">
         <button onclick="submitWithdraw()" style="width:100%; padding:15px; border-radius:12px; background:var(--primary); color:#000; border:none; font-weight:bold;">সাবমিট</button>
-    </div>
-
-    <div id="bio" class="page">
-        <div class="glass-card" style="padding: 25px; border: 1px solid var(--primary); margin-top: 10px;">
-            <div class="user-avatar" style="width:100px; height:100px; border: 3px solid var(--primary);">
-                <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" alt="Najmul">
-            </div>
-            <h3 style="margin:5px 0">Najmul Hoque Forhad</h3>
-            <p style="font-size:12px; color:var(--primary); margin-bottom:15px">Content Creator & Lead Editor</p>
-            <p style="font-size:13px; opacity:0.9; line-height:1.6; text-align: justify;">
-                আমি খবরের দুনিয়ার একজন কন্টেন্ট ক্রিয়েটর। বাংলাদেশি রাজনীতি থেকে শুরু করে জীবনযাত্রার মানোন্নয়ন—সবকিছুই আমার লেখায় ফুটে ওঠে।
-            </p>
-            <div style="display:flex; justify-content:center; gap:20px; margin-top:15px; font-size:24px;">
-                <a href="https://x.com/Najmulh112" style="color:var(--primary)"><i class="fab fa-x-twitter"></i></a>
-                <a href="https://www.linkedin.com/in/najmul-hoque-806900389" style="color:var(--primary)"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:najmulh219653@gmail.com" style="color:var(--primary)"><i class="fas fa-envelope"></i></a>
-            </div>
-        </div>
-        <div class="ad-banner-link" onclick="openPopUnder()">🔗 ভিজিট করুন অফিসিয়াল ওয়েবসাইট</div>
     </div>
 
     <div class="bottom-nav">
@@ -136,23 +125,30 @@
             });
         }
 
-        // Rewarded Video Ad Logic
+        /**
+         * Monetag Rewarded Ad Logic
+         * সাপোর্ট টিমের দেওয়া 'valued' ইভেন্ট চেক সিস্টেম যুক্ত করা হয়েছে
+         */
         function watchAd() {
             if (typeof show_10603637 === 'function') {
-                show_10603637('pop').then(() => {
-                    fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                        tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
-                        loadData();
-                    });
-                }).catch(() => tg.showAlert("অ্যাড লোড হতে ব্যর্থ হয়েছে।"));
+                show_10603637({ ymid: user.id, requestVar: "reward_button" })
+                .then((event) => {
+                    // মনিট্যাগ যখন কনফার্ম করবে অ্যাডটি সম্পূর্ণ দেখা হয়েছে (valued)
+                    if (event.reward_event_type === "valued") {
+                        fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
+                            tg.showAlert("অভিনন্দন! ৫ পয়েন্ট জমা হয়েছে।");
+                            loadData();
+                        });
+                    } else {
+                        tg.showAlert("অ্যাডটি সম্পূর্ণ দেখা হয়নি। পয়েন্ট পেতে পুরো অ্যাড দেখুন।");
+                    }
+                })
+                .catch(() => {
+                    tg.showAlert("অ্যাড লোড হতে সমস্যা হয়েছে বা বন্ধ করা হয়েছে।");
+                });
             } else {
-                tg.showAlert("অ্যাড সিস্টেম তৈরি হচ্ছে, ৫ সেকেন্ড পর চেষ্টা করুন।");
+                tg.showAlert("অ্যাড সিস্টেম লোড হচ্ছে, ৫ সেকেন্ড পর চেষ্টা করুন।");
             }
-        }
-
-        // Pop-under Logic (Direct Link)
-        function openPopUnder() {
-            window.open("https://omg10.com/4/10606058", "_blank");
         }
 
         function submitWithdraw() {
@@ -177,9 +173,6 @@
         }
 
         tg.ready(); tg.expand(); loadData();
-        
-        // অটোমেটিক পপ-আন্ডার স্ক্রিপ্ট লোড (অপশনাল)
-        (function(s,u,z,p){s.src=u,s.setAttribute('data-zone',z),p.appendChild(s);})(document.createElement('script'),'https://alwingulla.com/tag.min.js',10606058,document.body);
     </script>
 </body>
 </html>
