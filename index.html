@@ -1,41 +1,79 @@
-<div id="spinPage" style="display:none;" class="card">
-    <h4>🎡 Lucky Spin</h4>
-    <div id="wheelContainer" style="font-size: 50px; transition: transform 3s ease-out; margin: 20px 0;">🎡</div>
-    <p id="spinResult">চাকাটি ঘুরিয়ে ভাগ্য পরীক্ষা করুন!</p>
-    <button class="btn" style="background:#f1c40f; color:#2c3e50;" onclick="startSpin()" id="spinBtn">🌀 Spin Now</button>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; padding-bottom: 80px; }
+        .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 15px; }
+        .btn { width: 100%; padding: 14px; border-radius: 50px; border: none; color: #fff; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
+        .nav-item { font-size: 10px; color: #95a5a6; text-align: center; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="home" class="card">
+        <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" style="width:65px; border-radius:50%;">
+        <h4 id="uName">Loading...</h4>
+        <div style="font-size:32px; font-weight:bold;">💰 <span id="pts">0</span></div>
+        <button class="btn" style="background:#0088cc;" onclick="location.reload()"><i class="fa fa-sync"></i> Refresh</button>
+    </div>
 
-<script>
-    let isSpinning = false;
+    <div id="spin" class="card" style="display:none;">
+        <div id="wheel" style="font-size:60px; transition: 3s;">🎡</div>
+        <button class="btn" style="background:#f1c40f; color:#000;" onclick="doSpin()">Spin Now</button>
+    </div>
 
-    async function startSpin() {
-        if(isSpinning) return;
-        isSpinning = true;
-        
-        let wheel = document.getElementById('wheelContainer');
-        let btn = document.getElementById('spinBtn');
-        btn.disabled = true;
-        
-        // এনিমেশন
-        wheel.style.transform = "rotate(1800deg)";
-        
-        let res = await fetch(`${BASE}/spin`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({user_id: user.id})
-        });
-        let data = await res.json();
-        
-        setTimeout(() => {
-            wheel.style.transform = "rotate(0deg)";
-            tg.showAlert(`অভিনন্দন! আপনি ${data.win} পয়েন্ট জিতেছেন।`);
-            document.getElementById('spinResult').innerText = `আপনি শেষবার ${data.win} পয়েন্ট পেয়েছেন!`;
-            isSpinning = false;
-            btn.disabled = false;
-            load(); // ব্যালেন্স আপডেট
-        }, 3000);
-    }
-    
-    // ন্যাভিগেশনে স্পিন বাটন যোগ করুন
-    function showSpin() { showTab('spinPage'); }
-</script>
+    <div id="history" class="card" style="display:none;">
+        <h4>History</h4><div id="hList"></div>
+    </div>
+
+    <div class="nav">
+        <div class="nav-item" onclick="show('home')"><i class="fa fa-home"></i><br>Home</div>
+        <div class="nav-item" onclick="show('spin')"><i class="fa fa-play-circle"></i><br>Spin</div>
+        <div class="nav-item" onclick="loadHistory()"><i class="fa fa-history"></i><br>History</div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        let user = tg.initDataUnsafe.user || {id: 8145444675, first_name: "Admin"};
+        let BASE = "https://earnquick-backend.onrender.com";
+
+        function show(id) {
+            ['home', 'spin', 'history'].forEach(p => document.getElementById(p).style.display='none');
+            document.getElementById(id).style.display='block';
+        }
+
+        async function load() {
+            let r = await fetch(`${BASE}/data?user_id=${user.id}&name=${user.first_name}`);
+            let d = await r.json();
+            document.getElementById('uName').innerText = d.name;
+            document.getElementById('pts').innerText = d.balance;
+        }
+
+        async function doSpin() {
+            let r = await fetch(`${BASE}/spin`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user.id})
+            });
+            let d = await r.json();
+            document.getElementById('wheel').style.transform = "rotate(1440deg)";
+            setTimeout(() => {
+                tg.showAlert(`You won ${d.win} Pts!`);
+                document.getElementById('wheel').style.transform = "rotate(0deg)";
+                load();
+            }, 3000);
+        }
+
+        async function loadHistory() {
+            show('history');
+            let r = await fetch(`${BASE}/history?user_id=${user.id}`);
+            let d = await r.json();
+            document.getElementById('hList').innerHTML = d.map(h => `<p>${h.amount} Pts - ${h.status}</p>`).join('');
+        }
+        load();
+    </script>
+</body>
+</html>
