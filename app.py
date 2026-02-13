@@ -5,10 +5,12 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import threading
 
+# পরিবেশ ভেরিয়েবল থেকে তথ্য গ্রহণ
 TOKEN = os.environ.get("BOT_TOKEN")
 DB_URL = os.environ.get("DATABASE_URL")
 ADMIN_ID = 8145444675 
 
+# Postgres URL ফিক্স (Render এর জন্য)
 if DB_URL and DB_URL.startswith("postgres://"):
     DB_URL = DB_URL.replace("postgres://", "postgresql://", 1)
 
@@ -19,6 +21,7 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
+# ডাটাবেজ অটো-সেটআপ (টেবিল না থাকলে নিজে তৈরি হবে)
 def init_db():
     conn = get_db(); cur = conn.cursor()
     cur.execute("""
@@ -32,7 +35,7 @@ def init_db():
     conn.commit(); cur.close(); conn.close()
 
 @app.route("/")
-def home(): return "Backend is Active!"
+def home(): return "EarnQuick Pro Backend is Live!"
 
 @app.route("/data")
 def get_data():
@@ -61,15 +64,17 @@ def postback():
 def withdraw():
     data = request.json
     uid, amount = data['user_id'], int(data['amount'])
+    method, phone = data['method'], data['phone']
     conn = get_db(); cur = conn.cursor()
     cur.execute("SELECT balance FROM users WHERE user_id = %s", (uid,))
     res = cur.fetchone()
     if res and res[0] >= amount:
         cur.execute("UPDATE users SET balance = balance - %s WHERE user_id = %s", (amount, uid))
         conn.commit()
-        bot.send_message(ADMIN_ID, f"💰 **Withdraw Alert!**\nID: {uid}\nAmount: {amount}\nPhone: {data['phone']}\nMethod: {data['method']}")
-        return jsonify({"message": "রিকোয়েস্ট সফল!"})
-    return jsonify({"message": "ব্যালেন্স কম!"})
+        # অ্যাডমিনকে টেলিগ্রামে মেসেজ পাঠানো
+        bot.send_message(ADMIN_ID, f"💰 **নতুন উইথড্র রিকোয়েস্ট!**\n\n👤 ইউজার: {data['name']}\n💵 পরিমাণ: {amount}\n💳 মেথড: {method}\n📞 নাম্বার: {phone}")
+        return jsonify({"status": "success", "message": "উইথড্র রিকোয়েস্ট সফল!"})
+    return jsonify({"status": "error", "message": "ব্যালেন্স পর্যাপ্ত নয়!"})
 
 if __name__ == "__main__":
     init_db()
