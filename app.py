@@ -79,3 +79,35 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     threading.Thread(target=bot.infinity_polling, daemon=True).start()
     app.run(host="0.0.0.0", port=port)
+@bot.message_handler(commands=['start'])
+def start(message):
+    uid = message.from_user.id
+    name = message.from_user.first_name
+    
+    # চেক করুন মেসেজে কোনো রেফারাল আইডি আছে কি না
+    args = message.text.split()
+    referrer_id = args[1] if len(args) > 1 else None
+
+    conn = get_db(); cur = conn.cursor()
+    
+    # ইউজার আগে থেকেই ডাটাবেজে আছে কি না চেক করুন
+    cur.execute("SELECT user_id FROM users WHERE user_id = %s", (uid,))
+    user_exists = cur.fetchone()
+
+    if not user_exists:
+        # নতুন ইউজার হলে তাকে রেজিস্টার করুন
+        cur.execute("INSERT INTO users (user_id, name, balance, refs) VALUES (%s, %s, 0, 0)", (uid, name))
+        
+        # যদি কেউ তাকে রেফার করে থাকে, তবে রেফারারকে ২০০ পয়েন্ট বোনাস দিন
+        if referrer_id and referrer_id.isdigit() and int(referrer_id) != uid:
+            cur.execute("UPDATE users SET balance = balance + 200, refs = refs + 1 WHERE user_id = %s", (referrer_id,))
+            bot.send_message(referrer_id, f"🎉 অভিনন্দন! আপনার লিঙ্কে নতুন একজন যোগ দেওয়ায় ২০০ পয়েন্ট বোনাস পেয়েছেন।")
+        
+        conn.commit()
+    
+    # অ্যাপ খোলার বাটনসহ ওয়েলকাম মেসেজ
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton("Open App 🚀", url="https://t.me/EarnQuick_Official_bot/app"))
+    bot.reply_to(message, f"হ্যালো {name}! EarnQuick Pro-তে আপনাকে স্বাগতম।", reply_markup=markup)
+    
+    cur.close(); conn.close()
