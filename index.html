@@ -10,149 +10,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --primary: #00f2fe; --secondary: #4facfe; --bg: #0b0f19; --card: rgba(22, 29, 47, 0.85); --text: #fff; --accent: #ff007a; }
-        
-        /* প্রিমিয়াম ব্যাকগ্রাউন্ড এনিমেশন */
-        body { 
-            font-family: 'Poppins', sans-serif; 
-            margin: 0; 
-            padding-bottom: 90px; 
-            overflow-x: hidden;
-            background: linear-gradient(-45deg, #0b0f19, #1a2a6c, #b21f1f, #fdbb2d);
-            background-size: 400% 400%;
-            animation: moveGradient 15s ease infinite;
-            color: var(--text);
-        }
-        @keyframes moveGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+        :root { --primary: #00f2fe; --card: rgba(22, 29, 47, 0.95); --text: #fff; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 90px; background: linear-gradient(-45deg, #0b0f19, #1a2a6c, #b21f1f, #0b0f19); background-size: 400% 400%; animation: moveBG 15s ease infinite; color: var(--text); overflow-x: hidden; }
+        @keyframes moveBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .headline { background: rgba(255, 0, 122, 0.1); color: var(--accent); padding: 10px; font-size: 13px; font-weight: bold; overflow: hidden; white-space: nowrap; border-bottom: 1px solid var(--accent); }
-        .headline span { display: inline-block; animation: scroll 20s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        .page { display: none; padding: 15px; animation: fadeIn 0.4s; }
+        .page { display: none; padding: 20px; animation: fadeIn 0.5s; }
         .active { display: block; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .header { 
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            padding: 30px; 
-            border-bottom-left-radius: 40px; 
-            border-bottom-right-radius: 40px; 
-            text-align: center; 
-            margin-bottom: 20px; 
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .user-avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); margin: 0 auto 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 35px; background: var(--card); color: var(--primary); }
+        /* Header */
+        .header { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; text-align: center; border-radius: 0 0 40px 40px; border-bottom: 2px solid var(--primary); margin-bottom: 20px; }
+        .user-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; box-shadow: 0 0 15px var(--primary); }
 
-        .glass-card { background: var(--card); backdrop-filter: blur(10px); border-radius: 20px; padding: 18px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-bottom: 15px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        
-        .menu-btn { 
-            background: var(--card); 
-            padding: 22px; 
-            border-radius: 20px; 
-            text-align: center; 
-            border-bottom: 4px solid var(--primary); 
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        .menu-btn:active { transform: scale(0.9); }
-        .menu-btn i { font-size: 28px; margin-bottom: 10px; display: block; color: var(--primary); }
+        /* Stats Card */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); text-align: center; }
 
-        /* ব্যানার অ্যাড বক্স */
-        .ad-container { 
-            width: 100%; 
-            background: rgba(0,0,0,0.3); 
-            border-radius: 15px; 
-            margin: 15px 0; 
-            min-height: 100px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+        /* Buttons */
+        .action-btn { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; transition: 0.3s; margin-top: 15px; }
+        .action-btn:active { transform: scale(0.95); }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: rgba(22, 29, 47, 0.95); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 18px 0; border-top: 1px solid rgba(255,255,255,0.05); z-index: 1000; border-radius: 25px 25px 0 0; }
-        .nav-item { color: rgba(255,255,255,0.4); font-size: 22px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { color: var(--primary); transform: translateY(-5px); }
-        .nav-item span { display: block; font-size: 11px; margin-top: 5px; }
+        /* Withdraw Form */
+        input, select { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 18px; background: var(--primary); border: none; border-radius: 15px; font-weight: bold; color: #000; font-size: 16px; cursor: pointer; }
+
+        /* Nav */
+        .nav { position: fixed; bottom: 0; width: 100%; background: #161d2f; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
+        .nav-item { color: #666; font-size: 11px; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--primary); }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 4px; }
     </style>
 </head>
 <body>
 
-    <div class="headline"><span>📢 স্বাগতম Najmul Hoque Forhad-এর অফিসিয়াল অ্যাপে! প্রতি ভিডিওতে ৫ পয়েন্ট এবং রেফারে ২০০ পয়েন্ট বোনাস!</span></div>
-
-    <div id="home" class="page active">
+    <div id="home_page" class="page active">
         <div class="header">
-            <div id="u_pic" class="user-avatar">?</div>
-            <h2 id="u_name" style="margin:0; font-size: 22px; letter-spacing: 1px;">Loading...</h2>
-            <p style="font-size:12px; color: var(--primary); font-weight: bold; margin-top: 5px;">VERIFIED MEMBER ✔️</p>
+            <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" class="user-img">
+            <h2 id="u_name" style="margin:10px 0 5px;">User Name</h2>
+            <span style="color:var(--primary); font-size:12px; font-weight:bold;">OFFICIAL MEMBER ✔️</span>
         </div>
 
-        <div class="grid">
-            <div class="glass-card"><i class="fas fa-coins" style="color:#fdbb2d"></i><br><b><span id="bal" style="font-size: 18px;">0.00</span></b><br><small>Balance</small></div>
-            <div class="glass-card"><i class="fas fa-users" style="color:var(--primary)"></i><br><b><span id="ref" style="font-size: 18px;">0</span></b><br><small>Referrals</small></div>
+        <div class="stats-grid">
+            <div class="stat-card">💰 <span id="bal" style="font-size:20px;">0.00</span><br><small>Balance</small></div>
+            <div class="stat-card">👥 <span id="ref" style="font-size:20px;">0</span><br><small>Referrals</small></div>
         </div>
 
-        <div class="ad-container">
+        <div style="margin: 20px 0; border-radius: 15px; overflow: hidden; text-align: center;">
             <script async="async" data-cfasync="false" src="https://hathomeynapoleon.com/2aa3ba4ae91eac742e7fc4fb1768ac28/invoke.js"></script>
             <div id="container-2aa3ba4ae91eac742e7fc4fb1768ac28"></div>
         </div>
 
-        <div class="grid">
-            <div class="menu-btn" onclick="watchAd()" style="border-color: var(--accent);"><i class="fas fa-play-circle" style="color: var(--accent);"></i><span>Watch Video</span></div>
-            <div class="menu-btn" onclick="copyRef()"><i class="fas fa-gift"></i><span>Invite Friends</span></div>
+        <div class="stats-grid">
+            <div class="action-btn" onclick="watchAd()"><i class="fas fa-play-circle" style="color:var(--primary); font-size:28px;"></i><br>Watch Ad</div>
+            <div class="action-btn" onclick="copyRef()"><i class="fas fa-share-alt" style="color:var(--primary); font-size:28px;"></i><br>Invite</div>
         </div>
     </div>
 
-    <div id="withdraw" class="page">
-        <h3 style="text-align:center; margin-bottom: 20px;">💰 Withdraw Earnings</h3>
-        <div class="glass-card" style="border: 1px solid var(--primary);">
-            <small>Your Total Points</small>
-            <h2 id="bal2" style="margin:8px 0; color:var(--primary); font-size: 30px;">0.00</h2>
+    <div id="wallet_page" class="page">
+        <h2 style="text-align: center;">💰 Withdraw Money</h2>
+        <div class="stat-card" style="margin-bottom: 20px; border: 1px solid var(--primary);">
+            <small>Total Earnings</small>
+            <h1 id="bal_wallet" style="color:var(--primary); margin: 5px 0;">0.00</h1>
         </div>
-
-        <div class="ad-container">
-            <div id="container-2aa3ba4ae91eac742e7fc4fb1768ac28"></div>
-        </div>
-
-        <input type="number" id="phone" placeholder="Enter Bkash/Nagad Number" style="width:100%; padding:16px; border-radius:12px; border:none; margin-bottom:12px; background: rgba(255,255,255,0.08); color: #fff; font-size: 16px;">
-        <input type="number" id="amount" placeholder="Minimum 1000 Points" style="width:100%; padding:16px; border-radius:12px; border:none; margin-bottom:20px; background: rgba(255,255,255,0.08); color: #fff; font-size: 16px;">
-        <button onclick="submitWithdraw()" style="width:100%; padding:18px; border-radius:15px; background: linear-gradient(90deg, var(--secondary), var(--primary)); border:none; font-weight:bold; color:#000; font-size: 16px; cursor:pointer; box-shadow: 0 5px 15px rgba(0, 242, 254, 0.4);">SUBMIT REQUEST</button>
-    </div>
-
-    <div id="bio" class="page">
-        <div class="glass-card" style="padding: 35px; border: 1px solid var(--primary); position: relative; overflow: hidden;">
-            <div style="position: absolute; top: -20px; right: -20px; font-size: 100px; color: rgba(255,255,255,0.05);"><i class="fas fa-user-tie"></i></div>
-            <div class="user-avatar" style="width:100px; height:100px; border: 4px solid var(--primary);"><img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" style="width:100%; height:100%; object-fit:cover;"></div>
-            <h2 style="margin:10px 0 5px;">Najmul Hoque Forhad</h2>
-            <p style="font-size:14px; color:var(--primary); font-weight: bold;">Content Creator & Editor</p>
-            <hr style="opacity:0.1; margin: 15px 0;">
-            <p style="font-size:13px; opacity:0.8; line-height:1.7; text-align: justify;">
-                আমি খবরের দুনিয়ার একজন কন্টেন্ট ক্রিয়েটর। বাংলাদেশি রাজনীতি থেকে শুরু করে জীবনযাত্রার মানোন্নয়ন—সবকিছুই আমার লেখায় ফুটে ওঠে।
-            </p>
-        </div>
-
-        <div class="ad-container">
-            <div id="container-2aa3ba4ae91eac742e7fc4fb1768ac28"></div>
+        
+        <div class="stat-card">
+            <select id="method">
+                <option value="Bkash">Bkash</option>
+                <option value="Nagad">Nagad</option>
+                <option value="Recharge">Mobile Recharge</option>
+            </select>
+            <input type="number" id="phone" placeholder="Account Number">
+            <input type="number" id="amount" placeholder="Min Amount 1000">
+            <button class="submit-btn" onclick="submitWithdraw()">SUBMIT REQUEST</button>
         </div>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('home', this)"><i class="fas fa-home"></i><span>Home</span></div>
-        <div class="nav-item" onclick="showPage('withdraw', this)"><i class="fas fa-wallet"></i><span>Wallet</span></div>
-        <div class="nav-item" onclick="showPage('bio', this)"><i class="fas fa-user-tie"></i><span>Profile</span></div>
+    <div id="profile_page" class="page">
+        <div class="stat-card" style="padding: 40px 20px;">
+            <img src="https://2.gravatar.com/userimage/272425442/fcb83aee8c79859af6e54d0c9cf11a7b?size=1024" style="width:110px; border-radius:50%; border:3px solid var(--primary);">
+            <h2>Najmul Hoque Forhad</h2>
+            <p style="color:var(--primary); font-weight: bold;">Lead Editor & Developer</p>
+            <hr style="opacity: 0.1; margin: 20px 0;">
+            <p style="font-size:14px; opacity:0.8; line-height:1.6; text-align: justify;">আমি খবরের দুনিয়ার একজন কন্টেন্ট ক্রিয়েটর। বাংলাদেশি রাজনীতি থেকে শুরু করে জীবনযাত্রার মানোন্নয়ন—সবকিছুই আমার লেখায় ফুটে ওঠে।</p>
+        </div>
+    </div>
+
+    <div class="nav">
+        <div id="nav_home" class="nav-item active" onclick="showPage('home_page', this)"><i class="fas fa-home"></i>Home</div>
+        <div id="nav_wallet" class="nav-item" onclick="showPage('wallet_page', this)"><i class="fas fa-wallet"></i>Wallet</div>
+        <div id="nav_profile" class="nav-item" onclick="showPage('profile_page', this)"><i class="fas fa-user-tie"></i>Profile</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user;
+        const user = tg.initDataUnsafe.user || {id: 12345, first_name: "User"};
         const BACKEND = "https://earnquick-backend.onrender.com";
 
         function showPage(pageId, el) {
@@ -164,40 +115,36 @@
         }
 
         function loadData() {
-            if(!user) return;
-            document.getElementById('u_name').innerText = user.first_name;
-            document.getElementById('u_pic').innerText = user.first_name[0].toUpperCase();
-            fetch(`${BACKEND}/data?user_id=${user.id}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('bal').innerText = data.balance.toFixed(2);
-                    document.getElementById('bal2').innerText = data.balance.toFixed(2);
-                    document.getElementById('ref').innerText = data.refs;
-                }).catch(err => console.error("Error loading data"));
+            fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`)
+            .then(res => res.json()).then(data => {
+                document.getElementById('u_name').innerText = user.first_name;
+                document.getElementById('bal').innerText = data.balance.toFixed(2);
+                document.getElementById('bal_wallet').innerText = data.balance.toFixed(2);
+                document.getElementById('ref').innerText = data.refs;
+            });
         }
 
         function watchAd() {
             if (typeof show_10603637 === 'function') {
                 show_10603637('pop').then(() => {
                     fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                        tg.showPopup({ title: 'Success!', message: 'You have earned 5 points.', buttons: [{type: 'ok'}] });
+                        tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
                         loadData();
                     });
-                }).catch(() => tg.showAlert("Ad not available. Try again."));
-            } else {
-                tg.showAlert("Ad loading... please wait 5 seconds.");
-            }
+                }).catch(() => tg.showAlert("Ad Error! Try later."));
+            } else { tg.showAlert("Ad is loading..."); }
         }
 
         function submitWithdraw() {
+            const method = document.getElementById('method').value;
             const phone = document.getElementById('phone').value;
             const amount = document.getElementById('amount').value;
-            if(!phone || !amount) return tg.showAlert("Please fill all fields!");
+            if(!phone || !amount) return tg.showAlert("সব তথ্য দিন!");
             
             fetch(`${BACKEND}/withdraw`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user.id, name: user.first_name, method: 'Bkash/Nagad', phone, amount})
+                body: JSON.stringify({user_id: user.id, name: user.first_name, method, phone, amount})
             }).then(res => res.json()).then(data => {
                 tg.showAlert(data.message);
                 loadData();
@@ -206,7 +153,7 @@
 
         function copyRef() {
             const link = `https://t.me/EarnQuick_Official_bot?start=${user.id}`;
-            navigator.clipboard.writeText(link).then(() => tg.showAlert("Referral link copied!"));
+            navigator.clipboard.writeText(link).then(() => tg.showAlert("রেফার লিঙ্ক কপি হয়েছে!"));
         }
 
         tg.ready(); tg.expand(); loadData();
