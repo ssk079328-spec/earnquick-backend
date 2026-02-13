@@ -5,7 +5,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; padding-bottom: 80px; }
+        body { font-family: 'Poppins', sans-serif; background: #f0f4f8; margin: 0; padding: 15px; padding-bottom: 70px; }
         .card { background: #fff; border-radius: 20px; padding: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); text-align: center; margin-bottom: 15px; }
         .btn { width: 100%; padding: 14px; border-radius: 50px; border: none; color: #fff; font-weight: bold; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; }
@@ -13,26 +13,41 @@
     </style>
 </head>
 <body>
-    <div id="home" class="card">
-        <img src="https://gravatar.com/avatar/dazzlingf43ad20761?s=200" style="width:65px; border-radius:50%;">
-        <h4 id="uName">Loading...</h4>
-        <div style="font-size:32px; font-weight:bold;">💰 <span id="pts">0</span></div>
-        <button class="btn" style="background:#0088cc;" onclick="location.reload()"><i class="fa fa-sync"></i> Refresh</button>
+    <div id="homePage">
+        <div class="card">
+            <h4 id="uName">Loading...</h4>
+            <div style="font-size:35px; font-weight:bold; color:#2c3e50;">💰 <span id="pts">0</span></div>
+            <p style="color:#95a5a6; font-size:12px;">রেফার করেছেন: <span id="refs">0</span> জন</p>
+        </div>
+        <button class="btn" style="background:#0088cc;" onclick="watchAd()"><i class="fa fa-play-circle"></i> Watch Video (+5)</button>
+        <button class="btn" style="background:#f1c40f; color:#000;" onclick="showTab('spinPage')"><i class="fa fa-sync"></i> Lucky Spin</button>
+        <button class="btn" style="background:#e67e22;" onclick="showTab('withdrawPage')"><i class="fa fa-paper-plane"></i> Withdraw Now</button>
     </div>
 
-    <div id="spin" class="card" style="display:none;">
-        <div id="wheel" style="font-size:60px; transition: 3s;">🎡</div>
-        <button class="btn" style="background:#f1c40f; color:#000;" onclick="doSpin()">Spin Now</button>
+    <div id="spinPage" style="display:none;" class="card">
+        <div id="wheel" style="font-size:70px; transition:3s;">🎡</div>
+        <button class="btn" style="background:#f1c40f; color:#000; margin-top:20px;" onclick="doSpin()">🌀 Spin Now</button>
     </div>
 
-    <div id="history" class="card" style="display:none;">
-        <h4>History</h4><div id="hList"></div>
+    <div id="withdrawPage" style="display:none;" class="card">
+        <h3>Withdraw</h3>
+        <select id="mth" style="width:100%; padding:10px;"><option>bKash</option><option>Nagad</option></select>
+        <input type="number" id="amt" placeholder="Amount (Min 500)" style="width:90%; padding:10px; margin:10px 0;">
+        <input type="text" id="phn" placeholder="Phone Number" style="width:90%; padding:10px;">
+        <button class="btn" style="background:#2ecc71; margin-top:10px;" onclick="doWithdraw()">Confirm</button>
+    </div>
+
+    <div id="refPage" style="display:none;" class="card">
+        <h3>Refer & Earn</h3>
+        <p style="font-size:13px; background:#f9f9f9; padding:10px; word-break:break-all;" id="refL">Loading...</p>
+        <button class="btn" style="background:#34495e;" onclick="copyL()">📋 Copy Link</button>
     </div>
 
     <div class="nav">
-        <div class="nav-item" onclick="show('home')"><i class="fa fa-home"></i><br>Home</div>
-        <div class="nav-item" onclick="show('spin')"><i class="fa fa-play-circle"></i><br>Spin</div>
-        <div class="nav-item" onclick="loadHistory()"><i class="fa fa-history"></i><br>History</div>
+        <div class="nav-item" onclick="showTab('homePage')"><i class="fa fa-home"></i><br>Home</div>
+        <div class="nav-item" onclick="showTab('spinPage')"><i class="fa fa-play"></i><br>Spin</div>
+        <div class="nav-item" onclick="showTab('refPage')"><i class="fa fa-users"></i><br>Refer</div>
+        <div class="nav-item" onclick="location.reload()"><i class="fa fa-user"></i><br>Profile</div>
     </div>
 
     <script>
@@ -40,8 +55,8 @@
         let user = tg.initDataUnsafe.user || {id: 8145444675, first_name: "Admin"};
         let BASE = "https://earnquick-backend.onrender.com";
 
-        function show(id) {
-            ['home', 'spin', 'history'].forEach(p => document.getElementById(p).style.display='none');
+        function showTab(id) {
+            ['homePage', 'spinPage', 'withdrawPage', 'refPage'].forEach(p => document.getElementById(p).style.display='none');
             document.getElementById(id).style.display='block';
         }
 
@@ -50,29 +65,29 @@
             let d = await r.json();
             document.getElementById('uName').innerText = d.name;
             document.getElementById('pts').innerText = d.balance;
+            document.getElementById('refs').innerText = d.refs;
+            document.getElementById('refL').innerText = d.ref_link;
         }
+
+        function watchAd() { fetch(`${BASE}/postback?user_id=${user.id}`).then(() => { tg.showAlert("৫ পয়েন্ট যোগ হয়েছে!"); load(); }); }
 
         async function doSpin() {
-            let r = await fetch(`${BASE}/spin`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({user_id: user.id})
-            });
+            let r = await fetch(`${BASE}/spin`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:user.id})});
             let d = await r.json();
             document.getElementById('wheel').style.transform = "rotate(1440deg)";
-            setTimeout(() => {
-                tg.showAlert(`You won ${d.win} Pts!`);
-                document.getElementById('wheel').style.transform = "rotate(0deg)";
-                load();
-            }, 3000);
+            setTimeout(() => { tg.showAlert(`You won ${d.win} Pts!`); document.getElementById('wheel').style.transform = "rotate(0deg)"; load(); }, 3000);
         }
 
-        async function loadHistory() {
-            show('history');
-            let r = await fetch(`${BASE}/history?user_id=${user.id}`);
-            let d = await r.json();
-            document.getElementById('hList').innerHTML = d.map(h => `<p>${h.amount} Pts - ${h.status}</p>`).join('');
+        async function doWithdraw() {
+            let a = document.getElementById('amt').value, p = document.getElementById('phn').value, m = document.getElementById('mth').value;
+            if(a < 500) return tg.showAlert("Min 500 Pts required!");
+            let r = await fetch(`${BASE}/withdraw`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:user.id, amount:a, method:m, phone:p})});
+            let res = await r.json();
+            tg.showAlert(res.status==='success' ? "সাফল্য!" : "ব্যালেন্স কম!");
+            if(res.status==='success') location.reload();
         }
+
+        function copyL() { navigator.clipboard.writeText(document.getElementById('refL').innerText); tg.showAlert("Copied!"); }
         load();
     </script>
 </body>
