@@ -79,3 +79,10 @@ if __name__ == "__main__":
     init_db()
     threading.Thread(target=bot.infinity_polling, daemon=True).start()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+if __name__ == "__main__":
+    init_db()
+    threading.Thread(target=bot.infinity_polling, daemon=True).start()
+    
+    # এই অংশটি রেন্ডারের পোর্টের জন্য অত্যন্ত জরুরি
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
