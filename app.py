@@ -16,6 +16,7 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
+# ডাটাবেজ অটো-ফিক্স মডিউল
 def init_db():
     conn = get_db(); cur = conn.cursor()
     cur.execute("""
@@ -24,9 +25,7 @@ def init_db():
             name TEXT DEFAULT 'User',
             balance FLOAT DEFAULT 0, 
             refs INT DEFAULT 0
-        )
-    """)
-    cur.execute("""
+        );
         CREATE TABLE IF NOT EXISTS withdrawals (
             id SERIAL PRIMARY KEY,
             user_id BIGINT,
@@ -34,40 +33,70 @@ def init_db():
             method TEXT,
             status TEXT DEFAULT 'Pending',
             date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
+        );
     """)
     conn.commit(); cur.close(); conn.close()
 
-# --- ওয়েলকাম টেক্সট মডিউল ---
+# --- ওয়েলকাম মেসেজ ---
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def start_msg(message):
     uid = message.from_user.id
     name = message.from_user.first_name
-    
-    welcome_msg = f"👋 আসসালামু আলাইকুম {name}!\n\n" \
-                  f"🚀 **EarnQuick Pro**-তে আপনাকে স্বাগতম।\n" \
-                  f"এখানে আপনি ভিডিও অ্যাড দেখে এবং লাকি স্পিন খেলে প্রতিদিন টাকা ইনকাম করতে পারবেন।\n\n" \
-                  f"💰 **প্রতি অ্যাডে:** ৫ পয়েন্ট\n" \
-                  f"🎡 **লাকি স্পিন:** আনলিমিটেড সুযোগ\n" \
-                  f"💳 **মিনিমাম উইথড্র:** ৫০০ পয়েন্ট (বিকাশ/নগদ)\n\n" \
-                  f"নিচের বাটনে ক্লিক করে কাজ শুরু করুন! 👇"
-    
+    msg = f"👋 স্বাগতম {name}!\n\nভিডিও দেখে এবং স্পিন খেলে ইনকাম শুরু করুন।\n💰 প্রতি অ্যাড: ৫ পয়েন্ট\n🎡 স্পিন: আনলিমিটেড"
     markup = telebot.types.InlineKeyboardMarkup()
     markup.add(telebot.types.InlineKeyboardButton("Open App 🚀", url="https://t.me/EarnQuick_Official_bot/app"))
-    bot.send_message(uid, welcome_msg, reply_markup=markup, parse_mode="Markdown")
+    bot.send_message(uid, msg, reply_markup=markup)
 
-# --- লাকি স্পিন এপিআই ---
-@app.route("/spin", methods=['POST'])
-def spin_earn():
-    uid = request.json.get('user_id')
-    win_pts = random.choice([1, 2, 5, 0, 10, 3]) # স্পিন থেকে জেতা পয়েন্ট
+# --- এপিআই রুটস ---
+@app.route("/data")
+def get_data():
+    uid = request.args.get('user_id')
+    name = request.args.get('name', 'User')
     conn = get_db(); cur = conn.cursor()
-    cur.execute("UPDATE users SET balance = balance + %s WHERE user_id = %s", (win_pts, uid))
-    conn.commit(); cur.close(); conn.close()
-    return jsonify({"win": win_pts})
+    cur.execute("SELECT balance, name FROM users WHERE user_id = %s", (uid,))
+    res = cur.fetchone()
+    if not res:
+        cur.execute("INSERT INTO users (user_id, name) VALUES (%s, %s)", (uid, name))
+        conn.commit(); res = (0, name)
+    cur.close(); conn.close()
+    return jsonify({"balance": res[0], "name": res[1]})
 
-# (বাকি এপিআই রুটগুলো আগের মতোই থাকবে: /data, /postback, /withdraw, /history, /admin-panel-secret-8145)
-# ... [আগের দেওয়া app.py এর বাকি অংশ এখানে থাকবে] ...
+@app.route("/spin", methods=['POST'])
+def spin():
+    uid = request.json.get('user_id')
+    win = random.choice([1, 2, 5, 0, 10])
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("UPDATE users SET balance = balance + %s WHERE user_id = %s", (win, uid))
+    conn.commit(); cur.close(); conn.close()
+    return jsonify({"win": win})
+
+@app.route("/withdraw", methods=['POST'])
+def withdraw():
+    d = request.json
+    uid, amt, method, phn = d['user_id'], int(d['amount']), d['method'], d['phone']
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("SELECT balance FROM users WHERE user_id = %s", (uid,))
+    if cur.fetchone()[0] >= amt:
+        cur.execute("UPDATE users SET balance = balance - %s WHERE user_id = %s", (amt, uid))
+        cur.execute("INSERT INTO withdrawals (user_id, amount, method) VALUES (%s, %s, %s)", (uid, amt, method))
+        conn.commit()
+        bot.send_message(ADMIN_ID, f"💰 New Withdraw: {amt} Pts\nVia: {method}\nPh: {phn}\nID: {uid}")
+        return jsonify({"status": "success"})
+    return jsonify({"status": "error"})
+
+@app.route("/history")
+def history():
+    uid = request.args.get('user_id')
+    conn = get_db(); cur = conn.cursor()
+    cur.execute("SELECT amount, method, status FROM withdrawals WHERE user_id = %s ORDER BY id DESC", (uid,))
+    res = [{"amount": r[0], "method": r[1], "status": r[2]} for r in cur.fetchall()]
+    cur.close(); conn.close()
+    return jsonify(res)
+
+@app.route("/admin-panel-secret-8145")
+def admin():
+    with open('admin.html', 'r', encoding='utf-8') as f:
+        return render_template_string(f.read())
 
 if __name__ == "__main__":
     init_db()
