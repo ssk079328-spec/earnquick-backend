@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
-        :root { --primary: #00f2fe; --bg: #0b0f19; --card: rgba(22, 29, 47, 0.95); }
-        body { font-family: 'Poppins', sans-serif; margin: 0; background: var(--bg); color: #fff; padding-bottom: 160px; overflow-x: hidden; }
+        :root { --primary: #00f2fe; --card: rgba(22, 29, 47, 0.95); --text: #fff; }
+        body { font-family: 'Poppins', sans-serif; margin: 0; padding-bottom: 160px; background: #0b0f19; color: var(--text); overflow-x: hidden; }
         
         .page { display: none; padding: 20px; animation: fadeIn 0.4s; }
         .active { display: block; }
@@ -20,14 +20,13 @@
         .header { background: rgba(255,255,255,0.05); padding: 30px; text-align: center; border-radius: 0 0 40px 40px; border-bottom: 2px solid var(--primary); }
         .user-img { width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary); object-fit: cover; box-shadow: 0 0 15px var(--primary); }
 
-        .stat-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .stat-card { background: var(--card); border-radius: 20px; padding: 15px; text-align: center; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 20px 0; }
         
-        .btn-main { background: var(--card); padding: 20px; border-radius: 20px; text-align: center; border-bottom: 4px solid var(--primary); cursor: pointer; transition: 0.3s; }
-        .btn-main:active { transform: scale(0.95); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: 1px solid #333; background: #1b2438; color: #fff; box-sizing: border-box; }
+        .btn-action { width: 100%; padding: 15px; background: var(--primary); border: none; border-radius: 12px; font-weight: bold; color: #000; cursor: pointer; }
 
-        /* Sticky Bottom Banner Ad */
-        .bottom-ad { position: fixed; bottom: 70px; left: 0; width: 100%; min-height: 100px; background: #000; z-index: 999; display: flex; justify-content: center; align-items: center; border-top: 1px solid #333; }
+        .bottom-ad { position: fixed; bottom: 70px; left: 0; width: 100%; min-height: 100px; background: #000; z-index: 999; border-top: 1px solid #333; display: flex; justify-content: center; align-items: center; }
 
         .nav { position: fixed; bottom: 0; width: 100%; background: #161d2f; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000; }
         .nav div { color: #555; font-size: 12px; text-align: center; cursor: pointer; }
@@ -37,39 +36,47 @@
 </head>
 <body>
 
-    <div id="home" class="page active">
+    <div id="home_page" class="page active">
         <div class="header">
             <img id="u_img" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" class="user-img">
-            <h2 id="u_name" style="margin-top:10px;">User</h2>
-            <span style="color:var(--primary); font-size:12px;">Premium Member ✔️</span>
+            <h2 id="u_name">User</h2>
+            <span style="color:var(--primary); font-size:12px;">OFFICIAL MEMBER ✔️</span>
         </div>
-
         <div class="grid">
             <div class="stat-card">💰 <span id="bal" style="font-size:20px;">0.00</span><br><small>Balance</small></div>
             <div class="stat-card">👥 <span id="ref" style="font-size:20px;">0</span><br><small>Referrals</small></div>
         </div>
-
-        <div class="btn-main" onclick="watchAd()">
-            <i class="fas fa-play-circle" style="font-size:30px; color:var(--primary);"></i><br>Watch Video (Earn 5 Pts)
+        <div class="stat-card" onclick="watchAd()" style="cursor:pointer; border-bottom: 4px solid var(--primary);">
+            <i class="fas fa-play-circle" style="font-size:30px; color:var(--primary);"></i><br>Watch Video & Earn 5 pts
+        </div>
+        <div class="stat-card" onclick="copyRef()" style="cursor:pointer; border-bottom: 4px solid #ff007a;">
+            <i class="fas fa-user-plus" style="font-size:30px; color:#ff007a;"></i><br>Invite Friends (Refer)
         </div>
     </div>
 
-    <div id="wallet" class="page">
-        <h2 style="text-align:center;">Withdraw</h2>
+    <div id="wallet_page" class="page">
+        <h2 style="text-align:center;">💰 Withdraw</h2>
         <div class="stat-card">
-            <h1 id="bal2" style="color:var(--primary);">0.00</h1>
-            <input type="number" id="phone" placeholder="Phone Number" style="width:90%; padding:12px; margin:5px; border-radius:10px;">
-            <input type="number" id="amount" placeholder="Min 1000 Pts" style="width:90%; padding:12px; margin:5px; border-radius:10px;">
-            <button onclick="submitWithdraw()" style="width:95%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; margin-top:10px;">Submit Request</button>
+            <small>Available Points</small>
+            <h1 id="bal_wallet" style="color:var(--primary); margin: 5px 0;">0.00</h1>
+            <select id="method">
+                <option value="Bkash">Bkash</option>
+                <option value="Nagad">Nagad</option>
+                <option value="Recharge">Mobile Recharge</option>
+            </select>
+            <input type="number" id="phone" placeholder="Account Number">
+            <input type="number" id="amount" placeholder="Min 1000 Points">
+            <button class="btn-action" onclick="submitWithdraw()">SUBMIT WITHDRAW</button>
         </div>
     </div>
 
-    <div id="profile" class="page">
+    <div id="profile_page" class="page">
         <div class="stat-card" style="padding: 40px 20px;">
-            <img id="u_img_profile" src="" class="user-img">
+            <img id="u_img_profile" src="" class="user-img" style="width:110px; height:110px;">
             <h2 id="p_name">User</h2>
-            <p style="color:var(--primary); font-weight:bold;">Najmul Hoque Forhad (Admin)</p>
-            <p style="font-size:13px; opacity:0.8;">Content Creator & App Lead Developer</p>
+            <p style="color:var(--primary); font-weight: bold;">Najmul Hoque Forhad (Admin)</p>
+            <hr style="opacity: 0.1; margin: 15px 0;">
+            <p style="font-size:13px; opacity:0.8; line-height:1.6;">আপনি এই অ্যাপের একজন ভেরিফাইড ইউজার। আপনার উপার্জিত পয়েন্ট এখানে সুরক্ষিত। যেকোনো সমস্যায় অ্যাডমিনের সাথে যোগাযোগ করুন।</p>
         </div>
     </div>
 
@@ -79,15 +86,16 @@
     </div>
 
     <div class="nav">
-        <div onclick="showPage('home', this)" class="active"><i class="fas fa-home"></i>Home</div>
-        <div onclick="showPage('wallet', this)"><i class="fas fa-wallet"></i>Wallet</div>
-        <div onclick="showPage('profile', this)"><i class="fas fa-user-tie"></i>Profile</div>
+        <div onclick="showPage('home_page', this)" class="active"><i class="fas fa-home"></i>Home</div>
+        <div onclick="showPage('wallet_page', this)"><i class="fas fa-wallet"></i>Wallet</div>
+        <div onclick="showPage('profile_page', this)"><i class="fas fa-user-tie"></i>Profile</div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        const user = tg.initDataUnsafe.user;
-        const BACKEND = "https://earnquick-backend.onrender.com";
+        // ইউজারের তথ্য সংগ্রহ (ফেলব্যাকসহ)
+        const user = tg.initDataUnsafe.user || {id: 12345, first_name: "Guest", photo_url: ""};
+        const BACKEND = "https://your-backend-url.onrender.com"; // এখানে আপনার Render URL দিন
 
         function showPage(pId, el) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -96,36 +104,64 @@
             el.classList.add('active');
         }
 
-        function load() {
-            if(!user) return;
-            // ছবি সেট করা
-            const pUrl = user.photo_url || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
-            document.getElementById('u_img').src = pUrl;
-            document.getElementById('u_img_profile').src = pUrl;
+        function loadData() {
+            // প্রোফাইল পিকচার সেট করা
+            const photo = user.photo_url || "https://cdn-icons-png.flaticon.com/512/3135/3135715.png";
+            document.getElementById('u_img').src = photo;
+            document.getElementById('u_img_profile').src = photo;
             document.getElementById('u_name').innerText = user.first_name;
             document.getElementById('p_name').innerText = user.first_name;
 
             fetch(`${BACKEND}/data?user_id=${user.id}&name=${user.first_name}`)
-                .then(r => r.json()).then(d => {
-                    document.getElementById('bal').innerText = d.balance.toFixed(2);
-                    document.getElementById('bal2').innerText = d.balance.toFixed(2);
-                    document.getElementById('ref').innerText = d.refs;
+                .then(res => res.json()).then(data => {
+                    document.getElementById('bal').innerText = data.balance.toFixed(2);
+                    document.getElementById('bal_wallet').innerText = data.balance.toFixed(2);
+                    document.getElementById('ref').innerText = data.refs;
                 });
         }
 
         function watchAd() {
             if (typeof show_10603637 === 'function') {
-                show_10603637('pop').then(() => {
-                    // ভিডিও শেষ হলে ব্যাকএন্ডে পয়েন্ট পাঠাবে
-                    fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
-                        tg.showAlert("অভিনন্দন! ৫ পয়েন্ট যোগ হয়েছে।");
-                        load();
-                    });
-                }).catch(() => tg.showAlert("Ad not finished."));
-            } else { tg.showAlert("Ad loading..."); }
+                // মনিট্যাগ সাপোর্ট টিমের দেওয়া সঠিক প্রমিজ মেথড
+                show_10603637({ ymid: user.id, requestVar: "reward_button" })
+                .then((event) => {
+                    if (event.reward_event_type === "valued") {
+                        fetch(`${BACKEND}/postback?user_id=${user.id}`).then(() => {
+                            tg.showAlert("অভিনন্দন! ৫ পয়েন্ট জমা হয়েছে।");
+                            loadData();
+                        });
+                    } else {
+                        tg.showAlert("পুরো অ্যাডটি না দেখলে পয়েন্ট পাবেন না।");
+                    }
+                })
+                .catch(() => tg.showAlert("অ্যাড লোড হতে পারেনি।"));
+            } else { tg.showAlert("Ad Loading..."); }
         }
 
-        tg.ready(); tg.expand(); load();
+        function submitWithdraw() {
+            const method = document.getElementById('method').value;
+            const phone = document.getElementById('phone').value;
+            const amount = document.getElementById('amount').value;
+            if(!phone || amount < 1000) return tg.showAlert("সঠিক তথ্য দিন (মিনিমাম ১০০০ পয়েন্ট)");
+
+            fetch(`${BACKEND}/withdraw`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({user_id: user.id, name: user.first_name, method, phone, amount})
+            }).then(res => res.json()).then(data => {
+                tg.showAlert(data.message);
+                loadData();
+            });
+        }
+
+        function copyRef() {
+            const link = `https://t.me/your_bot_username?start=${user.id}`; // আপনার বটের ইউজারনেম দিন
+            navigator.clipboard.writeText(link).then(() => {
+                tg.showAlert("রেফার লিঙ্ক কপি হয়েছে! বন্ধুদের ইনভাইট করুন।");
+            });
+        }
+
+        tg.ready(); tg.expand(); loadData();
     </script>
 </body>
 </html>
