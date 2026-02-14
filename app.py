@@ -16,17 +16,26 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
-# ডাটাবেজ এবং টেবিল অটো-ক্রিয়েশন লজিক
+# ডাটাবেজ আপডেট এবং অটো-ফিক্স লজিক
 def init_db():
-    conn = get_db(); cur = conn.cursor()
+    conn = get_db()
+    cur = conn.cursor()
+    # মূল টেবিল তৈরি
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id BIGINT PRIMARY KEY, 
-            name TEXT DEFAULT 'User',
             balance FLOAT DEFAULT 0, 
             refs INT DEFAULT 0,
             referred_by BIGINT DEFAULT NULL
         );
+    """)
+    # গুরুত্বপূর্ণ: যদি 'name' কলাম না থাকে তবে এটি অটো তৈরি করবে
+    try:
+        cur.execute("ALTER TABLE users ADD COLUMN name TEXT DEFAULT 'User';")
+    except psycopg2.errors.DuplicateColumn:
+        conn.rollback() # কলাম ইতিমধ্যে থাকলে এরর এড়িয়ে যাবে
+    
+    cur.execute("""
         CREATE TABLE IF NOT EXISTS withdrawals (
             id SERIAL PRIMARY KEY,
             user_id BIGINT,
@@ -36,9 +45,11 @@ def init_db():
             date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
-    conn.commit(); cur.close(); conn.close()
+    conn.commit()
+    cur.close()
+    conn.close()
 
-# --- টেলিগ্রাম বট লজিক (রেফারেলসহ) ---
+# --- টেলিগ্রাম বট লজিক ---
 @bot.message_handler(commands=['start'])
 def start(message):
     uid, name = message.from_user.id, message.from_user.first_name
@@ -62,12 +73,22 @@ def start(message):
 # --- এপিআই রুটস ---
 @app.route("/data")
 def get_data():
-    uid, name = request.args.get('user_id'), request.args.get('name', 'User')
+    uid = request.args.get('user_id')
+    if not uid: return jsonify({"error": "No ID"})
+    
     conn = get_db(); cur = conn.cursor()
     cur.execute("SELECT balance, name, refs FROM users WHERE user_id = %s", (uid,))
     res = cur.fetchone()
     cur.close(); conn.close()
-    return jsonify({"balance": res[0], "name": res[1], "refs": res[2], "ref_link": f"https://t.me/EarnQuick_Official_bot?start={uid}"}) if res else jsonify({"error": "1"})
+    
+    if res:
+        return jsonify({
+            "balance": res[0], 
+            "name": res[1], 
+            "refs": res[2], 
+            "ref_link": f"https://t.me/EarnQuick_Official_bot?start={uid}"
+        })
+    return jsonify({"error": "User not found"}), 404
 
 @app.route("/postback")
 def add_points():
@@ -110,11 +131,11 @@ def get_history():
     cur.close(); conn.close()
     return jsonify(data)
 
-@app.route("/admin-panel-secret-8145")
-def admin():
-    with open('admin.html', 'r', encoding='utf-8') as f: return render_template_string(f.read())
+@app.route("/")
+def home():
+    return "Backend is running!"
 
 if __name__ == "__main__":
-    init_db()
+    init_db() # অ্যাপ রান হওয়ার সময় ডাটাবেস অটো ঠিক করবে
     threading.Thread(target=bot.infinity_polling, daemon=True).start()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
