@@ -16,11 +16,11 @@ CORS(app)
 def get_db():
     return psycopg2.connect(DB_URL, sslmode='require')
 
-# ডাটাবেজ আপডেট এবং অটো-ফিক্স লজিক
+# ডাটাবেজ এবং টেবিল অটো-ক্রিয়েশন ও আপডেট লজিক
 def init_db():
     conn = get_db()
     cur = conn.cursor()
-    # মূল টেবিল তৈরি
+    # মূল টেবিল তৈরি (যদি না থাকে)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             user_id BIGINT PRIMARY KEY, 
@@ -28,14 +28,6 @@ def init_db():
             refs INT DEFAULT 0,
             referred_by BIGINT DEFAULT NULL
         );
-    """)
-    # গুরুত্বপূর্ণ: যদি 'name' কলাম না থাকে তবে এটি অটো তৈরি করবে
-    try:
-        cur.execute("ALTER TABLE users ADD COLUMN name TEXT DEFAULT 'User';")
-    except psycopg2.errors.DuplicateColumn:
-        conn.rollback() # কলাম ইতিমধ্যে থাকলে এরর এড়িয়ে যাবে
-    
-    cur.execute("""
         CREATE TABLE IF NOT EXISTS withdrawals (
             id SERIAL PRIMARY KEY,
             user_id BIGINT,
@@ -45,6 +37,17 @@ def init_db():
             date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     """)
+    
+    # আপনার এরর সমাধানের জন্য 'name' কলামটি অটো-ফিক্স
+    try:
+        cur.execute("ALTER TABLE users ADD COLUMN name TEXT DEFAULT 'User';")
+        print("Column 'name' added successfully.")
+    except psycopg2.errors.DuplicateColumn:
+        conn.rollback() # কলামটি ইতিমধ্যে থাকলে এরর এড়িয়ে যাবে
+    except Exception as e:
+        print(f"Error updating database: {e}")
+        conn.rollback()
+        
     conn.commit()
     cur.close()
     conn.close()
@@ -74,21 +77,25 @@ def start(message):
 @app.route("/data")
 def get_data():
     uid = request.args.get('user_id')
-    if not uid: return jsonify({"error": "No ID"})
-    
+    if not uid:
+        return jsonify({"error": "User ID missing"}), 400
+        
     conn = get_db(); cur = conn.cursor()
-    cur.execute("SELECT balance, name, refs FROM users WHERE user_id = %s", (uid,))
-    res = cur.fetchone()
-    cur.close(); conn.close()
-    
-    if res:
-        return jsonify({
-            "balance": res[0], 
-            "name": res[1], 
-            "refs": res[2], 
-            "ref_link": f"https://t.me/EarnQuick_Official_bot?start={uid}"
-        })
-    return jsonify({"error": "User not found"}), 404
+    try:
+        cur.execute("SELECT balance, name, refs FROM users WHERE user_id = %s", (uid,))
+        res = cur.fetchone()
+        if res:
+            return jsonify({
+                "balance": res[0], 
+                "name": res[1], 
+                "refs": res[2], 
+                "ref_link": f"https://t.me/EarnQuick_Official_bot?start={uid}"
+            })
+        return jsonify({"error": "User not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close(); conn.close()
 
 @app.route("/postback")
 def add_points():
@@ -133,9 +140,9 @@ def get_history():
 
 @app.route("/")
 def home():
-    return "Backend is running!"
+    return "Backend is running smoothly!"
 
 if __name__ == "__main__":
-    init_db() # অ্যাপ রান হওয়ার সময় ডাটাবেস অটো ঠিক করবে
+    init_db() # অ্যাপ চালু হওয়ার সময় ডাটাবেস চেক করবে
     threading.Thread(target=bot.infinity_polling, daemon=True).start()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
