@@ -3,117 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EarnQuick</title>
+  <title>EarnQuick Pro</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-  <header>
-    <h1>EarnQuick Bot</h1>
-    <img src="https://via.placeholder.com/728x90.png?text=Banner+Ad" alt="Banner Ad" class="banner-ad">
-  </header>
+  <div class="app-container">
+    <div class="user-profile">
+      <img src="https://via.placeholder.com/50" alt="User" class="avatar">
+      <div class="user-text">
+        <h3 id="display-name">User's Name</h3>
+        <p>Level: Gold Member ✨</p>
+      </div>
+    </div>
 
-  <div class="headline">
-    <span>🔥 Earn points fast! Watch ads, refer friends, withdraw rewards! 🔥</span>
+    <div class="balance-card">
+      <p class="label">Balance</p>
+      <h1><span id="balance-val">0.00</span> Pts</h1>
+      <p class="approx">Approx. ₹0.00 INR</p>
+    </div>
+
+    <div class="main-actions">
+      <button class="action-btn watch-btn" onclick="watchAd()">
+        <i class="fas fa-play-circle"></i> Watch Ad (5 Pts)
+      </button>
+      
+      <button class="action-btn bonus-btn">
+        <i class="fas fa-gift"></i> Daily Bonus
+      </button>
+
+      <div class="extra-row">
+        <div class="mini-leaderboard">
+          <p>🏆 Top 3 Earners:</p>
+          <small>1. Alam - 4010 Pts</small><br>
+          <small>2. Puja - 3919 Pts</small>
+        </div>
+        <button class="spin-btn">Lucky Spin</button>
+      </div>
+    </div>
+
+    <div id="auth-box" class="auth-box">
+      <input type="number" id="tgId" placeholder="Telegram ID">
+      <input type="text" id="name" placeholder="Name">
+      <button onclick="join()">Join Now</button>
+    </div>
+
+    <nav class="bottom-nav">
+      <div class="nav-item active"><i class="fas fa-home"></i><p>Home</p></div>
+      <div class="nav-item"><i class="fas fa-tasks"></i><p>Tasks</p></div>
+      <div class="nav-item"><i class="fas fa-trophy"></i><p>Leaderboard</p></div>
+      <div class="nav-item" onclick="withdraw()"><i class="fas fa-wallet"></i><p>Withdraw</p></div>
+    </nav>
   </div>
-
-  <div id="userBox">
-    <input type="number" id="tgId" placeholder="Telegram ID">
-    <input type="text" id="name" placeholder="Name">
-    <button onclick="join()">Join</button>
-  </div>
-
-  <div class="stats">
-    <button id="balance-btn">Balance: 0</button>
-    <button id="refer-btn">Referrals: 0</button>
-  </div>
-
-  <div class="bot-buttons">
-    <button onclick="watchAd()">Watch Ad (+5)</button>
-    <button onclick="withdraw()">Withdraw</button>
-  </div>
-
-  <!-- Clickable Ad Section -->
-  <div class="ad-section">
-    <a href="https://example.com" target="_blank">
-      <img src="https://via.placeholder.com/728x90.png?text=Click+to+View+Ad" alt="Ad Banner">
-    </a>
-  </div>
-
-  <p id="msg"></p>
 
   <script>
-    const API_URL = "https://earnquick-backend.onrender.com"; // Live backend
+    const API_URL = "https://earnquick-backend.onrender.com";
 
     async function join() {
       const tgId = document.getElementById("tgId").value;
       const name = document.getElementById("name").value;
-      if(!tgId || !name) { alert("Fill both fields!"); return; }
+      if(!tgId || !name) return alert("Fill all fields");
 
-      try {
-        const res = await fetch(`${API_URL}/join`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ telegram_id: tgId, name: name })
-        });
-        const data = await res.json();
-        document.getElementById("msg").innerText = `Joined: ${data.full_name || name}`;
-        loadProfile(tgId);
-      } catch(err) {
-        console.error(err);
-        document.getElementById("msg").innerText = "Error joining user!";
-      }
-    }
-
-    async function watchAd() {
-      const tgId = document.getElementById("tgId").value;
-      if(!tgId) { alert("Enter Telegram ID!"); return; }
-
-      try {
-        const res = await fetch(`${API_URL}/watch`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ telegram_id: tgId })
-        });
-        const data = await res.json();
-        document.getElementById("balance-btn").innerText = `Balance: ${data.points || 0}`;
-        document.getElementById("msg").innerText = "Ad watched! +5 points";
-      } catch(err) {
-        console.error(err);
-        document.getElementById("msg").innerText = "Error watching ad!";
-      }
-    }
-
-    async function withdraw() {
-      const tgId = document.getElementById("tgId").value;
-      if(!tgId) { alert("Enter Telegram ID!"); return; }
-
-      try {
-        const res = await fetch(`${API_URL}/withdraw`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ telegram_id: tgId })
-        });
-        const data = await res.json();
-        document.getElementById("msg").innerText = data.message;
-        loadProfile(tgId);
-      } catch(err) {
-        console.error(err);
-        document.getElementById("msg").innerText = "Error withdrawing!";
-      }
+      const res = await fetch(`${API_URL}/join`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ telegram_id: tgId, name: name })
+      });
+      const data = await res.json();
+      document.getElementById("auth-box").style.display = "none";
+      loadProfile(tgId);
     }
 
     async function loadProfile(tgId) {
-      try {
-        const res = await fetch(`${API_URL}/user/${tgId}`);
-        const data = await res.json();
-        document.getElementById("balance-btn").innerText = `Balance: ${data.points || 0}`;
-        document.getElementById("refer-btn").innerText = `Referrals: ${data.referrals || 0}`;
-      } catch(err) {
-        console.error(err);
-      }
+      const res = await fetch(`${API_URL}/user/${tgId}`);
+      const data = await res.json();
+      document.getElementById("balance-val").innerText = data.points;
+      document.getElementById("display-name").innerText = data.name;
     }
+    // আপনার আগের watchAd এবং withdraw ফাংশনগুলো এখানে থাকবে...
   </script>
-
 </body>
 </html>
