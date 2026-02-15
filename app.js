@@ -1,4 +1,4 @@
-const API = "https://YOUR_BACKEND_URL"; // Render URL দেবে
+const API = "https://earnquick-backend.onrender.com"; // Render URL দেবে
 
 function join() {
   const telegram_id = document.getElementById("tgId").value;
