@@ -1,44 +1,46 @@
-const API_URL = "https://your-backend-url.onrender.com"; // আপনার Render URL দিন
+const tg = window.Telegram.WebApp;
+tg.expand();
 
-async function join() {
-  const tgId = document.getElementById("tgId").value;
-  const name = document.getElementById("name").value;
-  if(!tgId || !name) return alert("All fields are required!");
+const API_URL = "https://your-backend-url.onrender.com";
+let userData = tg.initDataUnsafe.user;
 
-  const res = await fetch(`${API_URL}/join`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ telegram_id: tgId, name: name })
-  });
-  const data = await res.json();
-  localStorage.setItem("user_id", tgId);
-  document.getElementById("auth-box").style.display = "none";
-  updateUI(data);
+async function autoRegister() {
+    if (!userData) {
+        alert("টেলিগ্রাম থেকে অ্যাপটি ওপেন করুন!");
+        return;
+    }
+
+    const res = await fetch(`${API_URL}/user/${userData.id}`);
+    if (res.status === 404) {
+        // নতুন ইউজার হলে রেফার কোড অপশন দেখাবে
+        document.getElementById("refer-overlay").style.display = "flex";
+    } else {
+        const data = await res.json();
+        updateUI(data);
+    }
 }
 
-function watchAd() {
-  const tgId = localStorage.getItem("user_id");
-  if(!tgId) return alert("Please login first!");
-
-  if (typeof show_10603687 === 'function') {
-    show_10603687().then(async () => {
-      const res = await fetch(`${API_URL}/watch`, {
+async function completeRegistration() {
+    const refCode = document.getElementById("ref-input").value;
+    const res = await fetch(`${API_URL}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ telegram_id: tgId })
-      });
-      const data = await res.json();
-      document.getElementById("balance-val").innerText = data.points;
-      document.getElementById("inr-val").innerText = (data.points / 100).toFixed(2);
+        body: JSON.stringify({
+            telegram_id: userData.id,
+            name: userData.first_name + " " + (userData.last_name || ""),
+            referred_by: refCode
+        })
     });
-  }
+    const data = await res.json();
+    document.getElementById("refer-overlay").style.display = "none";
+    updateUI(data);
 }
 
-function showWithdraw() { document.getElementById("withdraw-modal").style.display = "block"; }
-function closeModal() { document.getElementById("withdraw-modal").style.display = "none"; }
-
-function updateUI(user) {
-  document.getElementById("display-name").innerText = user.name;
-  document.getElementById("balance-val").innerText = user.points;
-  document.getElementById("inr-val").innerText = (user.points / 100).toFixed(2);
+function updateUI(data) {
+    document.getElementById("user-name").innerText = data.name;
+    document.getElementById("balance-val").innerText = data.points;
+    document.getElementById("refer-count").innerText = data.refer_count || 0;
+    document.getElementById("tg-display-id").innerText = "ID: " + data.telegram_id;
 }
+
+autoRegister();
