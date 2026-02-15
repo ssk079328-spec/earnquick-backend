@@ -1,76 +1,21 @@
-const express = require('express');
-const cors = require('cors');
-const { Pool } = require('pg');
-
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-/* DATABASE */
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }
+/* ADMIN STATS */
+app.get('/admin/stats', async (req, res) => {
+  const totalUsers = await pool.query('SELECT COUNT(*) FROM users');
+  const pendingPayments = await pool.query('SELECT COUNT(*) FROM users WHERE points >= 4000'); // উদাহরণ
+  
+  res.json({
+    totalUsers: totalUsers.rows[0].count,
+    pending: pendingPayments.rows[0].count,
+    todayEarning: "₹500.00" // এটি আপনার অ্যাড নেটওয়ার্ক থেকে ম্যানুয়ালি বা API দিয়ে আনতে হবে
+  });
 });
 
-/* ROOT */
-app.get('/', (req, res) => {
-  res.send('EarnQuick Backend Running');
+/* GET USER FOR PROFILE */
+app.get('/user/:id', async (req, res) => {
+  const user = await pool.query('SELECT * FROM users WHERE telegram_id=$1', [req.params.id]);
+  if(user.rows.length > 0) {
+    res.json(user.rows[0]);
+  } else {
+    res.status(404).json({msg: "Not found"});
+  }
 });
-
-/* JOIN */
-app.post('/join', async (req, res) => {
-  const { telegram_id, name } = req.body;
-
-  const exist = await pool.query(
-    'SELECT * FROM users WHERE telegram_id=$1',
-    [telegram_id]
-  );
-
-  if (exist.rows.length)
-    return res.json({ msg: 'Already Joined' });
-
-  await pool.query(
-    'INSERT INTO users (telegram_id, name, points) VALUES ($1,$2,0)',
-    [telegram_id, name]
-  );
-
-  res.json({ msg: 'Joined' });
-});
-
-/* WATCH AD */
-app.post('/watch', async (req, res) => {
-  const { telegram_id } = req.body;
-
-  await pool.query(
-    'UPDATE users SET points=points+5 WHERE telegram_id=$1',
-    [telegram_id]
-  );
-
-  res.json({ msg: '+5 Points' });
-});
-
-/* WITHDRAW */
-app.post('/withdraw', async (req, res) => {
-  const { telegram_id } = req.body;
-
-  const u = await pool.query(
-    'SELECT points FROM users WHERE telegram_id=$1',
-    [telegram_id]
-  );
-
-  if (!u.rows.length)
-    return res.json({ msg: 'User Not Found' });
-
-  if (u.rows[0].points < 4000)
-    return res.json({ msg: 'Need 4000 Points' });
-
-  await pool.query(
-    'UPDATE users SET points=points-4000 WHERE telegram_id=$1',
-    [telegram_id]
-  );
-
-  res.json({ msg: 'Withdraw Requested' });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log('Server Running'));
