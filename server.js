@@ -1,56 +1,118 @@
-const express = require("express");
-const cors = require("cors");
-const db = require("./db");
-require("dotenv").config();
+const express = require('express');
+const { Pool } = require('pg');
+const cors = require('cors');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+app.use(cors());
 
-/* USER JOIN */
-app.post("/join", async (req, res) => {
-  const { telegram_id, name } = req.body;
-
-  const user = await db.query(
-    "INSERT INTO users (telegram_id, full_name, ref_code) VALUES ($1,$2,$3) RETURNING *",
-    [telegram_id, name, "REF" + telegram_id]
-  );
-
-  res.json(user.rows[0]);
+// DATABASE CONNECTION (Neon / PostgreSQL)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-/* WATCH AD */
-app.post("/ad", async (req, res) => {
-  const { telegram_id } = req.body;
-
-  await db.query(
-    "UPDATE users SET points = points + 5 WHERE telegram_id=$1",
-    [telegram_id]
-  );
-
-  res.json({ msg: "5 Points Added" });
+// ROOT ROUTE
+app.get('/', (req, res) => {
+  res.send('EarnQuick Backend Running');
 });
 
-/* WITHDRAW */
-app.post("/withdraw", async (req, res) => {
-  const { telegram_id } = req.body;
+// JOIN USER
+app.post('/join', async (req, res) => {
+  try {
+    const { telegram_id, name, ref_code } = req.body;
 
-  const u = await db.query(
-    "SELECT * FROM users WHERE telegram_id=$1",
-    [telegram_id]
-  );
+    const checkUser = await pool.query(
+      'SELECT * FROM users WHERE telegram_id=$1',
+      [telegram_id]
+    );
 
-  if (u.rows[0].points < 4000)
-    return res.send("Minimum 4000 points needed");
+    if (checkUser.rows.length > 0) {
+      return res.json({ message: 'User Already Exists' });
+    }
 
-  await db.query(
-    "UPDATE users SET points=0 WHERE telegram_id=$1",
-    [telegram_id]
-  );
+    const myRef = 'EQ' + Math.floor(Math.random() * 100000);
 
-  res.send("Withdraw Requested");
+    await pool.query(
+      'INSERT INTO users (telegram_id, name, ref_code, points) VALUES ($1,$2,$3,$4)',
+      [telegram_id, name, myRef, 0]
+    );
+
+    // Referral Bonus
+    if (ref_code) {
+      const refUser = await pool.query(
+        'SELECT * FROM users WHERE ref_code=$1',
+        [ref_code]
+      );
+
+      if (refUser.rows.length > 0) {
+        await pool.query(
+          'UPDATE users SET points = points + 100 WHERE ref_code=$1',
+          [ref_code]
+        );
+      }
+    }
+
+    res.json({ message: 'Joined Successfully', ref: myRef });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).send('Error');
+  }
 });
 
-app.listen(process.env.PORT, () =>
-  console.log("Server Running")
-);
+// WATCH AD (+5 POINT)
+app.post('/watch', async (req, res) => {
+  try {
+    const { telegram_id } = req.body;
+
+    await pool.query(
+      'UPDATE users SET points = points + 5 WHERE telegram_id=$1',
+      [telegram_id]
+    );
+
+    res.json({ message: 'Points Added +5' });
+  } catch (err) {
+    res.status(500).send('Error');
+  }
+});
+
+// WITHDRAW
+app.post('/withdraw', async (req, res) => {
+  try {
+    const { telegram_id } = req.body;
+
+    const user = await pool.query(
+      'SELECT points FROM users WHERE telegram_id=$1',
+      [telegram_id]
+    );
+
+    if (user.rows.length === 0) {
+      return res.json({ message: 'User Not Found' });
+    }
+
+    const points = user.rows[0].points;
+
+    if (points < 4000) {
+      return res.json({ message: 'Minimum 4000 Points Needed' });
+    }
+
+    await pool.query(
+      'UPDATE users SET points = points - 4000 WHERE telegram_id=$1',
+      [telegram_id]
+    );
+
+    res.json({ message: 'Withdraw Request Sent' });
+
+  } catch (err) {
+    res.status(500).send('Error');
+  }
+});
+
+// PORT
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log('Server Running on ' + PORT);
+});
