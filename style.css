@@ -3,6 +3,42 @@ body {
   text-align: center;
   background: #111;
   color: white;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #0088cc;
+  padding: 20px;
+}
+
+header h1 {
+  margin: 0 0 10px 0;
+}
+
+header .banner-ad {
+  width: 100%;
+  max-width: 728px;
+  border-radius: 5px;
+}
+
+.headline {
+  background: #ffdd57;
+  color: #333;
+  padding: 10px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.headline span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: marquee 15s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
 }
 
 input, button {
@@ -15,4 +51,32 @@ input, button {
 button {
   background: green;
   color: white;
+  cursor: pointer;
+}
+
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.bot-buttons {
+  margin: 10px 0;
+}
+
+.ad-section {
+  margin: 20px auto;
+  max-width: 728px;
+}
+
+.ad-section img {
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.ad-section img:hover {
+  transform: scale(1.03);
 }
