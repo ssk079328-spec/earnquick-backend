@@ -3,69 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EarnQuick Pro</title>
+  <title>EarnQuick Pro - Neon</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  
   <script src='//libtl.com/sdk.js' data-zone='10603687' data-sdk='show_10603687'></script>
 </head>
 <body>
 
-  <div class="app-container">
-    <div class="user-profile">
-      <img src="https://via.placeholder.com/50" alt="User" class="avatar">
-      <div class="user-text">
-        <h3 id="display-name">User's Name</h3>
-        <p>Level: Gold Member ✨</p>
+  <div class="app-shell">
+    <header class="app-header">
+      <h2 id="user-name">Loading...</h2>
+      <div class="user-pill">
+        <span id="tg-display-id">ID: 00000</span>
       </div>
-    </div>
+    </header>
 
-    <div class="balance-card">
-      <p class="label">Current Balance</p>
-      <h1><span id="balance-val">0</span> Pts</h1>
-      <p class="approx">Approx. ₹<span id="inr-val">0.00</span> INR</p>
-    </div>
-
-    <div class="main-actions">
-      <button class="action-btn watch-btn" onclick="watchAd()">
-        <i class="fas fa-play-circle"></i> Watch Ad (+5 Pts)
-      </button>
-      
-      <button class="action-btn bonus-btn" onclick="dailyBonus()">
-        <i class="fas fa-gift"></i> Daily Bonus
-      </button>
-
-      <div class="extra-row">
-        <div class="mini-leaderboard">
-          <p>🏆 Top Earners:</p>
-          <small id="leader-text">Loading...</small>
+    <div class="stats-grid-container">
+        <div class="stat-card">
+            <p>পয়েন্ট</p>
+            <h2 id="balance-val">0</h2>
         </div>
-        <button class="spin-btn">Lucky Spin</button>
+        <div class="stat-card">
+            <p>রেফার</p>
+            <h2 id="refer-count">0</h2>
+        </div>
+    </div>
+
+    <div class="main-buttons-grid">
+      <div class="grid-btn pink" onclick="watchAd()">
+        <i class="fas fa-play-circle"></i>
+        <p>অ্যাড দেখুন (+৫)</p>
+      </div>
+      <div class="grid-btn cyan" id="refer-btn">
+        <i class="fas fa-user-plus"></i>
+        <p>রেফার করুন</p>
+      </div>
+      <div class="grid-btn purple" onclick="showWithdraw()">
+        <i class="fas fa-wallet"></i>
+        <p>উইথড্র</p>
+      </div>
+      <div class="grid-btn green" onclick="location.reload()">
+        <i class="fas fa-sync-alt"></i>
+        <p>রিফ্রেশ</p>
       </div>
     </div>
 
-    <div id="auth-box" class="auth-box">
-      <h3>Register / Login</h3>
-      <input type="number" id="tgId" placeholder="Telegram ID">
-      <input type="text" id="name" placeholder="Full Name">
-      <button onclick="join()">Join & Start Earning</button>
+    <div id="refer-overlay" class="overlay" style="display:none;">
+      <div class="modal">
+        <h3>স্বাগতম!</h3>
+        <p>আপনার কি কোনো রেফার কোড আছে?</p>
+        <input type="text" id="ref-input" placeholder="Refer Code (Optional)">
+        <button class="neon-btn blue" onclick="completeRegistration()">অ্যাপ শুরু করুন</button>
+      </div>
     </div>
 
     <nav class="bottom-nav">
       <div class="nav-item active"><i class="fas fa-home"></i><p>Home</p></div>
       <div class="nav-item" onclick="showWithdraw()"><i class="fas fa-wallet"></i><p>Withdraw</p></div>
-      <div class="nav-item"><i class="fas fa-user-friends"></i><p>Refer</p></div>
+      <div class="nav-item"><i class="fas fa-users"></i><p>Refer</p></div>
     </nav>
-  </div>
-
-  <div id="withdraw-modal" class="modal">
-    <div class="modal-content">
-      <h3>Withdraw Points</h3>
-      <input type="number" id="pay-num" placeholder="Bkash/Nagad Number">
-      <input type="number" id="pay-amount" placeholder="Min 4000 Points">
-      <button onclick="submitWithdraw()">Submit Request</button>
-      <button onclick="closeModal()" class="close-btn">Close</button>
-    </div>
   </div>
 
   <script src="app.js"></script>
