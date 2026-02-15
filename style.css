@@ -1,82 +1,128 @@
-body {
-  font-family: Arial;
-  text-align: center;
-  background: #111;
-  color: white;
-  margin: 0;
-  padding: 0;
+:root {
+  --primary: #4a90e2;
+  --secondary: #7ed321;
+  --orange: #f5a623;
+  --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
 }
 
-header {
-  background: #0088cc;
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: var(--bg-gradient);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.app-container {
+  width: 350px;
+  height: 650px;
+  background: #fdfdfd;
+  border-radius: 30px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  position: relative;
+  overflow: hidden;
   padding: 20px;
 }
 
-header h1 {
-  margin: 0 0 10px 0;
-}
-
-header .banner-ad {
-  width: 100%;
-  max-width: 728px;
-  border-radius: 5px;
-}
-
-.headline {
-  background: #ffdd57;
-  color: #333;
-  padding: 10px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.headline span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: marquee 15s linear infinite;
-}
-
-@keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
-}
-
-input, button {
-  padding: 10px;
-  margin: 5px;
-  border-radius: 5px;
-  border: none;
-}
-
-button {
-  background: green;
-  color: white;
-  cursor: pointer;
-}
-
-.stats {
+.user-profile {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin: 10px 0;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.bot-buttons {
-  margin: 10px 0;
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  background: #eee;
+  margin-right: 12px;
 }
 
-.ad-section {
-  margin: 20px auto;
-  max-width: 728px;
+.user-text h3 { margin: 0; font-size: 16px; }
+.user-text p { margin: 0; font-size: 12px; color: #888; }
+
+.balance-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  margin: 25px 0;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.03);
 }
 
-.ad-section img {
+.balance-card h1 { font-size: 32px; margin: 10px 0; color: #333; }
+.approx { font-size: 13px; color: #777; }
+
+.action-btn {
   width: 100%;
-  border-radius: 5px;
+  padding: 15px;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 12px;
   cursor: pointer;
-  transition: transform 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-.ad-section img:hover {
-  transform: scale(1.03);
+.watch-btn { background: var(--primary); }
+.bonus-btn { background: var(--secondary); }
+
+.extra-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.spin-btn {
+  background: var(--orange);
+  border: none;
+  padding: 15px 25px;
+  border-radius: 50px;
+  color: white;
+  font-weight: bold;
+}
+
+.bottom-nav {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: white;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.nav-item { text-align: center; color: #bbb; cursor: pointer; }
+.nav-item i { font-size: 20px; }
+.nav-item p { font-size: 10px; margin: 2px 0; }
+.nav-item.active { color: var(--primary); }
+
+.auth-box {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  width: 80%;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+.auth-box input {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
 }
