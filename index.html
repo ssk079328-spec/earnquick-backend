@@ -1,12 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EarnQuick</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h2>Earn Quick</h2>
+  <header>
+    <h1>EarnQuick Bot</h1>
+    <img src="https://via.placeholder.com/728x90.png?text=Banner+Ad" alt="Banner Ad" class="banner-ad">
+  </header>
+
+  <div class="headline">
+    <span>🔥 Earn points fast! Watch ads, refer friends, withdraw rewards! 🔥</span>
+  </div>
 
   <div id="userBox">
     <input type="number" id="tgId" placeholder="Telegram ID">
@@ -14,13 +23,97 @@
     <button onclick="join()">Join</button>
   </div>
 
-  <hr>
+  <div class="stats">
+    <button id="balance-btn">Balance: 0</button>
+    <button id="refer-btn">Referrals: 0</button>
+  </div>
 
-  <button onclick="watchAd()">Watch Ad (+5)</button>
-  <button onclick="withdraw()">Withdraw</button>
+  <div class="bot-buttons">
+    <button onclick="watchAd()">Watch Ad (+5)</button>
+    <button onclick="withdraw()">Withdraw</button>
+  </div>
+
+  <!-- Clickable Ad Section -->
+  <div class="ad-section">
+    <a href="https://example.com" target="_blank">
+      <img src="https://via.placeholder.com/728x90.png?text=Click+to+View+Ad" alt="Ad Banner">
+    </a>
+  </div>
 
   <p id="msg"></p>
 
-  <script src="app.js"></script>
+  <script>
+    const API_URL = "https://earnquick-backend.onrender.com"; // Live backend
+
+    async function join() {
+      const tgId = document.getElementById("tgId").value;
+      const name = document.getElementById("name").value;
+      if(!tgId || !name) { alert("Fill both fields!"); return; }
+
+      try {
+        const res = await fetch(`${API_URL}/join`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telegram_id: tgId, name: name })
+        });
+        const data = await res.json();
+        document.getElementById("msg").innerText = `Joined: ${data.full_name || name}`;
+        loadProfile(tgId);
+      } catch(err) {
+        console.error(err);
+        document.getElementById("msg").innerText = "Error joining user!";
+      }
+    }
+
+    async function watchAd() {
+      const tgId = document.getElementById("tgId").value;
+      if(!tgId) { alert("Enter Telegram ID!"); return; }
+
+      try {
+        const res = await fetch(`${API_URL}/watch`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telegram_id: tgId })
+        });
+        const data = await res.json();
+        document.getElementById("balance-btn").innerText = `Balance: ${data.points || 0}`;
+        document.getElementById("msg").innerText = "Ad watched! +5 points";
+      } catch(err) {
+        console.error(err);
+        document.getElementById("msg").innerText = "Error watching ad!";
+      }
+    }
+
+    async function withdraw() {
+      const tgId = document.getElementById("tgId").value;
+      if(!tgId) { alert("Enter Telegram ID!"); return; }
+
+      try {
+        const res = await fetch(`${API_URL}/withdraw`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ telegram_id: tgId })
+        });
+        const data = await res.json();
+        document.getElementById("msg").innerText = data.message;
+        loadProfile(tgId);
+      } catch(err) {
+        console.error(err);
+        document.getElementById("msg").innerText = "Error withdrawing!";
+      }
+    }
+
+    async function loadProfile(tgId) {
+      try {
+        const res = await fetch(`${API_URL}/user/${tgId}`);
+        const data = await res.json();
+        document.getElementById("balance-btn").innerText = `Balance: ${data.points || 0}`;
+        document.getElementById("refer-btn").innerText = `Referrals: ${data.referrals || 0}`;
+      } catch(err) {
+        console.error(err);
+      }
+    }
+  </script>
+
 </body>
 </html>
