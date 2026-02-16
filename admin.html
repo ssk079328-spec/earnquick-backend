@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EarnQuick Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #5E35B1, #7E57C2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #5E35B1;
+        }
+        
+        .stat-card .label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .user-table {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th {
+            background: #5E35B1;
+            color: white;
+            padding: 12px;
+            font-weight: 600;
+            text-align: left;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .badge {
+            background: #FFB300;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .export-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .refresh-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .search-box {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            width: 300px;
+            margin-right: 10px;
+        }
+        
+        .filters {
+            display: flex;
+            margin-bottom: 20px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> EarnQuick Admin Panel</h1>
+            <div>
+                <button class="refresh-btn" onclick="loadAllData()">
+                    <i class="fas fa-sync-alt"></i> রিফ্রেশ
+                </button>
+                <button class="export-btn" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i> CSV এক্সপোর্ট
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats-box">
+            <h3>📊 সারাংশ পরিসংখ্যান</h3>
+            <div class="stats-grid" id="summaryStats">
+                <div class="stat-card">
+                    <div class="number" id="totalUsers">0</div>
+                    <div class="label">মোট ইউজার</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalPoints">0</div>
+                    <div class="label">মোট পয়েন্ট</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalViews">0</div>
+                    <div class="label">মোট ভিউ</div>
+                </div>
+                <div class="stat-card">
+                    <div class="number" id="totalReferrals">0</div>
+                    <div class="label">মোট রেফারেল</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 ইউজার আইডি বা নাম দ্বারা সার্চ করুন...">
+            <select id="sortSelect" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
+                <option value="points_desc">পয়েন্ট (উচ্চ থেকে নিম্ন)</option>
+                <option value="points_asc">পয়েন্ট (নিম্ন থেকে উচ্চ)</option>
+                <option value="date_desc">জয়েন তারিখ (নতুন)</option>
+                <option value="date_asc">জয়েন তারিখ (পুরাতন)</option>
+                <option value="views_desc">ভিউ (উচ্চ থেকে নিম্ন)</option>
+            </select>
+        </div>
+        
+        <div class="user-table">
+            <h3 style="margin-bottom: 15px;">👥 ইউজার লিস্ট</h3>
+            <table id="userTable">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>নাম</th>
+                        <th>পয়েন্ট</th>
+                        <th>মোট ভিউ</th>
+                        <th>রেফারেল (L1/L2/L3)</th>
+                        <th>রেফার করেছেন</th>
+                        <th>জয়েন তারিখ</th>
+                        <th>অ্যাকশন</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">লোড হচ্ছে...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script>
+        function loadAllData() {
+            const users = [];
+            
+            // লোকাল স্টোরেজ থেকে সব ইউজার ডাটা সংগ্রহ
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('earnquickUser_')) {
+                    try {
+                        const userData = JSON.parse(localStorage.getItem(key));
+                        
+                        // যদি ইউজার অবজেক্ট না থাকে, তাহলে skip
+                        if (!userData || !userData.id) continue;
+                        
+                        // ডাটা ফরম্যাটিং
+                        users.push({
+                            key: key,
+                            id: userData.id || 'N/A',
+                            name: userData.name || 'Unknown',
+                            points: userData.points || 0,
+                            totalViews: userData.totalViews || 0,
+                            referrals: userData.referrals || { level1: [], level2: [], level3: [] },
+                            referredBy: userData.referredBy || null,
+                            joinDate: userData.joinDate || 'Unknown'
+                        });
+                    } catch (e) {
+                        console.error('Error parsing:', key, e);
+                    }
+                }
+            }
+            
+            // ইউজার আইডি দিয়ে স্ট্যান্ডার্ড কী চেক
+            if (users.length === 0) {
+                // fallback: সব কী চেক করুন
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && (data.id || data.name || data.points !== undefined)) {
+                            users.push({
+                                key: key,
+                                id: data.id || key.replace('earnquickUser_', '') || 'Unknown',
+                                name: data.name || 'Unknown',
+                                points: data.points || 0,
+                                totalViews: data.totalViews || 0,
+                                referrals: data.referrals || { level1: [], level2: [], level3: [] },
+                                referredBy: data.referredBy || null,
+                                joinDate: data.joinDate || 'Unknown'
+                            });
+                        }
+                    } catch (e) {}
+                }
+            }
+            
+            displayUsers(users);
+            updateStats(users);
+        }
+        
+        function displayUsers(users) {
+            const tbody = document.getElementById('userTableBody');
+            
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">কোন ইউজার পাওয়া যায়নি</td></tr>';
+                return;
+            }
+            
+            // সার্চ ফিল্টার
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            let filteredUsers = users;
+            
+            if (searchTerm) {
+                filteredUsers = users.filter(u => 
+                    u.id.toLowerCase().includes(searchTerm) || 
+                    u.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // সর্টিং
+            const sortBy = document.getElementById('sortSelect').value;
+            filteredUsers.sort((a, b) => {
+                switch(sortBy) {
+                    case 'points_desc': return b.points - a.points;
+                    case 'points_asc': return a.points - b.points;
+                    case 'date_desc': return (b.joinDate || '').localeCompare(a.joinDate || '');
+                    case 'date_asc': return (a.joinDate || '').localeCompare(b.joinDate || '');
+                    case 'views_desc': return b.totalViews - a.totalViews;
+                    default: return b.points - a.points;
+                }
+            });
+            
+            let html = '';
+            filteredUsers.forEach(user => {
+                html += `<tr>
+                    <td><span class="badge">${user.id}</span></td>
+                    <td>${user.name}</td>
+                    <td><strong>${user.points}</strong></td>
+                    <td>${user.totalViews}</td>
+                    <td>${user.referrals.level1.length} / ${user.referrals.level2.length} / ${user.referrals.level3.length}</td>
+                    <td>${user.referredBy || '—'}</td>
+                    <td>${user.joinDate}</td>
+                    <td>
+                        <button onclick="viewUserDetails('${user.id}')" style="background:#5E35B1; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        function updateStats(users) {
+            const totalUsers = users.length;
+            const totalPoints = users.reduce((sum, u) => sum + u.points, 0);
+            const totalViews = users.reduce((sum, u) => sum + u.totalViews, 0);
+            const totalReferrals = users.reduce((sum, u) => sum + u.referrals.level1.length, 0);
+            
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('totalReferrals').textContent = totalReferrals;
+        }
+        
+        function viewUserDetails(userId) {
+            // ইউজারের বিস্তারিত তথ্য দেখান
+            const userData = JSON.parse(localStorage.getItem(`earnquickUser_${userId}`));
+            if (userData) {
+                alert(JSON.stringify(userData, null, 2));
+            } else {
+                alert('ইউজার ডাটা পাওয়া যায়নি');
+            }
+        }
+        
+        function exportToCSV() {
+            const users = [];
+            
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('earnquickUser_')) {
+                    try {
+                        const userData = JSON.parse(localStorage.getItem(key));
+                        users.push({
+                            'User ID': userData.id,
+                            'নাম': userData.name,
+                            'পয়েন্ট': userData.points,
+                            'মোট ভিউ': userData.totalViews,
+                            'লেভেল ১': userData.referrals?.level1?.length || 0,
+                            'লেভেল ২': userData.referrals?.level2?.length || 0,
+                            'লেভেল ৩': userData.referrals?.level3?.length || 0,
+                            'রেফার করেছেন': userData.referredBy || '',
+                            'জয়েন তারিখ': userData.joinDate
+                        });
+                    } catch (e) {}
+                }
+            }
+            
+            if (users.length === 0) {
+                alert('কোন ডাটা নেই');
+                return;
+            }
+            
+            // CSV তৈরি
+            const headers = Object.keys(users[0]);
+            const csvRows = [];
+            csvRows.push(headers.join(','));
+            
+            for (const user of users) {
+                const values = headers.map(header => {
+                    const value = user[header]?.toString() || '';
+                    return `"${value.replace(/"/g, '""')}"`;
+                });
+                csvRows.push(values.join(','));
+            }
+            
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([csvString], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'earnquick_users.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        // ইভেন্ট লিসেনার
+        document.getElementById('searchInput').addEventListener('input', () => loadAllData());
+        document.getElementById('sortSelect').addEventListener('change', () => loadAllData());
+        
+        // পৃষ্ঠা লোড হলে
+        window.onload = loadAllData;
+    </script>
+</body>
+</html>
