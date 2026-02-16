@@ -1,45 +1,52 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
-const API_URL = "https://your-backend-url.onrender.com";
+const API = "https://earnquick-backend.onrender.com";
 
-async function autoLogin() {
-    const user = tg.initDataUnsafe.user;
-    if (!user) return alert("টেলিগ্রাম থেকে ওপেন করুন!");
+async function join(){
+  const tgId = document.getElementById("tgId").value;
+  const name = document.getElementById("name").value;
 
-    const res = await fetch(`${API_URL}/join`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            telegram_id: user.id,
-            name: user.first_name + " " + (user.last_name || "")
-        })
-    });
-    const data = await res.json();
-    updateUI(data);
+  const res = await fetch(API + "/join", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ telegram_id: tgId, name: name })
+  });
+
+  document.getElementById("msg").innerText = "Joined!";
+  loadProfile(tgId);
 }
 
-function watchAd() {
-    if (typeof show_10615270 === 'function') {
-        show_10615270().then(async () => {
-            const res = await fetch(`${API_URL}/watch`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ telegram_id: tg.initDataUnsafe.user.id })
-            });
-            const data = await res.json();
-            document.getElementById("balance-val").innerText = data.points;
-        });
-    }
+async function watchAd(){
+  const tgId = document.getElementById("tgId").value;
+
+  // AD SCRIPT
+  var s = document.createElement("script");
+  s.src = "https://5gvci.com/act/files/tag.min.js";
+  document.body.appendChild(s);
+
+  const res = await fetch(API + "/watch", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ telegram_id: tgId })
+  });
+
+  const data = await res.json();
+  document.getElementById("balance-btn").innerText = "Balance: " + data.points;
 }
 
-function showWithdraw() { document.getElementById("withdraw-modal").style.display = "flex"; }
-function closeModal() { document.getElementById("withdraw-modal").style.display = "none"; }
+async function withdraw(){
+  const tgId = document.getElementById("tgId").value;
 
-function updateUI(data) {
-    document.getElementById("user-name").innerText = data.name;
-    document.getElementById("balance-val").innerText = data.points;
-    document.getElementById("refer-count").innerText = data.refer_count || 0;
-    document.getElementById("tg-display-id").innerText = "ID: " + data.telegram_id;
+  const res = await fetch(API + "/withdraw", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ telegram_id: tgId })
+  });
+
+  const data = await res.json();
+  document.getElementById("msg").innerText = data.message;
 }
 
-autoLogin();
+async function loadProfile(id){
+  const res = await fetch(API + "/user/" + id);
+  const data = await res.json();
+  document.getElementById("balance-btn").innerText = "Balance: " + data.points;
+}
