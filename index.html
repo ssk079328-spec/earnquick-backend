@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EarnQuick Bot - Monetag Rewarded Ads</title>
     
+    <!-- ক্যাশ কন্ট্রোল মেটা ট্যাগ (সমস্যা সমাধান) -->
+    <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    
     <!-- Monetag Reward Ad Script -->
     <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
     
@@ -49,7 +55,6 @@
             position: relative;
         }
 
-        /* হেডলাইন */
         .headline {
             background: linear-gradient(90deg, #FF6B6B, #FFB300, #4ECDC4);
             color: white;
@@ -65,7 +70,6 @@
             gap: 20px;
         }
 
-        /* প্রোফাইল হেডার */
         .profile-header {
             background: linear-gradient(135deg, #5E35B1 0%, #7E57C2 100%);
             padding: 20px;
@@ -109,7 +113,6 @@
             line-height: 1.2;
         }
 
-        /* স্ট্যাটস গ্রিড */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -144,7 +147,6 @@
             color: var(--dark);
         }
 
-        /* টোকেন ডিসপ্লে */
         .token-badge {
             position: absolute;
             top: 20px;
@@ -159,7 +161,6 @@
             z-index: 10;
         }
 
-        /* অ্যাড বাটন */
         .ad-section {
             padding: 0 16px 20px;
         }
@@ -211,23 +212,6 @@
             to { transform: rotate(360deg); }
         }
 
-        .daily-limit {
-            text-align: center;
-            margin-top: 10px;
-            font-size: 12px;
-            color: #7F8C8D;
-            font-weight: 500;
-        }
-
-        .daily-limit span {
-            background: #E8EAF6;
-            padding: 4px 10px;
-            border-radius: 20px;
-            color: var(--primary);
-            font-weight: 700;
-        }
-
-        /* মেসেজ */
         .message {
             margin: 10px 16px;
             padding: 12px;
@@ -258,7 +242,6 @@
             border-left: 4px solid #2196F3;
         }
 
-        /* রেফারেল কার্ড */
         .referral-card {
             background: white;
             margin: 0 16px 20px;
@@ -338,7 +321,6 @@
             margin-top: 4px;
         }
 
-        /* টাস্ক সেকশন */
         .tasks-section {
             padding: 0 16px 20px;
         }
@@ -409,7 +391,6 @@
             font-size: 12px;
         }
 
-        /* উইথড্র সেকশন */
         .withdraw-section {
             padding: 0 16px 20px;
             display: none;
@@ -442,7 +423,6 @@
             color: var(--primary);
         }
 
-        /* নেভিগেশন মেনু */
         .bottom-nav {
             background: white;
             display: flex;
@@ -475,7 +455,6 @@
             font-weight: 500;
         }
 
-        /* মডেল */
         .modal {
             display: none;
             position: fixed;
@@ -546,7 +525,6 @@
             color: var(--danger);
         }
 
-        /* প্রোফাইল সেকশন */
         .profile-section {
             padding: 20px;
             display: none;
@@ -606,7 +584,7 @@
         <!-- হেডলাইন -->
         <div class="headline">
             <marquee behavior="scroll" direction="left" scrollamount="5">
-                🎉 Monetag রিওয়ার্ডেড অ্যাড! ভিডিও দেখুন ও ৫ পয়েন্ট অর্জন করুন 🎉 | ৪০০ পয়েন্ট = ২০ টাকা উইথড্র | রেফার করে আয় করুন ২০০ পয়েন্ট!
+                🎉 Monetag রিওয়ার্ডেড অ্যাড! ভিডিও দেখুন ও ৫ পয়েন্ট অর্জন করুন 🎉 | ৪০০০ পয়েন্ট = ২০ টাকা উইথড্র | রেফার করে আয় করুন ২০০ পয়েন্ট!
             </marquee>
         </div>
 
@@ -618,7 +596,7 @@
             </div>
             <div class="balance-card">
                 <h3>ব্যালেন্স</h3>
-                <div class="amount" id="balanceAmount">$10.50</div>
+                <div class="amount" id="balanceAmount">৳10.50</div>
                 <div style="font-size: 10px;">= <span id="balancePoints">2100</span> পয়েন্ট</div>
             </div>
         </div>
@@ -633,31 +611,30 @@
             <div class="stat-item">
                 <i class="fas fa-users"></i>
                 <div class="label">রেফারেল</div>
-                <div class="value" id="totalRefers">56</div>
+                <div class="value" id="totalRefers">0</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-trophy"></i>
                 <div class="label">মোট আয়</div>
-                <div class="value" id="totalEarned">$15.50</div>
+                <div class="value" id="totalEarned">৳10.50</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-fire"></i>
                 <div class="label">স্ট্রিক</div>
-                <div class="value" id="dailyStreak">৫</div>
+                <div class="value" id="dailyStreak">১</div>
             </div>
         </div>
 
         <!-- মেসেজ -->
         <div id="message" class="message"></div>
 
-        <!-- Monetag অ্যাড বাটন -->
+        <!-- Monetag অ্যাড বাটন (আনলিমিটেড) -->
         <div class="ad-section">
             <button class="watch-ad-btn" onclick="watchRewardedAd()" id="watchAdBtn">
-                <i class="fas fa-play-circle"></i> Monetag অ্যাড দেখুন
-                <span class="daily-limit" style="margin-left: 10px; background: rgba(0,0,0,0.1); padding: 5px 10px; border-radius: 30px; font-size: 12px;" id="dailyCount">0/10</span>
+                <i class="fas fa-play-circle"></i> Monetag অ্যাড দেখুন (৫ পয়েন্ট)
             </button>
-            <div class="daily-limit">
-                <span><i class="far fa-clock"></i> আজ বাকি: <span id="remainingAds">10</span> টি অ্যাড</span>
+            <div style="text-align: center; margin-top: 10px; color: #666; font-size: 12px;">
+                <i class="fas fa-infinity"></i> আনলিমিটেড অ্যাড দেখার সুযোগ
             </div>
         </div>
 
@@ -669,7 +646,7 @@
             </div>
             
             <div class="referral-code-box">
-                <span class="code" id="referralCode">NAARO123</span>
+                <span class="code" id="referralCode">EARNQUICK</span>
                 <button class="copy-btn" onclick="copyReferralCode()"><i class="far fa-copy"></i> কপি</button>
             </div>
 
@@ -689,29 +666,17 @@
             </div>
         </div>
 
-        <!-- ডেইলি টাস্ক সেকশন (হোম) -->
+        <!-- ডেইলি টাস্ক সেকশন -->
         <div id="homeSection" class="tasks-section">
             <div class="section-title">
                 <i class="fas fa-tasks" style="color: var(--primary);"></i> ডেইলি টাস্ক
             </div>
 
-            <!-- টাস্ক ১: ১০টি অ্যাড দেখা -->
-            <div class="task-card">
-                <div class="task-info">
-                    <h4>📱 ১০টি অ্যাড দেখুন</h4>
-                    <p><span id="watchProgress">0</span>/10 সম্পন্ন</p>
-                </div>
-                <div>
-                    <span class="reward-badge">+২৫</span>
-                    <button class="task-btn" id="watchTaskBtn" onclick="claimWatchTask()">ক্লেইম</button>
-                </div>
-            </div>
-
-            <!-- টাস্ক ২: ১ জন রেফার করুন -->
+            <!-- টাস্ক ১: রেফার টাস্ক -->
             <div class="task-card">
                 <div class="task-info">
                     <h4>👥 ১ জন রেফার করুন</h4>
-                    <p>বোনাস পয়েন্ট</p>
+                    <p>বোনাস পয়েন্ট: ২০০</p>
                 </div>
                 <div>
                     <span class="reward-badge">+২০০</span>
@@ -719,7 +684,7 @@
                 </div>
             </div>
 
-            <!-- টাস্ক ৩: ডেইলি বোনাস -->
+            <!-- টাস্ক ২: ডেইলি বোনাস -->
             <div class="task-card">
                 <div class="task-info">
                     <h4>🎁 ডেইলি বোনাস</h4>
@@ -743,7 +708,7 @@
                     <i class="fas fa-mobile-alt" style="color: #E2136E; font-size: 28px;"></i>
                     <div>
                         <h4>বিকাশ</h4>
-                        <small>৪০০ পয়েন্ট = ২০ টাকা</small>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
                     </div>
                 </div>
                 <div class="withdraw-detail">
@@ -756,7 +721,7 @@
                     <i class="fas fa-mobile-alt" style="color: #F5842E; font-size: 28px;"></i>
                     <div>
                         <h4>নগদ</h4>
-                        <small>৪০০ পয়েন্ট = ২০ টাকা</small>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
                     </div>
                 </div>
                 <div class="withdraw-detail">
@@ -769,7 +734,7 @@
                     <i class="fas fa-rocket" style="color: #FF0000; font-size: 28px;"></i>
                     <div>
                         <h4>রকেট</h4>
-                        <small>৪০০ পয়েন্ট = ২০ টাকা</small>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
                     </div>
                 </div>
                 <div class="withdraw-detail">
@@ -782,7 +747,7 @@
                     <i class="fas fa-phone-alt" style="color: #0088cc; font-size: 28px;"></i>
                     <div>
                         <h4>মোবাইল রিচার্জ</h4>
-                        <small>২০০ পয়েন্ট = ১০ টাকা</small>
+                        <small>২০০০ পয়েন্ট = ১০ টাকা</small>
                     </div>
                 </div>
                 <div class="withdraw-detail">
@@ -858,6 +823,23 @@
         </div>
     </div>
 
+    <!-- ফোর্স রিলোড স্ক্রিপ্ট (ক্যাশ সমস্যা সমাধান) -->
+    <script>
+        // ফোর্স রিলোড - পেজ লোড হওয়ার পর ক্যাশ চেক করে
+        window.onpageshow = function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        };
+        
+        // ব্যাক/ফরওয়ার্ড বাটনে ক্লিক করলে রিলোড
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+    </script>
+
     <script>
         // Monetag কনফিগারেশন
         self.options = {
@@ -870,13 +852,12 @@
         tg.expand();
         tg.ready();
 
-        // ইউজার ডাটা
+        // ইউজার ডাটা (আনলিমিটেড এড)
         let userData = {
             id: '8145444675',
             name: 'Najmul Hoque Forhad',
             points: 2100,
             todayWatched: 0,
-            maxDailyWatch: 10,
             totalViews: 1234,
             referrals: {
                 level1: 0,
@@ -884,7 +865,6 @@
                 level3: 0
             },
             lastDailyBonus: null,
-            watchTaskClaimed: false,
             referTaskClaimed: false,
             joinDate: '2024-01-20'
         };
@@ -925,38 +905,21 @@
         function updateUI() {
             document.getElementById('tokenDisplay').textContent = userData.points;
             document.getElementById('balancePoints').textContent = userData.points;
-            document.getElementById('balanceAmount').textContent = '$' + (userData.points / 200).toFixed(2);
+            document.getElementById('balanceAmount').textContent = '৳' + (userData.points / 200).toFixed(2);
             
             document.getElementById('totalViews').textContent = userData.totalViews.toLocaleString();
             document.getElementById('totalRefers').textContent = userData.referrals.level1;
-            document.getElementById('totalEarned').textContent = '$' + (userData.totalViews * 0.01).toFixed(2);
+            document.getElementById('totalEarned').textContent = '৳' + (userData.points / 200).toFixed(2);
             
             document.getElementById('profilePoints').textContent = userData.points;
             document.getElementById('profileRefer').textContent = userData.referrals.level1;
             document.getElementById('profileViews').textContent = userData.totalViews.toLocaleString();
             
-            document.getElementById('dailyCount').textContent = userData.todayWatched + '/' + userData.maxDailyWatch;
-            document.getElementById('remainingAds').textContent = userData.maxDailyWatch - userData.todayWatched;
-            document.getElementById('watchProgress').textContent = userData.todayWatched;
-            
             document.getElementById('level1Count').textContent = userData.referrals.level1;
             document.getElementById('level2Count').textContent = userData.referrals.level2;
             document.getElementById('level3Count').textContent = userData.referrals.level3;
             
-            const watchBtn = document.getElementById('watchTaskBtn');
-            if (userData.todayWatched >= 10 && !userData.watchTaskClaimed) {
-                watchBtn.textContent = 'ক্লেইম';
-                watchBtn.disabled = false;
-                watchBtn.classList.remove('completed');
-            } else if (userData.watchTaskClaimed) {
-                watchBtn.textContent = 'ক্লেইম করা হয়েছে';
-                watchBtn.disabled = true;
-                watchBtn.classList.add('completed');
-            } else {
-                watchBtn.textContent = 'ক্লেইম';
-                watchBtn.disabled = true;
-            }
-            
+            // রেফার টাস্ক বাটন
             const referBtn = document.getElementById('referTaskBtn');
             if (userData.referrals.level1 > 0 && !userData.referTaskClaimed) {
                 referBtn.textContent = 'ক্লেইম';
@@ -971,6 +934,7 @@
                 referBtn.disabled = true;
             }
             
+            // ডেইলি বোনাস
             const today = new Date().toDateString();
             const dailyBtn = document.getElementById('dailyBonusBtn');
             if (userData.lastDailyBonus === today) {
@@ -983,6 +947,7 @@
                 dailyBtn.classList.remove('completed');
             }
             
+            // স্ট্রিক (এলোমেলো)
             const streak = Math.floor(Math.random() * 10) + 1;
             document.getElementById('dailyStreak').textContent = streak;
         }
@@ -991,18 +956,15 @@
             const msg = document.getElementById('message');
             msg.textContent = text;
             msg.className = 'message ' + type;
+            msg.style.display = 'block';
             setTimeout(() => {
                 msg.style.display = 'none';
             }, 3000);
         }
 
+        // Monetag রিওয়ার্ডেড অ্যাড দেখান (আনলিমিটেড)
         function watchRewardedAd() {
             const btn = document.getElementById('watchAdBtn');
-            
-            if (userData.todayWatched >= userData.maxDailyWatch) {
-                showMessage('আপনি আজকের সর্বোচ্চ লিমিট ১০টি অ্যাড দেখেছেন! আগামীকাল আবার চেষ্টা করুন।', 'error');
-                return;
-            }
             
             btn.classList.add('loading');
             btn.disabled = true;
@@ -1025,10 +987,6 @@
                         updateUI();
                         
                         showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
-                        
-                        if (userData.todayWatched === 10) {
-                            showMessage('আপনি আজকের সবকটি অ্যাড দেখেছেন! টাস্ক ক্লেইম করুন!', 'info');
-                        }
                     } else {
                         showMessage('এই অ্যাডের জন্য কোন রিওয়ার্ড পাওয়া যায়নি। আবার চেষ্টা করুন।', 'error');
                     }
@@ -1052,7 +1010,7 @@
                         saveUserData();
                         updateUI();
                         
-                        showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉 (Simulated)', 'success');
+                        showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
                     } else {
                         showMessage('অ্যাড দেখতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
                     }
@@ -1060,20 +1018,6 @@
                     btn.classList.remove('loading');
                     btn.disabled = false;
                 }, 2000);
-            }
-        }
-
-        function claimWatchTask() {
-            if (userData.todayWatched >= 10 && !userData.watchTaskClaimed) {
-                userData.points += 25;
-                userData.watchTaskClaimed = true;
-                saveUserData();
-                updateUI();
-                showMessage('টাস্ক সম্পন্ন! +২৫ পয়েন্ট পেয়েছেন! 🎯', 'success');
-            } else if (userData.watchTaskClaimed) {
-                showMessage('আপনি ইতিমধ্যে এই টাস্ক ক্লেইম করেছেন!', 'error');
-            } else {
-                showMessage('আজকে ১০টি অ্যাড দেখুন তারপর ক্লেইম করুন!', 'error');
             }
         }
 
@@ -1143,10 +1087,10 @@
             const amount = document.getElementById('modalAmount');
             
             const methods = {
-                'bkash': { name: 'বিকাশ', min: 400, taka: 20 },
-                'nagad': { name: 'নগদ', min: 400, taka: 20 },
-                'rocket': { name: 'রকেট', min: 400, taka: 20 },
-                'recharge': { name: 'মোবাইল রিচার্জ', min: 200, taka: 10 }
+                'bkash': { name: 'বিকাশ', min: 4000, taka: 20 },
+                'nagad': { name: 'নগদ', min: 4000, taka: 20 },
+                'rocket': { name: 'রকেট', min: 4000, taka: 20 },
+                'recharge': { name: 'মোবাইল রিচার্জ', min: 2000, taka: 10 }
             };
             
             title.textContent = methods[method].name;
@@ -1173,10 +1117,10 @@
             }
             
             const methods = {
-                'bkash': { min: 400, taka: 20 },
-                'nagad': { min: 400, taka: 20 },
-                'rocket': { min: 400, taka: 20 },
-                'recharge': { min: 200, taka: 10 }
+                'bkash': { min: 4000, taka: 20 },
+                'nagad': { min: 4000, taka: 20 },
+                'rocket': { min: 4000, taka: 20 },
+                'recharge': { min: 2000, taka: 10 }
             };
             
             const method = methods[currentWithdrawMethod];
@@ -1189,14 +1133,16 @@
                 showMessage(`উইথড্র সফল! ${method.taka} টাকা ${phone} নম্বরে পাঠানো হবে 📱`, 'success');
                 closeWithdrawModal();
                 
-                // টেলিগ্রামে নোটিফিকেশন (যদি চান)
-                tg.sendData(JSON.stringify({
-                    action: 'withdraw',
-                    method: currentWithdrawMethod,
-                    phone: phone,
-                    amount: method.taka,
-                    points: method.min
-                }));
+                // টেলিগ্রামে নোটিফিকেশন
+                if (typeof tg !== 'undefined') {
+                    tg.sendData(JSON.stringify({
+                        action: 'withdraw',
+                        method: currentWithdrawMethod,
+                        phone: phone,
+                        amount: method.taka,
+                        points: method.min
+                    }));
+                }
             }
         }
 
@@ -1207,4 +1153,4 @@
         };
     </script>
 </body>
-</html>
+                    </html>
