@@ -3,299 +3,812 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnQuick Admin Panel</title>
+    <title>EarnQuick - অ্যাডমিন কন্ট্রোল প্যানেল</title>
+    
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- DataTables for advanced tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-        
+
         body {
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px;
         }
-        
-        .container {
-            max-width: 1200px;
+
+        .admin-container {
+            max-width: 1400px;
             margin: 0 auto;
         }
-        
-        .header {
-            background: linear-gradient(135deg, #5E35B1, #7E57C2);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
+
+        /* হেডার */
+        .admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .stats-box {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
+
+        .header-left h1 {
+            color: #5E35B1;
+            font-size: 28px;
+            margin-bottom: 5px;
         }
-        
+
+        .header-left p {
+            color: #666;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+
+        .date-badge {
+            background: #5E35B1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5E35B1, #7E57C2);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FFB300, #FFA000);
+            color: #333;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #F44336, #EF5350);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* স্ট্যাটস গ্রিড */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            gap: 20px;
+            margin-bottom: 25px;
         }
-        
+
         .stat-card {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
         }
-        
-        .stat-card .number {
-            font-size: 28px;
-            font-weight: 800;
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, transparent 50%, rgba(94,53,177,0.1) 50%);
+            border-radius: 0 0 0 100px;
+        }
+
+        .stat-icon {
+            font-size: 40px;
             color: #5E35B1;
+            margin-bottom: 15px;
         }
-        
-        .stat-card .label {
+
+        .stat-label {
             color: #666;
             font-size: 14px;
-            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
-        .user-table {
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #333;
+            margin: 5px 0;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            color: #4CAF50;
+        }
+
+        /* চার্ট রো */
+        .chart-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .chart-card {
             background: white;
             padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .chart-card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        /* ট্যাব নেভিগেশন */
+        .tab-nav {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            color: #666;
+        }
+
+        .tab-btn.active {
+            background: #5E35B1;
+            color: white;
+        }
+
+        .tab-pane {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* টেবিল */
+        .table-container {
             overflow-x: auto;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         th {
-            background: #5E35B1;
-            color: white;
-            padding: 12px;
-            font-weight: 600;
+            background: #f8f9fa;
+            padding: 15px;
             text-align: left;
+            font-weight: 600;
+            color: #5E35B1;
         }
-        
+
         td {
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid #eee;
         }
-        
+
         tr:hover {
             background: #f5f5f5;
         }
-        
+
         .badge {
-            background: #FFB300;
-            color: #333;
-            padding: 5px 10px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
-        
-        .export-btn {
+
+        .badge-success {
             background: #4CAF50;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            margin-left: 10px;
         }
-        
-        .refresh-btn {
+
+        .badge-warning {
+            background: #FFB300;
+            color: #333;
+        }
+
+        .badge-danger {
+            background: #F44336;
+            color: white;
+        }
+
+        .badge-info {
             background: #2196F3;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
         }
-        
-        .search-box {
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            width: 300px;
-            margin-right: 10px;
-        }
-        
-        .filters {
-            display: flex;
+
+        /* ফিল্টার সেকশন */
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
             margin-bottom: 20px;
-            gap: 10px;
+            display: flex;
+            gap: 15px;
             flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-input {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            min-width: 150px;
+        }
+
+        /* মডেল */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            color: #333;
+        }
+
+        /* এক্সপোর্ট অপশন */
+        .export-options {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* রেসপন্সিভ */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-right {
+                flex-direction: column;
+            }
+            
+            .tab-buttons {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fas fa-chart-line"></i> EarnQuick Admin Panel</h1>
-            <div>
-                <button class="refresh-btn" onclick="loadAllData()">
+    <div class="admin-container">
+        <!-- হেডার -->
+        <div class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-crown"></i> EarnQuick অ্যাডমিন প্যানেল</h1>
+                <p>সম্পূর্ণ কন্ট্রোল আপনার হাতে - রিয়েল টাইম ডাটা</p>
+            </div>
+            <div class="header-right">
+                <div class="date-badge">
+                    <i class="fas fa-calendar"></i> <span id="currentDate"></span>
+                </div>
+                <button class="btn btn-primary" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i> রিফ্রেশ
                 </button>
-                <button class="export-btn" onclick="exportToCSV()">
-                    <i class="fas fa-download"></i> CSV এক্সপোর্ট
+            </div>
+        </div>
+
+        <!-- স্ট্যাটস গ্রিড -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-label">মোট ইউজার</div>
+                <div class="stat-value" id="totalUsers">0</div>
+                <div class="stat-change" id="todayUsers">আজ: 0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
+                <div class="stat-label">নতুন আজ</div>
+                <div class="stat-value" id="newToday">0</div>
+                <div class="stat-change">+ গতকাল</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-coins"></i></div>
+                <div class="stat-label">মোট পয়েন্ট</div>
+                <div class="stat-value" id="totalPoints">0</div>
+                <div class="stat-change">≈ ৿<span id="totalBdt">0</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-eye"></i></div>
+                <div class="stat-label">মোট ভিউ</div>
+                <div class="stat-value" id="totalViews">0</div>
+                <div class="stat-change">আজ: <span id="todayViews">0</span></div>
+            </div>
+        </div>
+
+        <!-- দ্বিতীয় সারি স্ট্যাটস -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-money-bill-wave"></i></div>
+                <div class="stat-label">মোট উইথড্র</div>
+                <div class="stat-value" id="totalWithdraw">0</div>
+                <div class="stat-change">৿<span id="totalWithdrawBdt">0</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-label">পেন্ডিং উইথড্র</div>
+                <div class="stat-value" id="pendingWithdraw">0</div>
+                <div class="stat-change">৿<span id="pendingBdt">0</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-gift"></i></div>
+                <div class="stat-label">মোট রেফারেল</div>
+                <div class="stat-value" id="totalReferrals">0</div>
+                <div class="stat-change">লেভেল ১: <span id="level1Total">0</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-label">এভারেজ সিপিএম</div>
+                <div class="stat-value" id="avgCpm">$0.00</div>
+                <div class="stat-change">আনুমানিক</div>
+            </div>
+        </div>
+
+        <!-- চার্ট রো -->
+        <div class="chart-row">
+            <div class="chart-card">
+                <h3><i class="fas fa-user-chart" style="color: #5E35B1;"></i> ইউজার গ্রোথ (সাপ্তাহিক)</h3>
+                <canvas id="userChart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3><i class="fas fa-chart-pie" style="color: #FFB300;"></i> ইনকাম ডিস্ট্রিবিউশন</h3>
+                <canvas id="incomeChart"></canvas>
+            </div>
+        </div>
+
+        <!-- ট্যাব নেভিগেশন -->
+        <div class="tab-nav">
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showTab('users')">
+                    <i class="fas fa-users"></i> ইউজার লিস্ট
+                </button>
+                <button class="tab-btn" onclick="showTab('withdrawals')">
+                    <i class="fas fa-money-bill-wave"></i> উইথড্র রিকোয়েস্ট
+                </button>
+                <button class="tab-btn" onclick="showTab('referrals')">
+                    <i class="fas fa-sitemap"></i> রেফারেল ট্রি
+                </button>
+                <button class="tab-btn" onclick="showTab('topEarners')">
+                    <i class="fas fa-trophy"></i> টপ ইয়ার্নার
+                </button>
+                <button class="tab-btn" onclick="showTab('reports')">
+                    <i class="fas fa-file-alt"></i> রিপোর্টস
                 </button>
             </div>
         </div>
-        
-        <div class="stats-box">
-            <h3>📊 সারাংশ পরিসংখ্যান</h3>
-            <div class="stats-grid" id="summaryStats">
+
+        <!-- ইউজার লিস্ট ট্যাব -->
+        <div id="tab-users" class="tab-pane active">
+            <div class="filter-section">
+                <input type="text" class="filter-input" id="userSearch" placeholder="🔍 ইউজার আইডি বা নাম সার্চ করুন...">
+                <select class="filter-select" id="userFilter">
+                    <option value="all">সব ইউজার</option>
+                    <option value="active">সক্রিয় ইউজার</option>
+                    <option value="inactive">নিষ্ক্রিয় ইউজার</option>
+                    <option value="hasReferral">রেফারেল আছে</option>
+                    <option value="noReferral">রেফারেল নেই</option>
+                </select>
+                <select class="filter-select" id="userSort">
+                    <option value="points_desc">পয়েন্ট (উচ্চ→নিম্ন)</option>
+                    <option value="points_asc">পয়েন্ট (নিম্ন→উচ্চ)</option>
+                    <option value="date_desc">জয়েন (নতুন)</option>
+                    <option value="date_asc">জয়েন (পুরাতন)</option>
+                    <option value="views_desc">ভিউ (উচ্চ→নিম্ন)</option>
+                </select>
+                <button class="btn btn-primary" onclick="exportUsers()">
+                    <i class="fas fa-download"></i> এক্সপোর্ট
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="usersTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>নাম</th>
+                            <th>পয়েন্ট</th>
+                            <th>ভিউ</th>
+                            <th>রেফারেল (L1/L2/L3)</th>
+                            <th>রেফার করেছেন</th>
+                            <th>জয়েন তারিখ</th>
+                            <th>শেষ অ্যাক্টিভ</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr><td colspan="9">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- উইথড্র রিকোয়েস্ট ট্যাব -->
+        <div id="tab-withdrawals" class="tab-pane">
+            <div class="filter-section">
+                <select class="filter-select" id="withdrawFilter">
+                    <option value="all">সব রিকোয়েস্ট</option>
+                    <option value="pending">পেন্ডিং</option>
+                    <option value="approved">অ্যাপ্রুভড</option>
+                    <option value="rejected">রিজেক্টেড</option>
+                </select>
+                <button class="btn btn-success" onclick="processAllWithdrawals()">
+                    <i class="fas fa-check-double"></i> সব পেন্ডিং প্রসেস
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="withdrawalsTable">
+                    <thead>
+                        <tr>
+                            <th>ইউজার ID</th>
+                            <th>নাম</th>
+                            <th>পদ্ধতি</th>
+                            <th>নম্বর</th>
+                            <th>পয়েন্ট</th>
+                            <th>টাকা</th>
+                            <th>স্ট্যাটাস</th>
+                            <th>রিকোয়েস্ট তারিখ</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="withdrawalsBody">
+                        <tr><td colspan="9">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- রেফারেল ট্রি ট্যাব -->
+        <div id="tab-referrals" class="tab-pane">
+            <div class="filter-section">
+                <input type="text" class="filter-input" id="referralSearch" placeholder="🔍 ইউজার আইডি সার্চ করুন...">
+                <button class="btn btn-primary" onclick="showReferralTree()">
+                    <i class="fas fa-project-diagram"></i> ট্রি ভিউ
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="referralsTable">
+                    <thead>
+                        <tr>
+                            <th>রেফারার</th>
+                            <th>লেভেল ১</th>
+                            <th>লেভেল ২</th>
+                            <th>লেভেল ৩</th>
+                            <th>মোট কমিশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="referralsBody">
+                        <tr><td colspan="5">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- টপ ইয়ার্নার ট্যাব -->
+        <div id="tab-topEarners" class="tab-pane">
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
                 <div class="stat-card">
-                    <div class="number" id="totalUsers">0</div>
-                    <div class="label">মোট ইউজার</div>
+                    <div class="stat-icon"><i class="fas fa-medal" style="color: gold;"></i></div>
+                    <div class="stat-label">১ম স্থান</div>
+                    <div class="stat-value" id="top1Name">-</div>
+                    <div class="stat-change" id="top1Points">০ পয়েন্ট</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="totalPoints">0</div>
-                    <div class="label">মোট পয়েন্ট</div>
+                    <div class="stat-icon"><i class="fas fa-medal" style="color: silver;"></i></div>
+                    <div class="stat-label">২য় স্থান</div>
+                    <div class="stat-value" id="top2Name">-</div>
+                    <div class="stat-change" id="top2Points">০ পয়েন্ট</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="totalViews">0</div>
-                    <div class="label">মোট ভিউ</div>
+                    <div class="stat-icon"><i class="fas fa-medal" style="color: #cd7f32;"></i></div>
+                    <div class="stat-label">৩য় স্থান</div>
+                    <div class="stat-value" id="top3Name">-</div>
+                    <div class="stat-change" id="top3Points">০ পয়েন্ট</div>
+                </div>
+            </div>
+            
+            <div class="table-container" style="margin-top: 20px;">
+                <table id="topEarnersTable">
+                    <thead>
+                        <tr>
+                            <th>র‍্যাঙ্ক</th>
+                            <th>ইউজার ID</th>
+                            <th>নাম</th>
+                            <th>পয়েন্ট</th>
+                            <th>ভিউ</th>
+                            <th>রেফারেল</th>
+                            <th>উইথড্র</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topEarnersBody">
+                        <tr><td colspan="7">লোড হচ্ছে...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- রিপোর্টস ট্যাব -->
+        <div id="tab-reports" class="tab-pane">
+            <div class="export-options">
+                <button class="btn btn-success" onclick="exportReport('daily')">
+                    <i class="fas fa-calendar-day"></i> ডেইলি রিপোর্ট
+                </button>
+                <button class="btn btn-primary" onclick="exportReport('weekly')">
+                    <i class="fas fa-calendar-week"></i> উইকলি রিপোর্ট
+                </button>
+                <button class="btn btn-warning" onclick="exportReport('monthly')">
+                    <i class="fas fa-calendar-alt"></i> মান্থলি রিপোর্ট
+                </button>
+                <button class="btn btn-danger" onclick="exportReport('full')">
+                    <i class="fas fa-database"></i> ফুল ডাটাবেস
+                </button>
+            </div>
+            
+            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 20px;">
+                <div class="stat-card">
+                    <div class="stat-label">গড় পয়েন্ট প্রতি ইউজার</div>
+                    <div class="stat-value" id="avgPoints">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="number" id="totalReferrals">0</div>
-                    <div class="label">মোট রেফারেল</div>
+                    <div class="stat-label">গড় ভিউ প্রতি ইউজার</div>
+                    <div class="stat-value" id="avgViews">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">কনভার্সন রেট</div>
+                    <div class="stat-value" id="conversionRate">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">রিটেনশন রেট</div>
+                    <div class="stat-value" id="retentionRate">0%</div>
                 </div>
             </div>
         </div>
-        
-        <div class="filters">
-            <input type="text" class="search-box" id="searchInput" placeholder="🔍 ইউজার আইডি বা নাম দ্বারা সার্চ করুন...">
-            <select id="sortSelect" style="padding: 10px; border: 2px solid #ddd; border-radius: 8px;">
-                <option value="points_desc">পয়েন্ট (উচ্চ থেকে নিম্ন)</option>
-                <option value="points_asc">পয়েন্ট (নিম্ন থেকে উচ্চ)</option>
-                <option value="date_desc">জয়েন তারিখ (নতুন)</option>
-                <option value="date_asc">জয়েন তারিখ (পুরাতন)</option>
-                <option value="views_desc">ভিউ (উচ্চ থেকে নিম্ন)</option>
-            </select>
-        </div>
-        
-        <div class="user-table">
-            <h3 style="margin-bottom: 15px;">👥 ইউজার লিস্ট</h3>
-            <table id="userTable">
-                <thead>
-                    <tr>
-                        <th>User ID</th>
-                        <th>নাম</th>
-                        <th>পয়েন্ট</th>
-                        <th>মোট ভিউ</th>
-                        <th>রেফারেল (L1/L2/L3)</th>
-                        <th>রেফার করেছেন</th>
-                        <th>জয়েন তারিখ</th>
-                        <th>অ্যাকশন</th>
-                    </tr>
-                </thead>
-                <tbody id="userTableBody">
-                    <tr>
-                        <td colspan="8" style="text-align: center;">লোড হচ্ছে...</td>
-                    </tr>
-                </tbody>
-            </table>
+    </div>
+
+    <!-- ইউজার ডিটেইল মডেল -->
+    <div id="userDetailModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-user-circle"></i> ইউজার বিস্তারিত</h3>
+            <div id="userDetails"></div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn btn-danger" onclick="closeModal()">বন্ধ করুন</button>
+            </div>
         </div>
     </div>
-    
-    <!-- Font Awesome Icons -->
+
+    <!-- উইথড্র প্রসেস মডেল -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-money-bill"></i> উইথড্র প্রসেস</h3>
+            <div id="withdrawDetails"></div>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-success" onclick="approveWithdraw()">অ্যাপ্রুভ</button>
+                <button class="btn btn-warning" onclick="rejectWithdraw()">রিজেক্ট</button>
+                <button class="btn btn-danger" onclick="closeModal()">বাতিল</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <script>
-        function loadAllData() {
-            const users = [];
+        // গ্লোবাল ভেরিয়েবল
+        let allUsers = [];
+        let allWithdrawals = [];
+        let currentWithdrawId = null;
+        let currentUserId = null;
+
+        // চার্ট ভেরিয়েবল
+        let userChart, incomeChart;
+
+        // পৃষ্ঠা লোড হলে
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('bn-BD', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
             
-            // লোকাল স্টোরেজ থেকে সব ইউজার ডাটা সংগ্রহ
+            loadAllData();
+            initCharts();
+            
+            // প্রতি ৩০ সেকেন্ডে ডাটা রিফ্রেশ
+            setInterval(loadAllData, 30000);
+        });
+
+        // সব ডাটা লোড
+        function loadAllData() {
+            loadUsers();
+            loadWithdrawals();
+            updateStats();
+            updateCharts();
+            updateTopEarners();
+        }
+
+        // ইউজার ডাটা লোড
+        function loadUsers() {
+            allUsers = [];
+            
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
-                if (key && key.startsWith('earnquickUser_')) {
+                if (key && (key.startsWith('earnquickUser_') || key.startsWith('user_'))) {
                     try {
                         const userData = JSON.parse(localStorage.getItem(key));
                         
-                        // যদি ইউজার অবজেক্ট না থাকে, তাহলে skip
-                        if (!userData || !userData.id) continue;
-                        
-                        // ডাটা ফরম্যাটিং
-                        users.push({
+                        // ইউজার অবজেক্ট ফরম্যাটিং
+                        const user = {
                             key: key,
-                            id: userData.id || 'N/A',
+                            id: userData.id || key.replace('earnquickUser_', '').replace('user_', ''),
                             name: userData.name || 'Unknown',
                             points: userData.points || 0,
                             totalViews: userData.totalViews || 0,
                             referrals: userData.referrals || { level1: [], level2: [], level3: [] },
                             referredBy: userData.referredBy || null,
-                            joinDate: userData.joinDate || 'Unknown'
-                        });
+                            joinDate: userData.joinDate || 'Unknown',
+                            lastActive: userData.lastActive || new Date().toISOString().split('T')[0],
+                            withdrawHistory: userData.withdrawHistory || []
+                        };
+                        
+                        allUsers.push(user);
                     } catch (e) {
-                        console.error('Error parsing:', key, e);
+                        console.error('Error parsing user:', key);
                     }
                 }
             }
             
-            // ইউজার আইডি দিয়ে স্ট্যান্ডার্ড কী চেক
-            if (users.length === 0) {
-                // fallback: সব কী চেক করুন
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    try {
-                        const data = JSON.parse(localStorage.getItem(key));
-                        if (data && (data.id || data.name || data.points !== undefined)) {
-                            users.push({
-                                key: key,
-                                id: data.id || key.replace('earnquickUser_', '') || 'Unknown',
-                                name: data.name || 'Unknown',
-                                points: data.points || 0,
-                                totalViews: data.totalViews || 0,
-                                referrals: data.referrals || { level1: [], level2: [], level3: [] },
-                                referredBy: data.referredBy || null,
-                                joinDate: data.joinDate || 'Unknown'
-                            });
-                        }
-                    } catch (e) {}
-                }
-            }
-            
-            displayUsers(users);
-            updateStats(users);
+            displayUsers();
         }
-        
-        function displayUsers(users) {
-            const tbody = document.getElementById('userTableBody');
+
+        // ইউজার ডিসপ্লে
+        function displayUsers() {
+            const searchTerm = document.getElementById('userSearch')?.value.toLowerCase() || '';
+            const filter = document.getElementById('userFilter')?.value || 'all';
+            const sortBy = document.getElementById('userSort')?.value || 'points_desc';
             
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">কোন ইউজার পাওয়া যায়নি</td></tr>';
-                return;
-            }
+            let filteredUsers = [...allUsers];
             
             // সার্চ ফিল্টার
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            let filteredUsers = users;
-            
             if (searchTerm) {
-                filteredUsers = users.filter(u => 
+                filteredUsers = filteredUsers.filter(u => 
                     u.id.toLowerCase().includes(searchTerm) || 
                     u.name.toLowerCase().includes(searchTerm)
                 );
             }
             
+            // ক্যাটাগরি ফিল্টার
+            switch(filter) {
+                case 'active':
+                    const today = new Date().toDateString();
+                    filteredUsers = filteredUsers.filter(u => u.lastActive === today);
+                    break;
+                case 'inactive':
+                    const sevenDaysAgo = new Date(Date.now() - 7*24*60*60*1000).toDateString();
+                    filteredUsers = filteredUsers.filter(u => u.lastActive < sevenDaysAgo);
+                    break;
+                case 'hasReferral':
+                    filteredUsers = filteredUsers.filter(u => u.referrals.level1.length > 0);
+                    break;
+                case 'noReferral':
+                    filteredUsers = filteredUsers.filter(u => u.referrals.level1.length === 0);
+                    break;
+            }
+            
             // সর্টিং
-            const sortBy = document.getElementById('sortSelect').value;
             filteredUsers.sort((a, b) => {
                 switch(sortBy) {
                     case 'points_desc': return b.points - a.points;
@@ -307,106 +820,470 @@
                 }
             });
             
+            // টেবিল রেন্ডার
             let html = '';
             filteredUsers.forEach(user => {
                 html += `<tr>
-                    <td><span class="badge">${user.id}</span></td>
+                    <td><span class="badge badge-info">${user.id}</span></td>
                     <td>${user.name}</td>
                     <td><strong>${user.points}</strong></td>
                     <td>${user.totalViews}</td>
                     <td>${user.referrals.level1.length} / ${user.referrals.level2.length} / ${user.referrals.level3.length}</td>
                     <td>${user.referredBy || '—'}</td>
                     <td>${user.joinDate}</td>
+                    <td>${user.lastActive}</td>
                     <td>
-                        <button onclick="viewUserDetails('${user.id}')" style="background:#5E35B1; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer;">
+                        <button class="btn btn-primary" style="padding:5px 10px;" onclick="viewUserDetails('${user.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-warning" style="padding:5px 10px;" onclick="editUser('${user.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            
+            document.getElementById('usersTableBody').innerHTML = html;
+        }
+
+        // স্ট্যাটস আপডেট
+        function updateStats() {
+            const totalUsers = allUsers.length;
+            const totalPoints = allUsers.reduce((sum, u) => sum + u.points, 0);
+            const totalViews = allUsers.reduce((sum, u) => sum + u.totalViews, 0);
+            const totalReferrals = allUsers.reduce((sum, u) => sum + u.referrals.level1.length, 0);
+            
+            // আজকের নতুন ইউজার
+            const today = new Date().toDateString();
+            const todayUsers = allUsers.filter(u => u.joinDate === today).length;
+            
+            // আজকের ভিউ (আনুমানিক)
+            const todayViews = Math.floor(totalViews / 30); // সিমুলেটেড
+            
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('newToday').textContent = todayUsers;
+            document.getElementById('totalPoints').textContent = totalPoints;
+            document.getElementById('totalBdt').textContent = (totalPoints / 200).toFixed(2);
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('todayViews').textContent = todayViews;
+            document.getElementById('totalReferrals').textContent = totalReferrals;
+            document.getElementById('level1Total').textContent = totalReferrals;
+            
+            // উইথড্র স্ট্যাটস (সিমুলেটেড)
+            document.getElementById('totalWithdraw').textContent = Math.floor(totalPoints * 0.3);
+            document.getElementById('totalWithdrawBdt').textContent = (totalPoints * 0.3 / 200).toFixed(2);
+            document.getElementById('pendingWithdraw').textContent = Math.floor(totalPoints * 0.1);
+            document.getElementById('pendingBdt').textContent = (totalPoints * 0.1 / 200).toFixed(2);
+            
+            // এভারেজ
+            document.getElementById('avgPoints').textContent = totalUsers ? Math.floor(totalPoints / totalUsers) : 0;
+            document.getElementById('avgViews').textContent = totalUsers ? Math.floor(totalViews / totalUsers) : 0;
+            document.getElementById('conversionRate').textContent = totalUsers ? ((totalReferrals / totalUsers) * 100).toFixed(1) + '%' : '0%';
+            document.getElementById('retentionRate').textContent = '85%'; // সিমুলেটেড
+            
+            // CPM (সিমুলেটেড)
+            document.getElementById('avgCpm').textContent = '$' + (Math.random() * 2 + 2).toFixed(2);
+        }
+
+        // চার্ট ইনিশিয়ালাইজ
+        function initCharts() {
+            const userCtx = document.getElementById('userChart').getContext('2d');
+            userChart = new Chart(userCtx, {
+                type: 'line',
+                data: {
+                    labels: ['সপ্তাহ ১', 'সপ্তাহ ২', 'সপ্তাহ ৩', 'সপ্তাহ ৪'],
+                    datasets: [{
+                        label: 'নতুন ইউজার',
+                        data: [12, 19, 25, 35],
+                        borderColor: '#5E35B1',
+                        backgroundColor: 'rgba(94,53,177,0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+            
+            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            incomeChart = new Chart(incomeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['অ্যাড ইনকাম', 'রেফারেল কমিশন', 'অন্যান্য'],
+                    datasets: [{
+                        data: [65, 25, 10],
+                        backgroundColor: ['#5E35B1', '#FFB300', '#4CAF50']
+                    }]
+                }
+            });
+        }
+
+        // চার্ট আপডেট
+        function updateCharts() {
+            // ইউজার চার্ট আপডেট (সিমুলেটেড)
+            if (userChart) {
+                userChart.data.datasets[0].data = [
+                    Math.floor(Math.random() * 20 + 10),
+                    Math.floor(Math.random() * 20 + 15),
+                    Math.floor(Math.random() * 25 + 20),
+                    Math.floor(Math.random() * 30 + 25)
+                ];
+                userChart.update();
+            }
+        }
+
+        // টপ ইয়ার্নার আপডেট
+        function updateTopEarners() {
+            const topUsers = [...allUsers].sort((a, b) => b.points - a.points).slice(0, 10);
+            
+            // টপ ৩
+            if (topUsers[0]) {
+                document.getElementById('top1Name').textContent = topUsers[0].name;
+                document.getElementById('top1Points').textContent = topUsers[0].points + ' পয়েন্ট';
+            }
+            if (topUsers[1]) {
+                document.getElementById('top2Name').textContent = topUsers[1].name;
+                document.getElementById('top2Points').textContent = topUsers[1].points + ' পয়েন্ট';
+            }
+            if (topUsers[2]) {
+                document.getElementById('top3Name').textContent = topUsers[2].name;
+                document.getElementById('top3Points').textContent = topUsers[2].points + ' পয়েন্ট';
+            }
+            
+            // টেবিল
+            let html = '';
+            topUsers.forEach((user, index) => {
+                html += `<tr>
+                    <td><span class="badge badge-warning">#${index + 1}</span></td>
+                    <td>${user.id}</td>
+                    <td>${user.name}</td>
+                    <td>${user.points}</td>
+                    <td>${user.totalViews}</td>
+                    <td>${user.referrals.level1.length}</td>
+                    <td>${user.withdrawHistory?.length || 0}</td>
+                </tr>`;
+            });
+            document.getElementById('topEarnersBody').innerHTML = html;
+        }
+
+        // উইথড্র ডাটা লোড (সিমুলেটেড)
+        function loadWithdrawals() {
+            allWithdrawals = [];
+            
+            // সিমুলেটেড ডাটা
+            const methods = ['bkash', 'nagad', 'rocket'];
+            const statuses = ['pending', 'approved', 'rejected'];
+            
+            for (let i = 0; i < 20; i++) {
+                allWithdrawals.push({
+                    id: `WD${1000 + i}`,
+                    userId: `user${100 + i}`,
+                    name: `User ${i}`,
+                    method: methods[Math.floor(Math.random() * methods.length)],
+                    phone: `01${Math.floor(Math.random() * 90000000 + 10000000)}`,
+                    points: Math.floor(Math.random() * 4000 + 1000),
+                    status: statuses[Math.floor(Math.random() * statuses.length)],
+                    date: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+                });
+            }
+            
+            displayWithdrawals();
+        }
+
+        // উইথড্র ডিসপ্লে
+        function displayWithdrawals() {
+            const filter = document.getElementById('withdrawFilter')?.value || 'all';
+            
+            let filtered = [...allWithdrawals];
+            if (filter !== 'all') {
+                filtered = filtered.filter(w => w.status === filter);
+            }
+            
+            let html = '';
+            filtered.forEach(w => {
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'approved': 'badge-success',
+                    'rejected': 'badge-danger'
+                }[w.status] || 'badge-info';
+                
+                const statusText = {
+                    'pending': '⏳ পেন্ডিং',
+                    'approved': '✅ অ্যাপ্রুভড',
+                    'rejected': '❌ রিজেক্টেড'
+                }[w.status] || w.status;
+                
+                html += `<tr>
+                    <td>${w.userId}</td>
+                    <td>${w.name}</td>
+                    <td>${w.method}</td>
+                    <td>${w.phone}</td>
+                    <td>${w.points}</td>
+                    <td>${(w.points / 200).toFixed(2)}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>${w.date}</td>
+                    <td>
+                        ${w.status === 'pending' ? `
+                            <button class="btn btn-success" style="padding:5px 10px;" onclick="processWithdraw('${w.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger" style="padding:5px 10px;" onclick="rejectWithdraw('${w.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-primary" style="padding:5px 10px;" onclick="viewWithdraw('${w.id}')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </td>
                 </tr>`;
             });
             
-            tbody.innerHTML = html;
+            document.getElementById('withdrawalsBody').innerHTML = html;
         }
-        
-        function updateStats(users) {
-            const totalUsers = users.length;
-            const totalPoints = users.reduce((sum, u) => sum + u.points, 0);
-            const totalViews = users.reduce((sum, u) => sum + u.totalViews, 0);
-            const totalReferrals = users.reduce((sum, u) => sum + u.referrals.level1.length, 0);
-            
-            document.getElementById('totalUsers').textContent = totalUsers;
-            document.getElementById('totalPoints').textContent = totalPoints;
-            document.getElementById('totalViews').textContent = totalViews;
-            document.getElementById('totalReferrals').textContent = totalReferrals;
-        }
-        
+
+        // ইউজার বিস্তারিত দেখান
         function viewUserDetails(userId) {
-            // ইউজারের বিস্তারিত তথ্য দেখান
-            const userData = JSON.parse(localStorage.getItem(`earnquickUser_${userId}`));
-            if (userData) {
-                alert(JSON.stringify(userData, null, 2));
-            } else {
-                alert('ইউজার ডাটা পাওয়া যায়নি');
-            }
-        }
-        
-        function exportToCSV() {
-            const users = [];
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) return;
             
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('earnquickUser_')) {
-                    try {
-                        const userData = JSON.parse(localStorage.getItem(key));
-                        users.push({
-                            'User ID': userData.id,
-                            'নাম': userData.name,
-                            'পয়েন্ট': userData.points,
-                            'মোট ভিউ': userData.totalViews,
-                            'লেভেল ১': userData.referrals?.level1?.length || 0,
-                            'লেভেল ২': userData.referrals?.level2?.length || 0,
-                            'লেভেল ৩': userData.referrals?.level3?.length || 0,
-                            'রেফার করেছেন': userData.referredBy || '',
-                            'জয়েন তারিখ': userData.joinDate
-                        });
-                    } catch (e) {}
+            currentUserId = userId;
+            
+            let html = `
+                <div class="detail-row">
+                    <span class="detail-label">ইউজার ID:</span>
+                    <span class="detail-value">${user.id}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">নাম:</span>
+                    <span class="detail-value">${user.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">পয়েন্ট:</span>
+                    <span class="detail-value">${user.points} (৳${(user.points/200).toFixed(2)})</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">মোট ভিউ:</span>
+                    <span class="detail-value">${user.totalViews}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">রেফারেল:</span>
+                    <span class="detail-value">লেভেল ১: ${user.referrals.level1.length}, লেভেল ২: ${user.referrals.level2.length}, লেভেল ৩: ${user.referrals.level3.length}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">রেফার করেছেন:</span>
+                    <span class="detail-value">${user.referredBy || '—'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">জয়েন তারিখ:</span>
+                    <span class="detail-value">${user.joinDate}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">শেষ অ্যাক্টিভ:</span>
+                    <span class="detail-value">${user.lastActive}</span>
+                </div>
+            `;
+            
+            document.getElementById('userDetails').innerHTML = html;
+            document.getElementById('userDetailModal').style.display = 'flex';
+        }
+
+        // ইউজার এডিট
+        function editUser(userId) {
+            const newPoints = prompt('নতুন পয়েন্ট সেট করুন:');
+            if (newPoints !== null) {
+                const user = allUsers.find(u => u.id === userId);
+                if (user) {
+                    user.points = parseInt(newPoints) || 0;
+                    localStorage.setItem(user.key, JSON.stringify(user));
+                    loadAllData();
+                    alert('পয়েন্ট আপডেট করা হয়েছে!');
                 }
             }
+        }
+
+        // উইথড্র প্রসেস
+        function processWithdraw(withdrawId) {
+            currentWithdrawId = withdrawId;
+            const withdraw = allWithdrawals.find(w => w.id === withdrawId);
             
-            if (users.length === 0) {
-                alert('কোন ডাটা নেই');
-                return;
+            if (withdraw) {
+                document.getElementById('withdrawDetails').innerHTML = `
+                    <div class="detail-row">
+                        <span class="detail-label">ইউজার:</span>
+                        <span class="detail-value">${withdraw.name} (${withdraw.userId})</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">পদ্ধতি:</span>
+                        <span class="detail-value">${withdraw.method}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">নম্বর:</span>
+                        <span class="detail-value">${withdraw.phone}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">পরিমাণ:</span>
+                        <span class="detail-value">${withdraw.points} পয়েন্ট = ৳${(withdraw.points/200).toFixed(2)}</span>
+                    </div>
+                `;
+                document.getElementById('withdrawModal').style.display = 'flex';
             }
-            
-            // CSV তৈরি
-            const headers = Object.keys(users[0]);
-            const csvRows = [];
-            csvRows.push(headers.join(','));
-            
-            for (const user of users) {
-                const values = headers.map(header => {
-                    const value = user[header]?.toString() || '';
-                    return `"${value.replace(/"/g, '""')}"`;
+        }
+
+        // উইথড্র অ্যাপ্রুভ
+        function approveWithdraw() {
+            if (currentWithdrawId) {
+                const withdraw = allWithdrawals.find(w => w.id === currentWithdrawId);
+                if (withdraw) {
+                    withdraw.status = 'approved';
+                    
+                    // ইউজারের পয়েন্ট কমিয়ে দিন
+                    const user = allUsers.find(u => u.id === withdraw.userId);
+                    if (user) {
+                        user.points -= withdraw.points;
+                        if (!user.withdrawHistory) user.withdrawHistory = [];
+                        user.withdrawHistory.push({
+                            id: withdraw.id,
+                            amount: withdraw.points,
+                            date: new Date().toISOString().split('T')[0]
+                        });
+                        localStorage.setItem(user.key, JSON.stringify(user));
+                    }
+                    
+                    loadAllData();
+                    closeModal();
+                    alert('উইথড্র অ্যাপ্রুভ করা হয়েছে!');
+                }
+            }
+        }
+
+        // উইথড্র রিজেক্ট
+        function rejectWithdraw(withdrawId) {
+            if (confirm('আপনি কি নিশ্চিত?')) {
+                const withdraw = allWithdrawals.find(w => w.id === (withdrawId || currentWithdrawId));
+                if (withdraw) {
+                    withdraw.status = 'rejected';
+                    loadAllData();
+                    closeModal();
+                }
+            }
+        }
+
+        // সব পেন্ডিং উইথড্র প্রসেস
+        function processAllWithdrawals() {
+            if (confirm('সব পেন্ডিং উইথড্র অ্যাপ্রুভ করবেন?')) {
+                allWithdrawals.forEach(w => {
+                    if (w.status === 'pending') {
+                        w.status = 'approved';
+                        
+                        // ইউজারের পয়েন্ট কমিয়ে দিন
+                        const user = allUsers.find(u => u.id === w.userId);
+                        if (user) {
+                            user.points -= w.points;
+                            if (!user.withdrawHistory) user.withdrawHistory = [];
+                            user.withdrawHistory.push({
+                                id: w.id,
+                                amount: w.points,
+                                date: new Date().toISOString().split('T')[0]
+                            });
+                            localStorage.setItem(user.key, JSON.stringify(user));
+                        }
+                    }
                 });
-                csvRows.push(values.join(','));
+                loadAllData();
+                alert('সব উইথড্র প্রসেস করা হয়েছে!');
             }
+        }
+
+        // এক্সপোর্ট ফাংশন
+        function exportUsers() {
+            let csv = 'User ID,নাম,পয়েন্ট,ভিউ,রেফারেল L1,রেফারেল L2,রেফারেল L3,রেফার করেছেন,জয়েন তারিখ\n';
             
-            const csvString = csvRows.join('\n');
-            const blob = new Blob([csvString], { type: 'text/csv' });
+            allUsers.forEach(u => {
+                csv += `${u.id},${u.name},${u.points},${u.totalViews},${u.referrals.level1.length},${u.referrals.level2.length},${u.referrals.level3.length},${u.referredBy || ''},${u.joinDate}\n`;
+            });
+            
+            downloadCSV(csv, 'earnquick_users.csv');
+        }
+
+        function exportReport(type) {
+            let csv = 'রিপোর্ট টাইপ,তারিখ,মোট ইউজার,নতুন ইউজার,মোট পয়েন্ট,মোট ভিউ,মোট উইথড্র\n';
+            
+            const today = new Date().toISOString().split('T')[0];
+            csv += `${type},${today},${allUsers.length},${allUsers.filter(u => u.joinDate === today).length},${allUsers.reduce((s,u) => s + u.points, 0)},${allUsers.reduce((s,u) => s + u.totalViews, 0)},${allWithdrawals.filter(w => w.status === 'approved').length}\n`;
+            
+            downloadCSV(csv, `earnquick_report_${type}_${today}.csv`);
+        }
+
+        function downloadCSV(csv, filename) {
+            const blob = new Blob([csv], { type: 'text/csv' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'earnquick_users.csv';
+            a.download = filename;
             a.click();
             window.URL.revokeObjectURL(url);
         }
-        
+
+        // রেফারেল ট্রি দেখান
+        function showReferralTree() {
+            let html = '';
+            
+            // টপ লেভেল রেফারার খুঁজুন (যাদের রেফারার নেই)
+            const topReferrers = allUsers.filter(u => !u.referredBy);
+            
+            topReferrers.forEach(referrer => {
+                const level1 = allUsers.filter(u => u.referredBy === referrer.id);
+                const level2 = level1.flatMap(l1 => allUsers.filter(u => u.referredBy === l1.id));
+                const level3 = level2.flatMap(l2 => allUsers.filter(u => u.referredBy === l2.id));
+                
+                const totalCommission = level1.length * 200 + level2.length * 100 + level3.length * 50;
+                
+                html += `<tr>
+                    <td><strong>${referrer.name}</strong> (${referrer.id})</td>
+                    <td>${level1.length}</td>
+                    <td>${level2.length}</td>
+                    <td>${level3.length}</td>
+                    <td>${totalCommission}</td>
+                </tr>`;
+            });
+            
+            document.getElementById('referralsBody').innerHTML = html || '<tr><td colspan="5">কোন ডাটা নেই</td></tr>';
+        }
+
+        // ট্যাব দেখান
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+            
+            // ট্যাব অনুযায়ী ডাটা লোড
+            if (tabName === 'referrals') {
+                showReferralTree();
+            }
+        }
+
+        // মডেল বন্ধ করুন
+        function closeModal() {
+            document.getElementById('userDetailModal').style.display = 'none';
+            document.getElementById('withdrawModal').style.display = 'none';
+            currentWithdrawId = null;
+            currentUserId = null;
+        }
+
+        // ডাটা রিফ্রেশ
+        function refreshData() {
+            loadAllData();
+        }
+
         // ইভেন্ট লিসেনার
-        document.getElementById('searchInput').addEventListener('input', () => loadAllData());
-        document.getElementById('sortSelect').addEventListener('change', () => loadAllData());
-        
-        // পৃষ্ঠা লোড হলে
-        window.onload = loadAllData;
+        document.getElementById('userSearch')?.addEventListener('input', displayUsers);
+        document.getElementById('userFilter')?.addEventListener('change', displayUsers);
+        document.getElementById('userSort')?.addEventListener('change', displayUsers);
+        document.getElementById('withdrawFilter')?.addEventListener('change', displayWithdrawals);
+        document.getElementById('referralSearch')?.addEventListener('input', showReferralTree);
     </script>
 </body>
-</html>
+    </html>
