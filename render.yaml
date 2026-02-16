@@ -1,8 +1,0 @@
-services:
-  - type: web
-    name: earnquick-backend
-    runtime: static  # 'python' না, 'static' দিতে হবে
-    repo: https://github.com/ssk079328-spec/earnquick-backend
-    branch: main
-    buildCommand: echo "No build needed"  # একটি ভ্যালিড কমান্ড
-    staticPublishPath: .
