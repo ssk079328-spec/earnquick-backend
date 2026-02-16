@@ -1,40 +1,39 @@
 const tg = window.Telegram.WebApp;
 tg.expand();
-
 const API_URL = "https://your-backend-url.onrender.com";
-let userData = tg.initDataUnsafe.user;
 
-async function autoRegister() {
-    if (!userData) {
-        alert("টেলিগ্রাম থেকে অ্যাপটি ওপেন করুন!");
-        return;
-    }
+async function autoLogin() {
+    const user = tg.initDataUnsafe.user;
+    if (!user) return alert("টেলিগ্রাম থেকে ওপেন করুন!");
 
-    const res = await fetch(`${API_URL}/user/${userData.id}`);
-    if (res.status === 404) {
-        // নতুন ইউজার হলে রেফার কোড অপশন দেখাবে
-        document.getElementById("refer-overlay").style.display = "flex";
-    } else {
-        const data = await res.json();
-        updateUI(data);
-    }
-}
-
-async function completeRegistration() {
-    const refCode = document.getElementById("ref-input").value;
     const res = await fetch(`${API_URL}/join`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            telegram_id: userData.id,
-            name: userData.first_name + " " + (userData.last_name || ""),
-            referred_by: refCode
+            telegram_id: user.id,
+            name: user.first_name + " " + (user.last_name || "")
         })
     });
     const data = await res.json();
-    document.getElementById("refer-overlay").style.display = "none";
     updateUI(data);
 }
+
+function watchAd() {
+    if (typeof show_10615270 === 'function') {
+        show_10615270().then(async () => {
+            const res = await fetch(`${API_URL}/watch`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ telegram_id: tg.initDataUnsafe.user.id })
+            });
+            const data = await res.json();
+            document.getElementById("balance-val").innerText = data.points;
+        });
+    }
+}
+
+function showWithdraw() { document.getElementById("withdraw-modal").style.display = "flex"; }
+function closeModal() { document.getElementById("withdraw-modal").style.display = "none"; }
 
 function updateUI(data) {
     document.getElementById("user-name").innerText = data.name;
@@ -43,4 +42,4 @@ function updateUI(data) {
     document.getElementById("tg-display-id").innerText = "ID: " + data.telegram_id;
 }
 
-autoRegister();
+autoLogin();
