@@ -1,66 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnQuick Pro</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
-    <script src='//libtl.com/sdk.js' data-zone='10615270' data-sdk='show_10615270'></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EarnQuick Bot</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- AUTO AD -->
+<script>
+(function(){
+  var s = document.createElement("script");
+  s.src = "https://5gvci.com/act/files/tag.min.js";
+  s.async = true;
+  document.head.appendChild(s);
+})();
+</script>
+
 </head>
 <body>
-    <div class="app-shell">
-        <header class="app-header">
-            <h2 id="user-name">Loading...</h2>
-            <div class="user-pill"><span id="tg-display-id">ID: 00000</span></div>
-        </header>
 
-        <div class="stats-grid-container">
-            <div class="stat-card blue-glow">
-                <p>পয়েন্ট</p>
-                <h2 id="balance-val">0</h2>
-            </div>
-            <div class="stat-card green-glow">
-                <p>রেফার</p>
-                <h2 id="refer-count">0</h2>
-            </div>
-        </div>
+<header>
+  <h2>EarnQuick Bot</h2>
+  <img src="https://via.placeholder.com/728x90.png?text=Banner+Ad" class="banner">
+</header>
 
-        <div class="main-buttons-grid">
-            <div class="grid-btn pink" onclick="watchAd()"><i class="fas fa-play-circle"></i><p>অ্যাড দেখুন</p></div>
-            <div class="grid-btn cyan" onclick="copyReferLink()"><i class="fas fa-user-plus"></i><p>রেফার করুন</p></div>
-            <div class="grid-btn purple" onclick="showWithdraw()"><i class="fas fa-wallet"></i><p>উইথড্র</p></div>
-            <div class="grid-btn green" onclick="location.reload()"><i class="fas fa-sync-alt"></i><p>রিফ্রেশ</p></div>
-        </div>
+<div class="headline">
+  🔥 Earn points fast! Watch ads & withdraw rewards! 🔥
+</div>
 
-        <div id="withdraw-modal" class="overlay" style="display:none;">
-            <div class="modal neon-border">
-                <h3>টাকা উত্তোলন</h3>
-                <select id="pay-method" class="neon-input">
-                    <option value="">মেথড সিলেক্ট করুন</option>
-                    <option value="Bkash">বিকাশ (Bkash)</option>
-                    <option value="Nagad">নগদ (Nagad)</option>
-                    <option value="Rocket">রকেট (Rocket)</option>
-                    <option value="Recharge">মোবাইল রিচার্জ</option>
-                </select>
-                <input type="number" id="pay-num" class="neon-input" placeholder="আপনার নম্বর">
-                <input type="number" id="pay-amount" class="neon-input" placeholder="পয়েন্ট (Min 4000)">
-                <div class="modal-btns">
-                    <button class="neon-btn blue" onclick="submitWithdraw()">সাবমিট</button>
-                    <button class="neon-btn red" onclick="closeModal()">বন্ধ করুন</button>
-                </div>
-            </div>
-        </div>
+<div class="box">
+  <input type="number" id="tgId" placeholder="Telegram ID">
+  <input type="text" id="name" placeholder="Name">
+  <button onclick="join()">Join</button>
+</div>
 
-        <nav class="bottom-nav">
-            <div class="nav-item active"><i class="fas fa-home"></i><p>Home</p></div>
-            <div class="nav-item" onclick="showWithdraw()"><i class="fas fa-wallet"></i><p>Withdraw</p></div>
-            <div class="nav-item"><i class="fas fa-users"></i><p>Refer</p></div>
-        </nav>
-    </div>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="app.js"></script>
+<div class="stats">
+  <button id="balance-btn">Balance: 0</button>
+  <button id="refer-btn">Referrals: 0</button>
+</div>
+
+<div class="actions">
+  <button onclick="watchAd()">Watch Ad (+5)</button>
+  <button onclick="withdraw()">Withdraw</button>
+</div>
+
+<!-- CLICK AD -->
+<div class="adbox">
+  <a href="https://example.com" target="_blank">
+    <img src="https://via.placeholder.com/728x90.png?text=Ad+Banner">
+  </a>
+</div>
+
+<p id="msg"></p>
+
+<script src="app.js"></script>
+
+<!-- SERVICE WORKER REGISTER -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+</script>
+
 </body>
 </html>
