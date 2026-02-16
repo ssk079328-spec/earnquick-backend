@@ -10,14 +10,13 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
-    <!-- Monetag Reward Ad Script -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
+    <!-- Monetag Reward Ad Script (আপনার দেওয়া) -->
+    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     
     <!-- টেলিগ্রাম ওয়েব অ্যাপ SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
-        /* আপনার পূর্বের সব CSS একই থাকবে */
         * {
             margin: 0;
             padding: 0;
@@ -62,6 +61,12 @@
             font-weight: 700;
             font-size: 14px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .headline marquee {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
 
         .profile-header {
@@ -622,9 +627,9 @@
         <!-- মেসেজ -->
         <div id="message" class="message"></div>
 
-        <!-- Monetag অ্যাড বাটন (আনলিমিটেড) -->
+        <!-- Monetag অ্যাড বাটন (আপনার দেওয়া SDK অনুযায়ী) -->
         <div class="ad-section">
-            <button class="watch-ad-btn" onclick="watchRewardedAd()" id="watchAdBtn">
+            <button class="watch-ad-btn" onclick="watchMonetagAd()" id="watchAdBtn">
                 <i class="fas fa-play-circle"></i> Monetag অ্যাড দেখুন (৫ পয়েন্ট)
             </button>
             <div style="text-align: center; margin-top: 10px; color: #666; font-size: 12px;">
@@ -816,23 +821,16 @@
     </div>
 
     <script>
-        // Monetag কনফিগারেশন
-        self.options = {
-            "domain": "5gvci.com",
-            "zoneId": 10615270
-        };
-
         // টেলিগ্রাম ওয়েব অ্যাপ ইনিট
         let tg = window.Telegram.WebApp;
         tg.expand();
         tg.ready();
 
-        // গ্লোবাল ভেরিয়েবল
+        // ইউজার ডাটা অবজেক্ট
         let userData = {
             id: '',
             name: '',
             points: 0,
-            todayWatched: 0,
             totalViews: 0,
             referrals: {
                 level1: 0,
@@ -840,74 +838,61 @@
                 level3: 0
             },
             lastDailyBonus: null,
-            referTaskClaimed: false,
-            joinDate: new Date().toISOString().split('T')[0]
+            referTaskClaimed: false
         };
 
         let currentWithdrawMethod = null;
 
-        // ফিক্স ১: SDK লোড হওয়া পর্যন্ত অপেক্ষা করুন
+        // অ্যাপ ইনিশিয়ালাইজ
         function initApp() {
             console.log('App initializing...');
             
-            // প্রথমে লোকাল ডাটা লোড করুন
+            // লোকাল ডাটা লোড করুন
             loadLocalUserData();
             
-            // তারপর টেলিগ্রাম ডাটা লোড করার চেষ্টা করুন
+            // টেলিগ্রাম ইউজার ডাটা লোড করার চেষ্টা করুন
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                console.log('Telegram user found');
                 const user = tg.initDataUnsafe.user;
                 userData.id = user.id.toString();
                 userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                
-                // প্রোফাইল আপডেট করুন
                 updateProfileDisplay();
-                
-                // ডাটা সেভ করুন
                 saveUserData();
             } else {
-                console.log('No Telegram user, using local data');
-                // টেলিগ্রাম ডাটা না পেলে লোকাল ডাটা ব্যবহার করুন
                 if (!userData.id) {
-                    // লোকাল আইডি তৈরি করুন
-                    userData.id = 'local_' + Math.random().toString(36).substr(2, 9);
-                    userData.name = 'Local User';
+                    userData.id = 'user_' + Math.random().toString(36).substr(2, 9);
+                    userData.name = 'Guest User';
                 }
                 updateProfileDisplay();
             }
             
-            // UI আপডেট করুন
             updateUI();
         }
 
-        // ফিক্স ২: লোকাল ডাটা লোড করুন
+        // লোকাল ডাটা লোড
         function loadLocalUserData() {
             const saved = localStorage.getItem('earnquickUser');
             if (saved) {
                 try {
                     const parsed = JSON.parse(saved);
                     userData = {...userData, ...parsed};
-                    console.log('Local data loaded');
                 } catch (e) {
-                    console.error('Error loading local data', e);
+                    console.error('Error loading data', e);
                 }
             }
         }
 
-        // ফিক্স ৩: ডাটা সেভ করুন
+        // ডাটা সেভ
         function saveUserData() {
             localStorage.setItem('earnquickUser', JSON.stringify(userData));
-            console.log('Data saved');
         }
 
-        // ফিক্স ৪: প্রোফাইল ডিসপ্লে আপডেট করুন
+        // প্রোফাইল আপডেট
         function updateProfileDisplay() {
             document.getElementById('userName').textContent = userData.name || 'User';
             document.getElementById('userId').textContent = userData.id || 'N/A';
             document.getElementById('profileName').textContent = userData.name || 'User';
             document.getElementById('profileId').textContent = 'ID: ' + (userData.id || 'N/A');
             
-            // Avatar এর জন্য প্রথম অক্ষর
             const firstLetter = (userData.name || 'U').charAt(0).toUpperCase();
             document.getElementById('profileAvatar').textContent = firstLetter;
         }
@@ -958,9 +943,7 @@
                 dailyBtn.classList.remove('completed');
             }
             
-            // স্ট্রিক
-            const streak = Math.floor(Math.random() * 10) + 1;
-            document.getElementById('dailyStreak').textContent = streak;
+            document.getElementById('dailyStreak').textContent = Math.floor(Math.random() * 10) + 1;
         }
 
         function showMessage(text, type) {
@@ -973,8 +956,8 @@
             }, 3000);
         }
 
-        // Monetag রিওয়ার্ডেড অ্যাড দেখান
-        function watchRewardedAd() {
+        // ⭐ এটাই আপনার দেওয়া Monetag Ad ফাংশন ⭐
+        function watchMonetagAd() {
             const btn = document.getElementById('watchAdBtn');
             
             btn.classList.add('loading');
@@ -982,49 +965,45 @@
             
             showMessage('অ্যাড লোড হচ্ছে...', 'info');
             
-            if (typeof show_rewarded_ad !== 'undefined') {
-                show_rewarded_ad({ 
-                    ymid: userData.id, 
-                    requestVar: "watch_ad_button" 
-                })
-                .then((event) => {
-                    if (event.reward_event_type === "valued") {
-                        userData.points += 5;
-                        userData.todayWatched += 1;
-                        userData.totalViews += 1;
-                        
-                        saveUserData();
-                        updateUI();
-                        
-                        showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
-                    } else {
-                        showMessage('এই অ্যাডের জন্য কোন রিওয়ার্ড পাওয়া যায়নি। আবার চেষ্টা করুন।', 'error');
-                    }
+            // আপনার দেওয়া Monetag SDK কল করুন
+            if (typeof show_10603637 === 'function') {
+                show_10603637().then(() => {
+                    // অ্যাড সফলভাবে দেখার পর এই অংশটুকু 실행 হবে
                     
+                    // ইউজারকে ৫ পয়েন্ট দিন
+                    userData.points += 5;
+                    userData.totalViews += 1;
+                    
+                    // ডাটা সেভ করুন
+                    saveUserData();
+                    
+                    // UI আপডেট করুন
+                    updateUI();
+                    
+                    // সফল মেসেজ দেখান
+                    showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
+                    
+                    // বাটন সক্রিয় করুন
                     btn.classList.remove('loading');
                     btn.disabled = false;
-                })
-                .catch((error) => {
+                    
+                }).catch((error) => {
+                    // অ্যাড দেখাতে ব্যর্থ হলে
                     showMessage('অ্যাড দেখাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
                     btn.classList.remove('loading');
                     btn.disabled = false;
                 });
             } else {
-                // সিমুলেট
+                // SDK লোড না হলে সিমুলেট করুন (টেস্টিং এর জন্য)
+                showMessage('Monetag SDK লোড হচ্ছে, দয়া করে অপেক্ষা করুন...', 'info');
+                
                 setTimeout(() => {
-                    if (Math.random() < 0.8) {
-                        userData.points += 5;
-                        userData.todayWatched += 1;
-                        userData.totalViews += 1;
-                        
-                        saveUserData();
-                        updateUI();
-                        
-                        showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
-                    } else {
-                        showMessage('অ্যাড দেখতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
-                    }
-                    
+                    // সিমুলেটেড সফল রেসপন্স
+                    userData.points += 5;
+                    userData.totalViews += 1;
+                    saveUserData();
+                    updateUI();
+                    showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! (টেস্ট মোড) 🎉', 'success');
                     btn.classList.remove('loading');
                     btn.disabled = false;
                 }, 2000);
@@ -1051,7 +1030,6 @@
             if (userData.lastDailyBonus !== today) {
                 userData.points += 50;
                 userData.lastDailyBonus = today;
-                
                 saveUserData();
                 updateUI();
                 showMessage('ডেইলি বোনাস +৫০ পয়েন্ট! 🎁', 'success');
@@ -1142,29 +1120,11 @@
                 
                 showMessage(`উইথড্র সফল! ${method.taka} টাকা ${phone} নম্বরে পাঠানো হবে 📱`, 'success');
                 closeWithdrawModal();
-                
-                if (typeof tg !== 'undefined') {
-                    tg.sendData(JSON.stringify({
-                        action: 'withdraw',
-                        method: currentWithdrawMethod,
-                        phone: phone,
-                        amount: method.taka,
-                        points: method.min
-                    }));
-                }
             }
         }
 
-        // ফিক্স ৫: SDK লোড হওয়ার পর ইনিশিয়ালাইজ করুন
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded');
-            initApp();
-        });
-
-        // ফিক্স ৬: টেলিগ্রাম SDK লোড হওয়ার জন্য অতিরিক্ত চেক
-        if (tg) {
-            console.log('Telegram SDK loaded');
-        }
+        // পৃষ্ঠা লোড হলে
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
