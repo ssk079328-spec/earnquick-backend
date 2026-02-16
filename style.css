@@ -1,39 +1,56 @@
-.stats-grid-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
+body {
+  font-family: Arial;
+  background: #111;
+  color: white;
+  text-align: center;
+  margin: 0;
 }
 
-.stat-card {
-    background: #1e222d;
-    padding: 20px;
-    border-radius: 15px;
-    text-align: center;
-    border-bottom: 3px solid #4a90e2;
+header {
+  background: #0088cc;
+  padding: 15px;
 }
 
-.stat-card h2 { font-size: 30px; color: #00d2ff; margin: 5px 0; }
-
-.main-buttons-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 15px;
-    margin-top: 20px;
+.banner {
+  width: 100%;
+  max-width: 728px;
+  border-radius: 6px;
 }
 
-.grid-btn {
-    padding: 25px 10px;
-    border-radius: 20px;
-    text-align: center;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
+.headline {
+  background: yellow;
+  color: black;
+  padding: 8px;
+  font-weight: bold;
 }
 
-.grid-btn.pink { background: linear-gradient(45deg, #ff5e7e, #ff99ac); }
-.grid-btn.cyan { background: linear-gradient(45deg, #48c6ef, #6f86d6); }
-.grid-btn.purple { background: linear-gradient(45deg, #6a11cb, #2575fc); }
-.grid-btn.green { background: linear-gradient(45deg, #00b09b, #96c93d); }
+.box {
+  margin-top: 15px;
+}
 
-.grid-btn i { font-size: 24px; margin-bottom: 8px; }
+input, button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  background: green;
+  color: white;
+  cursor: pointer;
+}
+
+.stats {
+  margin: 10px;
+}
+
+.actions {
+  margin: 10px;
+}
+
+.adbox img {
+  width: 100%;
+  max-width: 728px;
+  border-radius: 5px;
+}
