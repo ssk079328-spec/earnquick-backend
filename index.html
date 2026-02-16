@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EarnQuick Bot - Monetag Rewarded Ads</title>
     
-    <!-- ক্যাশ কন্ট্রোল মেটা ট্যাগ (সমস্যা সমাধান) -->
+    <!-- ক্যাশ কন্ট্রোল মেটা ট্যাগ -->
     <meta http-equiv="Cache-Control" content="no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     
     <!-- Monetag Reward Ad Script -->
     <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
@@ -18,6 +17,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
     <style>
+        /* আপনার পূর্বের সব CSS একই থাকবে */
         * {
             margin: 0;
             padding: 0;
@@ -62,12 +62,6 @@
             font-weight: 700;
             font-size: 14px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .headline marquee {
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
 
         .profile-header {
@@ -578,7 +572,7 @@
     <div class="app-container">
         <!-- টোকেন ব্যাজ -->
         <div class="token-badge" id="tokenBadge">
-            <i class="fas fa-coins"></i> <span id="tokenDisplay">2100</span>
+            <i class="fas fa-coins"></i> <span id="tokenDisplay">0</span>
         </div>
 
         <!-- হেডলাইন -->
@@ -591,13 +585,13 @@
         <!-- প্রোফাইল হেডার -->
         <div class="profile-header">
             <div class="user-info">
-                <h2 id="userName">Najmul Hoque Forhad</h2>
-                <p><i class="far fa-id-card"></i> ID: <span id="userId">8145444675</span></p>
+                <h2 id="userName">লোড হচ্ছে...</h2>
+                <p><i class="far fa-id-card"></i> ID: <span id="userId">লোড হচ্ছে...</span></p>
             </div>
             <div class="balance-card">
                 <h3>ব্যালেন্স</h3>
-                <div class="amount" id="balanceAmount">৳10.50</div>
-                <div style="font-size: 10px;">= <span id="balancePoints">2100</span> পয়েন্ট</div>
+                <div class="amount" id="balanceAmount">৳0.00</div>
+                <div style="font-size: 10px;">= <span id="balancePoints">0</span> পয়েন্ট</div>
             </div>
         </div>
 
@@ -606,7 +600,7 @@
             <div class="stat-item">
                 <i class="fas fa-eye"></i>
                 <div class="label">মোট ভিউ</div>
-                <div class="value" id="totalViews">1,234</div>
+                <div class="value" id="totalViews">0</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-users"></i>
@@ -616,12 +610,12 @@
             <div class="stat-item">
                 <i class="fas fa-trophy"></i>
                 <div class="label">মোট আয়</div>
-                <div class="value" id="totalEarned">৳10.50</div>
+                <div class="value" id="totalEarned">৳0.00</div>
             </div>
             <div class="stat-item">
                 <i class="fas fa-fire"></i>
                 <div class="label">স্ট্রিক</div>
-                <div class="value" id="dailyStreak">১</div>
+                <div class="value" id="dailyStreak">০</div>
             </div>
         </div>
 
@@ -759,15 +753,13 @@
         <!-- প্রোফাইল সেকশন -->
         <div id="profileSection" class="profile-section">
             <div class="profile-card">
-                <div class="profile-avatar">
-                    NF
-                </div>
-                <div class="profile-name" id="profileName">Najmul Hoque Forhad</div>
-                <div class="profile-id" id="profileId">ID: 8145444675</div>
+                <div class="profile-avatar" id="profileAvatar">EQ</div>
+                <div class="profile-name" id="profileName">লোড হচ্ছে...</div>
+                <div class="profile-id" id="profileId">ID: লোড হচ্ছে...</div>
                 
                 <div class="profile-stats">
                     <div>
-                        <div style="font-size: 24px; font-weight: 800;" id="profilePoints">2100</div>
+                        <div style="font-size: 24px; font-weight: 800;" id="profilePoints">0</div>
                         <div style="color: #7F8C8D;">পয়েন্ট</div>
                     </div>
                     <div>
@@ -779,11 +771,11 @@
                 <div style="margin-top: 20px; padding: 15px; background: #F5F7FA; border-radius: 20px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
                         <span>মোট ভিউ:</span>
-                        <span id="profileViews">1,234</span>
+                        <span id="profileViews">0</span>
                     </div>
                     <div style="display: flex; justify-content: space-between;">
                         <span>অ্যাপ ওপেন:</span>
-                        <span>১২৩ বার</span>
+                        <span>০ বার</span>
                     </div>
                 </div>
             </div>
@@ -823,23 +815,6 @@
         </div>
     </div>
 
-    <!-- ফোর্স রিলোড স্ক্রিপ্ট (ক্যাশ সমস্যা সমাধান) -->
-    <script>
-        // ফোর্স রিলোড - পেজ লোড হওয়ার পর ক্যাশ চেক করে
-        window.onpageshow = function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        };
-        
-        // ব্যাক/ফরওয়ার্ড বাটনে ক্লিক করলে রিলোড
-        window.addEventListener('pageshow', function(event) {
-            if (event.persisted) {
-                window.location.reload();
-            }
-        });
-    </script>
-
     <script>
         // Monetag কনফিগারেশন
         self.options = {
@@ -852,13 +827,13 @@
         tg.expand();
         tg.ready();
 
-        // ইউজার ডাটা (আনলিমিটেড এড)
+        // গ্লোবাল ভেরিয়েবল
         let userData = {
-            id: '8145444675',
-            name: 'Najmul Hoque Forhad',
-            points: 2100,
+            id: '',
+            name: '',
+            points: 0,
             todayWatched: 0,
-            totalViews: 1234,
+            totalViews: 0,
             referrals: {
                 level1: 0,
                 level2: 0,
@@ -866,39 +841,75 @@
             },
             lastDailyBonus: null,
             referTaskClaimed: false,
-            joinDate: '2024-01-20'
+            joinDate: new Date().toISOString().split('T')[0]
         };
 
         let currentWithdrawMethod = null;
 
-        // টেলিগ্রাম ইউজার ডাটা লোড
-        function loadTelegramUser() {
+        // ফিক্স ১: SDK লোড হওয়া পর্যন্ত অপেক্ষা করুন
+        function initApp() {
+            console.log('App initializing...');
+            
+            // প্রথমে লোকাল ডাটা লোড করুন
+            loadLocalUserData();
+            
+            // তারপর টেলিগ্রাম ডাটা লোড করার চেষ্টা করুন
             if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                console.log('Telegram user found');
                 const user = tg.initDataUnsafe.user;
                 userData.id = user.id.toString();
                 userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                 
-                document.getElementById('userName').textContent = userData.name;
-                document.getElementById('userId').textContent = userData.id;
-                document.getElementById('profileName').textContent = userData.name;
-                document.getElementById('profileId').textContent = 'ID: ' + userData.id;
+                // প্রোফাইল আপডেট করুন
+                updateProfileDisplay();
+                
+                // ডাটা সেভ করুন
+                saveUserData();
+            } else {
+                console.log('No Telegram user, using local data');
+                // টেলিগ্রাম ডাটা না পেলে লোকাল ডাটা ব্যবহার করুন
+                if (!userData.id) {
+                    // লোকাল আইডি তৈরি করুন
+                    userData.id = 'local_' + Math.random().toString(36).substr(2, 9);
+                    userData.name = 'Local User';
+                }
+                updateProfileDisplay();
             }
             
-            loadUserData();
-        }
-
-        // লোকাল স্টোরেজ থেকে ডাটা লোড
-        function loadUserData() {
-            const saved = localStorage.getItem('earnquickUser_' + userData.id);
-            if (saved) {
-                userData = JSON.parse(saved);
-            }
+            // UI আপডেট করুন
             updateUI();
         }
 
-        // ডাটা সেভ
+        // ফিক্স ২: লোকাল ডাটা লোড করুন
+        function loadLocalUserData() {
+            const saved = localStorage.getItem('earnquickUser');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    userData = {...userData, ...parsed};
+                    console.log('Local data loaded');
+                } catch (e) {
+                    console.error('Error loading local data', e);
+                }
+            }
+        }
+
+        // ফিক্স ৩: ডাটা সেভ করুন
         function saveUserData() {
-            localStorage.setItem('earnquickUser_' + userData.id, JSON.stringify(userData));
+            localStorage.setItem('earnquickUser', JSON.stringify(userData));
+            console.log('Data saved');
+        }
+
+        // ফিক্স ৪: প্রোফাইল ডিসপ্লে আপডেট করুন
+        function updateProfileDisplay() {
+            document.getElementById('userName').textContent = userData.name || 'User';
+            document.getElementById('userId').textContent = userData.id || 'N/A';
+            document.getElementById('profileName').textContent = userData.name || 'User';
+            document.getElementById('profileId').textContent = 'ID: ' + (userData.id || 'N/A');
+            
+            // Avatar এর জন্য প্রথম অক্ষর
+            const firstLetter = (userData.name || 'U').charAt(0).toUpperCase();
+            document.getElementById('profileAvatar').textContent = firstLetter;
         }
 
         // UI আপডেট
@@ -947,7 +958,7 @@
                 dailyBtn.classList.remove('completed');
             }
             
-            // স্ট্রিক (এলোমেলো)
+            // স্ট্রিক
             const streak = Math.floor(Math.random() * 10) + 1;
             document.getElementById('dailyStreak').textContent = streak;
         }
@@ -962,7 +973,7 @@
             }, 3000);
         }
 
-        // Monetag রিওয়ার্ডেড অ্যাড দেখান (আনলিমিটেড)
+        // Monetag রিওয়ার্ডেড অ্যাড দেখান
         function watchRewardedAd() {
             const btn = document.getElementById('watchAdBtn');
             
@@ -971,7 +982,6 @@
             
             showMessage('অ্যাড লোড হচ্ছে...', 'info');
             
-            // Monetag Reward Ad Show
             if (typeof show_rewarded_ad !== 'undefined') {
                 show_rewarded_ad({ 
                     ymid: userData.id, 
@@ -1000,7 +1010,7 @@
                     btn.disabled = false;
                 });
             } else {
-                // সিমুলেট (ডেভেলপমেন্ট)
+                // সিমুলেট
                 setTimeout(() => {
                     if (Math.random() < 0.8) {
                         userData.points += 5;
@@ -1133,7 +1143,6 @@
                 showMessage(`উইথড্র সফল! ${method.taka} টাকা ${phone} নম্বরে পাঠানো হবে 📱`, 'success');
                 closeWithdrawModal();
                 
-                // টেলিগ্রামে নোটিফিকেশন
                 if (typeof tg !== 'undefined') {
                     tg.sendData(JSON.stringify({
                         action: 'withdraw',
@@ -1146,11 +1155,16 @@
             }
         }
 
-        // পৃষ্ঠা লোড হলে
-        window.onload = function() {
-            loadTelegramUser();
-            switchSection('home');
-        };
+        // ফিক্স ৫: SDK লোড হওয়ার পর ইনিশিয়ালাইজ করুন
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            initApp();
+        });
+
+        // ফিক্স ৬: টেলিগ্রাম SDK লোড হওয়ার জন্য অতিরিক্ত চেক
+        if (tg) {
+            console.log('Telegram SDK loaded');
+        }
     </script>
 </body>
 </html>
