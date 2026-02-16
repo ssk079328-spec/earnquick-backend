@@ -3,39 +3,924 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnBotDB</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>EarnQuick Bot - Firebase সংস্করণ</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    
+    <!-- Monetag Vignette Banner -->
+    <script>(function(s){s.dataset.zone='10616027',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
+    <!-- Monetag Rewarded Interstitial SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
+    
+    <!-- Monetag In-App Interstitial SDK -->
+    <script src='//libtl.com/sdk.js' data-zone='10603638' data-sdk='show_10603638'></script>
+    
+    <!-- টেলিগ্রাম ওয়েব অ্যাপ SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- ফন্ট অসম -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .app-container {
+            max-width: 400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .headline {
+            background: linear-gradient(90deg, #FF6B6B, #FFB300, #4ECDC4);
+            color: white;
+            padding: 12px 8px;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #5E35B1 0%, #7E57C2 100%);
+            padding: 20px;
+            color: white;
+        }
+
+        .user-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .balance-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 18px;
+            border-radius: 24px;
+            margin-top: 10px;
+        }
+
+        .balance-card .amount {
+            font-size: 26px;
+            font-weight: 800;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 12px 5px;
+            border-radius: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .token-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #FFB300;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 30px;
+            font-weight: 800;
+            z-index: 10;
+        }
+
+        .ad-section {
+            padding: 0 16px 20px;
+        }
+
+        .watch-ad-btn {
+            background: linear-gradient(135deg, #FFB300, #FFA000);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px rgba(255, 179, 0, 0.4);
+        }
+
+        .message {
+            margin: 10px 16px;
+            padding: 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            display: block;
+        }
+
+        .message.error {
+            background: #FFEBEE;
+            color: #C62828;
+            display: block;
+        }
+
+        .referral-card {
+            background: white;
+            margin: 0 16px 20px;
+            padding: 20px;
+            border-radius: 28px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .referral-code-box {
+            background: #F5F7FA;
+            padding: 15px;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .copy-btn, .share-btn {
+            background: #5E35B1;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .level-stats {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .level-item .count {
+            font-size: 22px;
+            font-weight: 800;
+            color: #5E35B1;
+        }
+
+        .tasks-section {
+            padding: 0 16px 20px;
+        }
+
+        .task-card {
+            background: white;
+            padding: 16px;
+            border-radius: 22px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-btn {
+            background: #5E35B1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .withdraw-section {
+            padding: 0 16px 20px;
+            display: none;
+        }
+
+        .withdraw-card {
+            background: white;
+            padding: 18px;
+            border-radius: 22px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 10px;
+            border-top: 2px solid #F0F0F0;
+        }
+
+        .nav-item {
+            text-align: center;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 30px;
+        }
+
+        .nav-item.active {
+            background: #EDE7F6;
+            color: #5E35B1;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 32px;
+            max-width: 340px;
+            width: 90%;
+        }
+
+        .profile-section {
+            padding: 20px;
+            display: none;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 28px;
+            padding: 25px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <h1>EarnBotDB</h1>
-
-        <!-- Admin Button -->
-        <button id="adminBtn" class="admin-btn">Admin Dashboard</button>
-
-        <!-- ইউজার প্রোফাইল -->
-        <div id="profileSection">
-            <h2 id="userName">লোড হচ্ছে...</h2>
-            <p>ID: <span id="userId">লোড হচ্ছে...</span></p>
-            <p>Points: <span id="tokenDisplay">0</span></p>
+        <!-- টোকেন ব্যাজ -->
+        <div class="token-badge" id="tokenBadge">
+            <i class="fas fa-coins"></i> <span id="tokenDisplay">0</span>
         </div>
 
-        <!-- অ্যাড দেখুন -->
-        <button id="watchAdBtn">অ্যাড দেখুন (+5 পয়েন্ট)</button>
-
-        <!-- রেফারেল -->
-        <div id="referralSection">
-            <p>রেফারেল লিঙ্ক: <span id="refLink"></span></p>
+        <!-- হেডলাইন -->
+        <div class="headline">
+            <marquee behavior="scroll" direction="left" scrollamount="5">
+                🎉 Monetag অ্যাড দেখুন ও ৫ পয়েন্ট অর্জন করুন 🎉 | ৪০০০ পয়েন্ট = ২০ টাকা উইথড্র | রেফার করে আয় করুন ২০০ পয়েন্ট!
+            </marquee>
         </div>
 
-        <!-- উইথড্রাল -->
-        <div id="withdrawSection">
-            <input type="number" id="withdrawAmount" placeholder="টাকা লিখুন">
-            <button id="withdrawBtn">উইথড্র</button>
+        <!-- প্রোফাইল হেডার -->
+        <div class="profile-header">
+            <div class="user-info">
+                <h2 id="userName">লোড হচ্ছে...</h2>
+                <p><i class="far fa-id-card"></i> ID: <span id="userId">লোড হচ্ছে...</span></p>
+            </div>
+            <div class="balance-card">
+                <h3>ব্যালেন্স</h3>
+                <div class="amount" id="balanceAmount">৳0.00</div>
+                <div style="font-size: 10px;">= <span id="balancePoints">0</span> পয়েন্ট</div>
+            </div>
+        </div>
+
+        <!-- স্ট্যাটস গ্রিড -->
+        <div class="stats-grid">
+            <div class="stat-item">
+                <i class="fas fa-eye"></i>
+                <div class="label">মোট ভিউ</div>
+                <div class="value" id="totalViews">0</div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-users"></i>
+                <div class="label">রেফারেল</div>
+                <div class="value" id="totalRefers">0</div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-trophy"></i>
+                <div class="label">মোট আয়</div>
+                <div class="value" id="totalEarned">৳0.00</div>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-fire"></i>
+                <div class="label">স্ট্রিক</div>
+                <div class="value" id="dailyStreak">০</div>
+            </div>
+        </div>
+
+        <!-- মেসেজ -->
+        <div id="message" class="message"></div>
+
+        <!-- Monetag অ্যাড বাটন -->
+        <div class="ad-section">
+            <button class="watch-ad-btn" onclick="watchManualAd()" id="watchAdBtn">
+                <i class="fas fa-play-circle"></i> অ্যাড দেখুন (৫ পয়েন্ট)
+            </button>
+        </div>
+
+        <!-- রেফারেল কার্ড -->
+        <div class="referral-card">
+            <div class="referral-header">
+                <h3><i class="fas fa-gift"></i> রেফারেল প্রোগ্রাম</h3>
+                <span class="level-badge">৩ লেভেল কমিশন</span>
+            </div>
+            
+            <div class="referral-code-box">
+                <span class="code" id="referralLink">লোড হচ্ছে...</span>
+                <button class="copy-btn" onclick="copyReferralLink()"><i class="far fa-copy"></i> কপি</button>
+            </div>
+            
+            <button class="share-btn" onclick="shareReferralLink()">
+                <i class="fas fa-share-alt"></i> রেফারেল লিংক শেয়ার করুন
+            </button>
+
+            <div class="level-stats">
+                <div class="level-item">
+                    <div class="count" id="level1Count">0</div>
+                    <div class="title">লেভেল ১ (২০০)</div>
+                </div>
+                <div class="level-item">
+                    <div class="count" id="level2Count">0</div>
+                    <div class="title">লেভেল ২ (১০০)</div>
+                </div>
+                <div class="level-item">
+                    <div class="count" id="level3Count">0</div>
+                    <div class="title">লেভেল ৩ (৫০)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ডেইলি টাস্ক -->
+        <div id="homeSection" class="tasks-section">
+            <div class="section-title">
+                <i class="fas fa-tasks"></i> ডেইলি টাস্ক
+            </div>
+
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>👥 ১ জন রেফার করুন</h4>
+                    <p>বোনাস পয়েন্ট: ২০০</p>
+                </div>
+                <div>
+                    <span class="reward-badge">+২০০</span>
+                    <button class="task-btn" id="referTaskBtn" onclick="claimReferTask()">ক্লেইম</button>
+                </div>
+            </div>
+
+            <div class="task-card">
+                <div class="task-info">
+                    <h4>🎁 ডেইলি বোনাস</h4>
+                    <p>প্রতিদিন ক্লেইম করুন</p>
+                </div>
+                <div>
+                    <span class="reward-badge">+৫০</span>
+                    <button class="task-btn" id="dailyBonusBtn" onclick="claimDailyBonus()">ক্লেইম</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- উইথড্র সেকশন -->
+        <div id="withdrawSection" class="withdraw-section">
+            <div class="section-title">
+                <i class="fas fa-money-bill-wave"></i> উইথড্র অপশন
+            </div>
+
+            <div class="withdraw-card" onclick="openWithdrawModal('bkash')">
+                <div class="withdraw-info">
+                    <i class="fas fa-mobile-alt" style="color: #E2136E;"></i>
+                    <div>
+                        <h4>বিকাশ</h4>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="withdraw-card" onclick="openWithdrawModal('nagad')">
+                <div class="withdraw-info">
+                    <i class="fas fa-mobile-alt" style="color: #F5842E;"></i>
+                    <div>
+                        <h4>নগদ</h4>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="withdraw-card" onclick="openWithdrawModal('rocket')">
+                <div class="withdraw-info">
+                    <i class="fas fa-rocket" style="color: #FF0000;"></i>
+                    <div>
+                        <h4>রকেট</h4>
+                        <small>৪০০০ পয়েন্ট = ২০ টাকা</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="withdraw-card" onclick="openWithdrawModal('recharge')">
+                <div class="withdraw-info">
+                    <i class="fas fa-phone-alt" style="color: #0088cc;"></i>
+                    <div>
+                        <h4>মোবাইল রিচার্জ</h4>
+                        <small>২০০০ পয়েন্ট = ১০ টাকা</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- প্রোফাইল সেকশন -->
+        <div id="profileSection" class="profile-section">
+            <div class="profile-card">
+                <div class="profile-avatar" id="profileAvatar">EQ</div>
+                <div class="profile-name" id="profileName">লোড হচ্ছে...</div>
+                <div class="profile-id" id="profileId">ID: লোড হচ্ছে...</div>
+                
+                <div class="profile-stats">
+                    <div>
+                        <div style="font-size: 24px; font-weight: 800;" id="profilePoints">0</div>
+                        <div>পয়েন্ট</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 24px; font-weight: 800;" id="profileRefer">0</div>
+                        <div>রেফারেল</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- নেভিগেশন মেনু -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="switchSection('home')">
+                <i class="fas fa-home"></i>
+                <span>হোম</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('profile')">
+                <i class="fas fa-user"></i>
+                <span>প্রোফাইল</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('withdraw')">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>উইথড্র</span>
+            </div>
+            <div class="nav-item" onclick="switchSection('tasks')">
+                <i class="fas fa-tasks"></i>
+                <span>টাস্ক</span>
+            </div>
         </div>
     </div>
 
-    <script src="js/app.js"></script>
+    <!-- উইথড্র মডেল -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3 id="modalTitle">বিকাশ উইথড্র</h3>
+            <input type="text" id="withdrawPhone" placeholder="মোবাইল নম্বর (01XXXXXXXXX)">
+            <div class="modal-amount" id="modalAmount">প্রাপ্তি: ২০ টাকা</div>
+            <div class="modal-buttons">
+                <button class="modal-btn confirm" onclick="processWithdraw()">নিশ্চিত</button>
+                <button class="modal-btn cancel" onclick="closeWithdrawModal()">বাতিল</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDp7OQw9qW5bLxKxKxKxKxKxKxKxKxKxKx", // আপনার API key দিন
+            authDomain: "earnbot-db.firebaseapp.com",
+            databaseURL: "https://earnbotdb-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "earnbot-db",
+            storageBucket: "earnbot-db.appspot.com",
+            messagingSenderId: "1234567890",
+            appId: "1:1234567890:web:abc123def456"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // টেলিগ্রাম ওয়েব অ্যাপ
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // ইউজার ডাটা
+        let userData = {
+            id: '',
+            name: '',
+            points: 0,
+            totalViews: 0,
+            referrals: {
+                level1: [],
+                level2: [],
+                level3: []
+            },
+            referredBy: null,
+            lastDailyBonus: null,
+            referTaskClaimed: false,
+            joinDate: new Date().toISOString().split('T')[0],
+            lastActive: new Date().toDateString(),
+            isLocked: false,
+            withdrawHistory: []
+        };
+
+        let currentWithdrawMethod = null;
+
+        // ========== ইউজার লোড ==========
+        async function loadUser() {
+            // টেলিগ্রাম থেকে ইউজার আইডি নিন
+            if (tg.initDataUnsafe?.user) {
+                const user = tg.initDataUnsafe.user;
+                userData.id = user.id.toString();
+                userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+            } else {
+                userData.id = 'local_' + Date.now();
+                userData.name = 'Local User';
+            }
+
+            // Firebase থেকে ইউজার ডাটা লোড
+            const userRef = db.ref('users/' + userData.id);
+            const snapshot = await userRef.once('value');
+            
+            if (snapshot.exists()) {
+                // ইউজার আছে - ডাটা লোড
+                const fbData = snapshot.val();
+                userData = { ...userData, ...fbData };
+            } else {
+                // নতুন ইউজার - সেভ করুন
+                await userRef.set(userData);
+                
+                // রেফারেল চেক করুন
+                await checkReferral();
+            }
+            
+            updateUI();
+            setupRealtimeUpdates();
+        }
+
+        // ========== রেফারেল চেক ==========
+        async function checkReferral() {
+            const startParam = tg.initDataUnsafe?.start_param || tg.startParam;
+            
+            if (startParam && startParam.startsWith('ref_')) {
+                const referrerId = startParam.replace('ref_', '');
+                
+                if (referrerId && referrerId !== userData.id) {
+                    await processReferral(referrerId, userData.id);
+                }
+            }
+        }
+
+        // ========== রেফারেল প্রসেস ==========
+        async function processReferral(referrerId, newUserId) {
+            // রেফারার ডাটা লোড
+            const referrerRef = db.ref('users/' + referrerId);
+            const snapshot = await referrerRef.once('value');
+            
+            if (snapshot.exists()) {
+                const referrerData = snapshot.val();
+                
+                // লেভেল ১ রেফারেল
+                if (!referrerData.referrals) referrerData.referrals = { level1: [], level2: [], level3: [] };
+                if (!referrerData.referrals.level1.includes(newUserId)) {
+                    referrerData.referrals.level1.push(newUserId);
+                    referrerData.points = (referrerData.points || 0) + 200;
+                    await referrerRef.set(referrerData);
+                    
+                    // লেভেল ২
+                    if (referrerData.referredBy) {
+                        const level2Ref = db.ref('users/' + referrerData.referredBy);
+                        const level2Snap = await level2Ref.once('value');
+                        if (level2Snap.exists()) {
+                            const level2Data = level2Snap.val();
+                            if (!level2Data.referrals.level2.includes(newUserId)) {
+                                level2Data.referrals.level2.push(newUserId);
+                                level2Data.points = (level2Data.points || 0) + 100;
+                                await level2Ref.set(level2Data);
+                                
+                                // লেভেল ৩
+                                if (level2Data.referredBy) {
+                                    const level3Ref = db.ref('users/' + level2Data.referredBy);
+                                    const level3Snap = await level3Ref.once('value');
+                                    if (level3Snap.exists()) {
+                                        const level3Data = level3Snap.val();
+                                        if (!level3Data.referrals.level3.includes(newUserId)) {
+                                            level3Data.referrals.level3.push(newUserId);
+                                            level3Data.points = (level3Data.points || 0) + 50;
+                                            await level3Ref.set(level3Data);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // নতুন ইউজারে রেফারার সেট
+            userData.referredBy = referrerId;
+            const userRef = db.ref('users/' + newUserId);
+            await userRef.set(userData);
+        }
+
+        // ========== UI আপডেট ==========
+        function updateUI() {
+            document.getElementById('userName').textContent = userData.name;
+            document.getElementById('userId').textContent = userData.id;
+            document.getElementById('profileName').textContent = userData.name;
+            document.getElementById('profileId').textContent = 'ID: ' + userData.id;
+            
+            document.getElementById('tokenDisplay').textContent = userData.points;
+            document.getElementById('balancePoints').textContent = userData.points;
+            document.getElementById('balanceAmount').textContent = '৳' + (userData.points / 200).toFixed(2);
+            
+            document.getElementById('totalViews').textContent = userData.totalViews;
+            document.getElementById('totalRefers').textContent = userData.referrals?.level1?.length || 0;
+            document.getElementById('totalEarned').textContent = '৳' + (userData.points / 200).toFixed(2);
+            
+            document.getElementById('profilePoints').textContent = userData.points;
+            document.getElementById('profileRefer').textContent = userData.referrals?.level1?.length || 0;
+            document.getElementById('profileViews').textContent = userData.totalViews;
+            
+            document.getElementById('level1Count').textContent = userData.referrals?.level1?.length || 0;
+            document.getElementById('level2Count').textContent = userData.referrals?.level2?.length || 0;
+            document.getElementById('level3Count').textContent = userData.referrals?.level3?.length || 0;
+            
+            document.getElementById('referralLink').textContent = generateReferralLink();
+            
+            const referBtn = document.getElementById('referTaskBtn');
+            if ((userData.referrals?.level1?.length || 0) > 0 && !userData.referTaskClaimed) {
+                referBtn.textContent = 'ক্লেইম';
+                referBtn.disabled = false;
+                referBtn.classList.remove('completed');
+            } else if (userData.referTaskClaimed) {
+                referBtn.textContent = 'ক্লেইম করা হয়েছে';
+                referBtn.disabled = true;
+                referBtn.classList.add('completed');
+            } else {
+                referBtn.textContent = 'ক্লেইম';
+                referBtn.disabled = true;
+            }
+            
+            const today = new Date().toDateString();
+            const dailyBtn = document.getElementById('dailyBonusBtn');
+            if (userData.lastDailyBonus === today) {
+                dailyBtn.textContent = 'ক্লেইম করা হয়েছে';
+                dailyBtn.disabled = true;
+                dailyBtn.classList.add('completed');
+            } else {
+                dailyBtn.textContent = 'ক্লেইম';
+                dailyBtn.disabled = false;
+                dailyBtn.classList.remove('completed');
+            }
+            
+            document.getElementById('dailyStreak').textContent = Math.floor(Math.random() * 10) + 1;
+        }
+
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = 'message ' + type;
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 3000);
+        }
+
+        // ========== অ্যাড ফাংশন ==========
+        async function watchManualAd() {
+            const btn = document.getElementById('watchAdBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            
+            showMessage('অ্যাড লোড হচ্ছে...', 'info');
+            
+            if (typeof show_10603637 === 'function') {
+                show_10603637().then(async () => {
+                    userData.points += 5;
+                    userData.totalViews += 1;
+                    
+                    const userRef = db.ref('users/' + userData.id);
+                    await userRef.set(userData);
+                    
+                    updateUI();
+                    showMessage('অভিনন্দন! +৫ পয়েন্ট! 🎉', 'success');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }).catch(() => {
+                    showMessage('অ্যাড দেখাতে সমস্যা হয়েছে', 'error');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                });
+            } else {
+                setTimeout(async () => {
+                    userData.points += 5;
+                    userData.totalViews += 1;
+                    
+                    const userRef = db.ref('users/' + userData.id);
+                    await userRef.set(userData);
+                    
+                    updateUI();
+                    showMessage('+৫ পয়েন্ট!', 'success');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }, 2000);
+            }
+        }
+
+        // ========== রেফারেল ফাংশন ==========
+        function generateReferralLink() {
+            return `https://t.me/EarnQuick_Official_bot/app?startapp=ref_${userData.id}`;
+        }
+
+        function copyReferralLink() {
+            navigator.clipboard.writeText(generateReferralLink());
+            showMessage('রেফারেল লিংক কপি হয়েছে!', 'success');
+        }
+
+        function shareReferralLink() {
+            const link = generateReferralLink();
+            const text = `🎁 EarnQuick এ জয়েন হয়ে পয়েন্ট আয় করুন!\n\n✅ প্রতি অ্যাড দেখে ৫ পয়েন্ট\n✅ ডেইলি বোনাস ৫০ পয়েন্ট\n✅ রেফার করে ২০০ পয়েন্ট\n✅ ৪০০০ পয়েন্ট = ২০ টাকা উইথড্র\n\n${link}`;
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ========== টাস্ক ফাংশন ==========
+        async function claimReferTask() {
+            if ((userData.referrals?.level1?.length || 0) > 0 && !userData.referTaskClaimed) {
+                userData.points += 200;
+                userData.referTaskClaimed = true;
+                
+                const userRef = db.ref('users/' + userData.id);
+                await userRef.set(userData);
+                
+                updateUI();
+                showMessage('রেফারেল বোনাস +২০০ পয়েন্ট! 👥', 'success');
+            } else if (userData.referTaskClaimed) {
+                showMessage('ইতিমধ্যে ক্লেইম করেছেন!', 'error');
+            } else {
+                showMessage('প্রথমে ১ জন রেফার করুন!', 'error');
+            }
+        }
+
+        async function claimDailyBonus() {
+            const today = new Date().toDateString();
+            if (userData.lastDailyBonus !== today) {
+                userData.points += 50;
+                userData.lastDailyBonus = today;
+                
+                const userRef = db.ref('users/' + userData.id);
+                await userRef.set(userData);
+                
+                updateUI();
+                showMessage('ডেইলি বোনাস +৫০ পয়েন্ট! 🎁', 'success');
+            } else {
+                showMessage('আজকের বোনাস নিয়েছেন!', 'error');
+            }
+        }
+
+        // ========== নেভিগেশন ==========
+        function switchSection(section) {
+            document.getElementById('homeSection').style.display = 'none';
+            document.getElementById('withdrawSection').style.display = 'none';
+            document.getElementById('profileSection').style.display = 'none';
+            
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            
+            if (section === 'home') {
+                document.getElementById('homeSection').style.display = 'block';
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (section === 'profile') {
+                document.getElementById('profileSection').style.display = 'block';
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            } else if (section === 'withdraw') {
+                document.getElementById('withdrawSection').style.display = 'block';
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (section === 'tasks') {
+                document.getElementById('homeSection').style.display = 'block';
+                document.querySelectorAll('.nav-item')[3].classList.add('active');
+            }
+        }
+
+        // ========== উইথড্র ফাংশন ==========
+        function openWithdrawModal(method) {
+            currentWithdrawMethod = method;
+            const modal = document.getElementById('withdrawModal');
+            const title = document.getElementById('modalTitle');
+            const amount = document.getElementById('modalAmount');
+            
+            const methods = {
+                'bkash': { name: 'বিকাশ', min: 4000, taka: 20 },
+                'nagad': { name: 'নগদ', min: 4000, taka: 20 },
+                'rocket': { name: 'রকেট', min: 4000, taka: 20 },
+                'recharge': { name: 'মোবাইল রিচার্জ', min: 2000, taka: 10 }
+            };
+            
+            title.textContent = methods[method].name;
+            amount.textContent = `প্রাপ্তি: ${methods[method].taka} টাকা (ন্যূনতম ${methods[method].min} পয়েন্ট)`;
+            
+            if (userData.points >= methods[method].min) {
+                modal.style.display = 'flex';
+            } else {
+                showMessage(`ন্যূনতম ${methods[method].min} পয়েন্ট প্রয়োজন!`, 'error');
+            }
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').style.display = 'none';
+            document.getElementById('withdrawPhone').value = '';
+        }
+
+        async function processWithdraw() {
+            const phone = document.getElementById('withdrawPhone').value;
+            
+            if (!phone || phone.length < 11) {
+                showMessage('সঠিক মোবাইল নম্বর দিন!', 'error');
+                return;
+            }
+            
+            const methods = {
+                'bkash': { min: 4000, taka: 20 },
+                'nagad': { min: 4000, taka: 20 },
+                'rocket': { min: 4000, taka: 20 },
+                'recharge': { min: 2000, taka: 10 }
+            };
+            
+            const method = methods[currentWithdrawMethod];
+            
+            if (userData.points >= method.min) {
+                userData.points -= method.min;
+                
+                const withdrawId = 'WD_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                const withdrawData = {
+                    id: withdrawId,
+                    userId: userData.id,
+                    method: currentWithdrawMethod,
+                    phone: phone,
+                    points: method.min,
+                    amount: method.taka,
+                    status: 'pending',
+                    requestedAt: new Date().toISOString()
+                };
+                
+                if (!userData.withdrawHistory) userData.withdrawHistory = [];
+                userData.withdrawHistory.push({
+                    id: withdrawId,
+                    method: currentWithdrawMethod,
+                    phone: phone,
+                    points: method.min,
+                    amount: method.taka,
+                    status: 'pending',
+                    date: new Date().toISOString()
+                });
+                
+                const updates = {};
+                updates['/users/' + userData.id] = userData;
+                updates['/withdrawals/' + withdrawId] = withdrawData;
+                
+                await db.ref().update(updates);
+                
+                updateUI();
+                showMessage(`উইথড্র রিকোয়েস্ট জমা হয়েছে! 📱`, 'success');
+                closeWithdrawModal();
+            }
+        }
+
+        // ========== রিয়েল-টাইম আপডেট ==========
+        function setupRealtimeUpdates() {
+            const userRef = db.ref('users/' + userData.id);
+            userRef.on('value', (snapshot) => {
+                if (snapshot.exists()) {
+                    userData = snapshot.val();
+                    updateUI();
+                }
+            });
+        }
+
+        // ========== স্টার্ট ==========
+        window.onload = loadUser;
+    </script>
 </body>
 </html>
