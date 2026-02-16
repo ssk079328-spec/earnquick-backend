@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EarnQuick - অ্যাডমিন কন্ট্রোল প্যানেল</title>
+    <title>EarnQuick - অ্যাডমিন কন্ট্রোল প্যানেল (সম্পূর্ণ)</title>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -105,6 +105,11 @@
             color: white;
         }
 
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
@@ -170,6 +175,7 @@
             border-radius: 20px;
             margin-bottom: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow-x: auto;
         }
 
         .tab-buttons {
@@ -187,6 +193,7 @@
             transition: all 0.3s;
             background: #f0f0f0;
             color: #666;
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -333,9 +340,61 @@
             color: #333;
         }
 
+        /* সেটিংস গ্রুপ */
+        .settings-group {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .settings-group h4 {
+            margin-bottom: 15px;
+            color: #5E35B1;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .settings-row label {
+            min-width: 150px;
+            font-weight: 600;
+        }
+
+        .settings-row input, .settings-row select {
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            flex: 1;
+        }
+
+        /* চার্ট */
+        .chart-container {
+            margin-top: 20px;
+            height: 300px;
+        }
+
         @media (max-width: 768px) {
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
+            }
+            
+            .settings-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .settings-row label {
+                min-width: auto;
+            }
+            
+            .settings-row input, .settings-row select {
+                width: 100%;
             }
         }
     </style>
@@ -346,31 +405,38 @@
         <div class="admin-header">
             <div class="header-left">
                 <h1><i class="fas fa-crown"></i> EarnQuick অ্যাডমিন প্যানেল</h1>
-                <p>সম্পূর্ণ কন্ট্রোল + লক সিস্টেম + টোটাল ডাটা</p>
+                <p>সম্পূর্ণ কন্ট্রোল | টোটাল কন্ট্রোল | রিয়েল টাইম</p>
             </div>
             <div class="header-right">
-                <div class="date-badge">
-                    <i class="fas fa-calendar"></i> <span id="currentDate"></span>
-                </div>
+                <div class="date-badge" id="currentDate"></div>
                 <button class="btn btn-primary" onclick="refreshData()">
                     <i class="fas fa-sync-alt"></i> রিফ্রেশ
+                </button>
+                <button class="btn btn-success" onclick="exportFullDatabase()">
+                    <i class="fas fa-database"></i> ব্যাকআপ
                 </button>
             </div>
         </div>
 
-        <!-- টোটাল স্ট্যাটস গ্রিড -->
+        <!-- ড্যাশবোর্ড স্ট্যাটস -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
                 <div class="stat-label">মোট ইউজার</div>
                 <div class="stat-value" id="totalUsers">0</div>
-                <div class="stat-change" id="totalUsersDetail">লকড: 0 | আনলকড: 0</div>
+                <div class="stat-change">আজ: <span id="todayUsers">0</span></div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-user-plus"></i></div>
-                <div class="stat-label">আজকের জয়েন</div>
-                <div class="stat-value" id="todayUsers">0</div>
-                <div class="stat-change">গতকাল: <span id="yesterdayUsers">0</span></div>
+                <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+                <div class="stat-label">সক্রিয় ইউজার</div>
+                <div class="stat-value" id="activeUsers">0</div>
+                <div class="stat-change">৭ দিন</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-lock"></i></div>
+                <div class="stat-label">লকড ইউজার</div>
+                <div class="stat-value" id="lockedUsers">0</div>
+                <div class="stat-change"><span id="lockedPercent">0%</span></div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-coins"></i></div>
@@ -378,16 +444,15 @@
                 <div class="stat-value" id="totalPoints">0</div>
                 <div class="stat-change">≈ ৳<span id="totalBdt">0</span></div>
             </div>
+        </div>
+
+        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-eye"></i></div>
                 <div class="stat-label">মোট ভিউ</div>
                 <div class="stat-value" id="totalViews">0</div>
                 <div class="stat-change">আজ: <span id="todayViews">0</span></div>
             </div>
-        </div>
-
-        <!-- দ্বিতীয় সারি স্ট্যাটস -->
-        <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-sitemap"></i></div>
                 <div class="stat-label">মোট রেফারেল</div>
@@ -406,42 +471,90 @@
                 <div class="stat-value" id="pendingWithdraw">0</div>
                 <div class="stat-change">৳<span id="pendingBdt">0</span></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-lock"></i></div>
-                <div class="stat-label">লকড ইউজার</div>
-                <div class="stat-value" id="lockedUsers">0</div>
-                <div class="stat-change"><span id="lockedPercent">0%</span> ইউজার</div>
-            </div>
         </div>
 
         <!-- ট্যাব নেভিগেশন -->
         <div class="tab-nav">
             <div class="tab-buttons">
-                <button class="tab-btn active" onclick="showTab('users')">
+                <button class="tab-btn active" onclick="showTab('dashboard')">
+                    <i class="fas fa-chart-pie"></i> ড্যাশবোর্ড
+                </button>
+                <button class="tab-btn" onclick="showTab('users')">
                     <i class="fas fa-users"></i> ইউজার লিস্ট
                 </button>
-                <button class="tab-btn" onclick="showTab('locked')">
-                    <i class="fas fa-lock"></i> লকড ইউজার
+                <button class="tab-btn" onclick="showTab('withdrawals')">
+                    <i class="fas fa-money-bill-wave"></i> উইথড্র
+                </button>
+                <button class="tab-btn" onclick="showTab('referrals')">
+                    <i class="fas fa-sitemap"></i> রেফারেল ট্রি
+                </button>
+                <button class="tab-btn" onclick="showTab('settings')">
+                    <i class="fas fa-cog"></i> সেটিংস
+                </button>
+                <button class="tab-btn" onclick="showTab('reports')">
+                    <i class="fas fa-file-alt"></i> রিপোর্টস
                 </button>
                 <button class="tab-btn" onclick="showTab('stats')">
-                    <i class="fas fa-chart-bar"></i> ডিটেইল স্ট্যাটস
-                </button>
-                <button class="tab-btn" onclick="showTab('search')">
-                    <i class="fas fa-search"></i> সার্চ ইউজার
+                    <i class="fas fa-chart-line"></i> ডিটেইল স্ট্যাটস
                 </button>
             </div>
         </div>
 
+        <!-- ড্যাশবোর্ড ট্যাব -->
+        <div id="tab-dashboard" class="tab-pane active">
+            <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="stat-card">
+                    <div class="stat-label">গড় পয়েন্ট প্রতি ইউজার</div>
+                    <div class="stat-value" id="avgPoints">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">গড় ভিউ প্রতি ইউজার</div>
+                    <div class="stat-value" id="avgViews">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">সর্বোচ্চ পয়েন্ট</div>
+                    <div class="stat-value" id="maxPoints">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">সর্বোচ্চ রেফারেল</div>
+                    <div class="stat-value" id="maxReferrals">0</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="userChart"></canvas>
+            </div>
+
+            <div class="table-container" style="margin-top: 20px;">
+                <h3>🏆 টপ ১০ ইউজার</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>র‍্যাঙ্ক</th>
+                            <th>ইউজার ID</th>
+                            <th>নাম</th>
+                            <th>পয়েন্ট</th>
+                            <th>ভিউ</th>
+                            <th>রেফারেল</th>
+                            <th>স্ট্যাটাস</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topUsersBody"></tbody>
+                </table>
+            </div>
+        </div>
+
         <!-- ইউজার লিস্ট ট্যাব -->
-        <div id="tab-users" class="tab-pane active">
+        <div id="tab-users" class="tab-pane">
             <div class="filter-section">
-                <input type="text" class="filter-input" id="userSearch" placeholder="🔍 ইউজার আইডি বা নাম সার্চ করুন...">
+                <input type="text" class="filter-input" id="userSearch" placeholder="🔍 ইউজার আইডি বা নাম সার্চ...">
                 <select class="filter-select" id="userFilter">
                     <option value="all">সব ইউজার</option>
-                    <option value="locked">🔒 লকড ইউজার</option>
-                    <option value="unlocked">✅ আনলকড ইউজার</option>
+                    <option value="locked">🔒 লকড</option>
+                    <option value="unlocked">✅ আনলকড</option>
                     <option value="hasReferral">রেফারেল আছে</option>
                     <option value="noReferral">রেফারেল নেই</option>
+                    <option value="highPoints">উচ্চ পয়েন্ট (>১০০০)</option>
                 </select>
                 <select class="filter-select" id="userSort">
                     <option value="points_desc">পয়েন্ট (উচ্চ→নিম্ন)</option>
@@ -449,7 +562,7 @@
                     <option value="date_desc">জয়েন (নতুন)</option>
                     <option value="date_asc">জয়েন (পুরাতন)</option>
                 </select>
-                <button class="btn btn-success" onclick="exportUsers()">
+                <button class="btn btn-primary" onclick="exportUsers()">
                     <i class="fas fa-download"></i> এক্সপোর্ট
                 </button>
             </div>
@@ -458,9 +571,10 @@
                 <table id="usersTable">
                     <thead>
                         <tr>
-                            <th>User ID</th>
+                            <th>ইউজার ID</th>
                             <th>নাম</th>
                             <th>পয়েন্ট</th>
+                            <th>টাকা</th>
                             <th>ভিউ</th>
                             <th>রেফারেল</th>
                             <th>স্ট্যাটাস</th>
@@ -468,38 +582,183 @@
                             <th>অ্যাকশন</th>
                         </tr>
                     </thead>
-                    <tbody id="usersTableBody">
-                        <tr><td colspan="8">লোড হচ্ছে...</td></tr>
-                    </tbody>
+                    <tbody id="usersTableBody"></tbody>
                 </table>
             </div>
         </div>
 
-        <!-- লকড ইউজার ট্যাব -->
-        <div id="tab-locked" class="tab-pane">
+        <!-- উইথড্র ট্যাব -->
+        <div id="tab-withdrawals" class="tab-pane">
             <div class="filter-section">
-                <h3><i class="fas fa-lock"></i> লকড ইউজার ( <span id="lockedCount">0</span> )</h3>
-                <button class="btn btn-success" onclick="unlockAllUsers()">
-                    <i class="fas fa-unlock-alt"></i> সব আনলক করুন
+                <select class="filter-select" id="withdrawFilter">
+                    <option value="all">সব রিকোয়েস্ট</option>
+                    <option value="pending">⏳ পেন্ডিং</option>
+                    <option value="approved">✅ অ্যাপ্রুভড</option>
+                    <option value="rejected">❌ রিজেক্টেড</option>
+                </select>
+                <button class="btn btn-success" onclick="processAllWithdrawals()">
+                    <i class="fas fa-check-double"></i> সব পেন্ডিং প্রসেস
                 </button>
             </div>
             
             <div class="table-container">
-                <table id="lockedTable">
+                <table id="withdrawalsTable">
                     <thead>
                         <tr>
-                            <th>User ID</th>
+                            <th>ইউজার ID</th>
                             <th>নাম</th>
+                            <th>পদ্ধতি</th>
+                            <th>নম্বর</th>
                             <th>পয়েন্ট</th>
-                            <th>ভিউ</th>
-                            <th>লক তারিখ</th>
+                            <th>টাকা</th>
+                            <th>স্ট্যাটাস</th>
+                            <th>তারিখ</th>
                             <th>অ্যাকশন</th>
                         </tr>
                     </thead>
-                    <tbody id="lockedTableBody">
-                        <tr><td colspan="6">লোড হচ্ছে...</td></tr>
-                    </tbody>
+                    <tbody id="withdrawalsBody"></tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- রেফারেল ট্রি ট্যাব -->
+        <div id="tab-referrals" class="tab-pane">
+            <div class="filter-section">
+                <input type="text" class="filter-input" id="referralSearch" placeholder="🔍 ইউজার আইডি সার্চ...">
+                <button class="btn btn-info" onclick="showReferralTree()">
+                    <i class="fas fa-project-diagram"></i> ট্রি ভিউ
+                </button>
+                <button class="btn btn-primary" onclick="exportReferrals()">
+                    <i class="fas fa-download"></i> এক্সপোর্ট
+                </button>
+            </div>
+            
+            <div class="table-container">
+                <table id="referralsTable">
+                    <thead>
+                        <tr>
+                            <th>রেফারার</th>
+                            <th>লেভেল ১</th>
+                            <th>লেভেল ২</th>
+                            <th>লেভেল ৩</th>
+                            <th>মোট কমিশন</th>
+                            <th>অ্যাকশন</th>
+                        </tr>
+                    </thead>
+                    <tbody id="referralsBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- সেটিংস ট্যাব -->
+        <div id="tab-settings" class="tab-pane">
+            <div class="settings-group">
+                <h4>🎯 পয়েন্ট সেটিংস</h4>
+                <div class="settings-row">
+                    <label>প্রতি অ্যাডে পয়েন্ট:</label>
+                    <input type="number" id="adPoints" value="5" min="1" max="100">
+                    <button class="btn btn-success" onclick="updateAdPoints()">আপডেট</button>
+                </div>
+                <div class="settings-row">
+                    <label>রেফারেল বোনাস (L1):</label>
+                    <input type="number" id="refBonusL1" value="200" min="0">
+                    <button class="btn btn-success" onclick="updateRefBonuses()">আপডেট</button>
+                </div>
+                <div class="settings-row">
+                    <label>রেফারেল বোনাস (L2):</label>
+                    <input type="number" id="refBonusL2" value="100" min="0">
+                </div>
+                <div class="settings-row">
+                    <label>রেফারেল বোনাস (L3):</label>
+                    <input type="number" id="refBonusL3" value="50" min="0">
+                </div>
+                <div class="settings-row">
+                    <label>ডেইলি বোনাস:</label>
+                    <input type="number" id="dailyBonus" value="50" min="0">
+                    <button class="btn btn-success" onclick="updateDailyBonus()">আপডেট</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h4>💳 উইথড্র সেটিংস</h4>
+                <div class="settings-row">
+                    <label>বিকাশ/নগদ/রকেট (পয়েন্ট):</label>
+                    <input type="number" id="withdrawPoints" value="4000" min="1000">
+                    <span> = ২০ টাকা</span>
+                    <button class="btn btn-success" onclick="updateWithdrawRate()">আপডেট</button>
+                </div>
+                <div class="settings-row">
+                    <label>মোবাইল রিচার্জ (পয়েন্ট):</label>
+                    <input type="number" id="rechargePoints" value="2000" min="500">
+                    <span> = ১০ টাকা</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h4>🔗 Monetag সেটিংস</h4>
+                <div class="settings-row">
+                    <label>Vignette Zone ID:</label>
+                    <input type="text" id="vignetteZone" value="10616027">
+                    <button class="btn btn-success" onclick="updateMonetagZones()">আপডেট</button>
+                </div>
+                <div class="settings-row">
+                    <label>Rewarded Zone ID:</label>
+                    <input type="text" id="rewardedZone" value="10603637">
+                </div>
+                <div class="settings-row">
+                    <label>Interstitial Zone ID:</label>
+                    <input type="text" id="interstitialZone" value="10603638">
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h4>⚙️ সিস্টেম সেটিংস</h4>
+                <div class="settings-row">
+                    <label>অটো লক (দিন):</label>
+                    <input type="number" id="autoLockDays" value="7" min="1" max="30">
+                    <button class="btn btn-success" onclick="updateAutoLock()">আপডেট</button>
+                </div>
+                <div class="settings-row">
+                    <label>মেইনটেন্যান্স মোড:</label>
+                    <select id="maintenanceMode">
+                        <option value="off">বন্ধ</option>
+                        <option value="on">চালু</option>
+                    </select>
+                    <button class="btn btn-warning" onclick="toggleMaintenance()">সেভ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- রিপোর্টস ট্যাব -->
+        <div id="tab-reports" class="tab-pane">
+            <div class="filter-section">
+                <button class="btn btn-success" onclick="exportReport('daily')">
+                    <i class="fas fa-calendar-day"></i> ডেইলি রিপোর্ট
+                </button>
+                <button class="btn btn-primary" onclick="exportReport('weekly')">
+                    <i class="fas fa-calendar-week"></i> উইকলি রিপোর্ট
+                </button>
+                <button class="btn btn-warning" onclick="exportReport('monthly')">
+                    <i class="fas fa-calendar-alt"></i> মান্থলি রিপোর্ট
+                </button>
+                <button class="btn btn-info" onclick="exportReport('yearly')">
+                    <i class="fas fa-calendar"></i> ইয়ারলি রিপোর্ট
+                </button>
+            </div>
+
+            <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 20px;">
+                <div class="stat-card">
+                    <div class="stat-label">গত ৭ দিনের গ্রোথ</div>
+                    <div class="stat-value" id="weeklyGrowth">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">গত ৩০ দিনের গ্রোথ</div>
+                    <div class="stat-value" id="monthlyGrowth">+0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">রেফারেল কনভার্সন</div>
+                    <div class="stat-value" id="referralConversion">0%</div>
+                </div>
             </div>
         </div>
 
@@ -507,82 +766,59 @@
         <div id="tab-stats" class="tab-pane">
             <div class="stats-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="stat-card">
-                    <div class="stat-label">গড় পয়েন্ট</div>
-                    <div class="stat-value" id="avgPoints">0</div>
+                    <div class="stat-label">মোট কমিশন দেওয়া</div>
+                    <div class="stat-value" id="totalCommission">0</div>
+                    <div class="stat-change">৳<span id="totalCommissionBdt">0</span></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">গড় ভিউ</div>
-                    <div class="stat-value" id="avgViews">0</div>
+                    <div class="stat-label">রেফারেল কাউন্ট</div>
+                    <div class="stat-value" id="totalReferralCount">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">সর্বোচ্চ পয়েন্ট</div>
-                    <div class="stat-value" id="maxPoints">0</div>
+                    <div class="stat-label">গড় রেফারেল/ইউজার</div>
+                    <div class="stat-value" id="avgReferral">0</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">সর্বোচ্চ ভিউ</div>
-                    <div class="stat-value" id="maxViews">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">রেফারেল রেট</div>
-                    <div class="stat-value" id="referralRate">0%</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">কনভার্সন</div>
-                    <div class="stat-value" id="conversionRate">0%</div>
+                    <div class="stat-label">রিটার্নিং ইউজার</div>
+                    <div class="stat-value" id="returningUsers">0%</div>
                 </div>
             </div>
-            
-            <div class="table-container" style="margin-top: 20px;">
-                <h3>📊 টপ ১০ ইউজার</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>র‍্যাঙ্ক</th>
-                            <th>User ID</th>
-                            <th>নাম</th>
-                            <th>পয়েন্ট</th>
-                            <th>ভিউ</th>
-                            <th>রেফারেল</th>
-                        </tr>
-                    </thead>
-                    <tbody id="topUsersBody">
-                        <tr><td colspan="6">লোড হচ্ছে...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
 
-        <!-- সার্চ ইউজার ট্যাব -->
-        <div id="tab-search" class="tab-pane">
-            <div class="filter-section">
-                <input type="text" class="filter-input" id="searchUserId" placeholder="🔍 ইউজার আইডি লিখুন (যেমন: 7712336151)" style="flex: 2;">
-                <button class="btn btn-primary" onclick="searchSpecificUser()">
-                    <i class="fas fa-search"></i> সার্চ
-                </button>
-                <button class="btn btn-info" onclick="checkUser7712336151()">
-                    <i class="fas fa-check-circle"></i> চেক 7712336151
-                </button>
-            </div>
-            
-            <div id="searchResult" style="display: none;">
-                <h3>সার্চ রেজাল্ট</h3>
-                <div class="table-container">
-                    <table>
-                        <tbody id="searchResultBody"></tbody>
-                    </table>
-                </div>
+            <div class="chart-container">
+                <canvas id="statsChart"></canvas>
             </div>
         </div>
     </div>
 
-    <!-- ইউজার ডিটেইল মডেল -->
-    <div id="userDetailModal" class="modal">
+    <!-- ইউজার এডিট মডেল -->
+    <div id="userEditModal" class="modal">
         <div class="modal-content">
-            <h3><i class="fas fa-user-circle"></i> ইউজার বিস্তারিত</h3>
-            <div id="userDetails"></div>
-            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: flex-end;">
-                <button class="btn btn-warning" id="lockUnlockBtn" onclick="toggleUserLock(currentUserId)">লক/আনলক</button>
-                <button class="btn btn-danger" onclick="closeModal()">বন্ধ করুন</button>
+            <h3><i class="fas fa-user-edit"></i> ইউজার এডিট</h3>
+            <div id="userEditDetails"></div>
+            <div style="margin-top: 20px;">
+                <input type="number" id="editPoints" placeholder="নতুন পয়েন্ট" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                <select id="editStatus" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+                    <option value="false">আনলকড</option>
+                    <option value="true">লকড</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-success" onclick="saveUserEdit()">সেভ</button>
+                <button class="btn btn-danger" onclick="deleteUser()">ডিলিট</button>
+                <button class="btn btn-secondary" onclick="closeModal()">বাতিল</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- উইথড্র প্রসেস মডেল -->
+    <div id="withdrawModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-money-bill"></i> উইথড্র প্রসেস</h3>
+            <div id="withdrawDetails"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-success" onclick="approveWithdraw()">অ্যাপ্রুভ</button>
+                <button class="btn btn-warning" onclick="rejectWithdraw()">রিজেক্ট</button>
+                <button class="btn btn-secondary" onclick="closeModal()">বাতিল</button>
             </div>
         </div>
     </div>
@@ -591,38 +827,88 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <script>
+        // ============================================
         // গ্লোবাল ভেরিয়েবল
+        // ============================================
         let allUsers = [];
+        let allWithdrawals = [];
         let currentUserId = null;
+        let currentWithdrawId = null;
+        let settings = {
+            adPoints: 5,
+            refBonusL1: 200,
+            refBonusL2: 100,
+            refBonusL3: 50,
+            dailyBonus: 50,
+            withdrawPoints: 4000,
+            rechargePoints: 2000,
+            vignetteZone: '10616027',
+            rewardedZone: '10603637',
+            interstitialZone: '10603638',
+            autoLockDays: 7,
+            maintenanceMode: 'off'
+        };
 
-        // পৃষ্ঠা লোড হলে
+        // ============================================
+        // ইনিশিয়ালাইজ
+        // ============================================
         document.addEventListener('DOMContentLoaded', function() {
+            updateDate();
+            loadAllData();
+            initCharts();
+            loadSettings();
+            
+            // প্রতি ১০ সেকেন্ডে রিফ্রেশ
+            setInterval(loadAllData, 10000);
+        });
+
+        function updateDate() {
             document.getElementById('currentDate').textContent = new Date().toLocaleDateString('bn-BD', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
             });
-            
-            loadAllData();
-            
-            // প্রতি ১০ সেকেন্ডে ডাটা রিফ্রেশ
-            setInterval(loadAllData, 10000);
-        });
-
-        // সব ডাটা লোড
-        function loadAllData() {
-            loadUsers();
-            updateStats();
-            displayUsers();
-            displayLockedUsers();
-            updateTopUsers();
-            
-            // স্পেসিফিক ইউজার 7712336151 চেক
-            checkUserPresence('7712336151');
         }
 
-        // ইউজার ডাটা লোড
+        function loadSettings() {
+            const saved = localStorage.getItem('earnquick_admin_settings');
+            if (saved) {
+                settings = { ...settings, ...JSON.parse(saved) };
+            }
+            
+            document.getElementById('adPoints').value = settings.adPoints;
+            document.getElementById('refBonusL1').value = settings.refBonusL1;
+            document.getElementById('refBonusL2').value = settings.refBonusL2;
+            document.getElementById('refBonusL3').value = settings.refBonusL3;
+            document.getElementById('dailyBonus').value = settings.dailyBonus;
+            document.getElementById('withdrawPoints').value = settings.withdrawPoints;
+            document.getElementById('rechargePoints').value = settings.rechargePoints;
+            document.getElementById('vignetteZone').value = settings.vignetteZone;
+            document.getElementById('rewardedZone').value = settings.rewardedZone;
+            document.getElementById('interstitialZone').value = settings.interstitialZone;
+            document.getElementById('autoLockDays').value = settings.autoLockDays;
+            document.getElementById('maintenanceMode').value = settings.maintenanceMode;
+        }
+
+        function saveSettings() {
+            localStorage.setItem('earnquick_admin_settings', JSON.stringify(settings));
+        }
+
+        // ============================================
+        // ডাটা লোড
+        // ============================================
+        function loadAllData() {
+            loadUsers();
+            loadWithdrawals();
+            updateStats();
+            displayUsers();
+            displayWithdrawals();
+            updateTopUsers();
+            updateReferrals();
+            updateDetailedStats();
+        }
+
         function loadUsers() {
             allUsers = [];
             
@@ -638,12 +924,15 @@
                             name: userData.name || 'Unknown',
                             points: userData.points || 0,
                             totalViews: userData.totalViews || 0,
-                            referrals: userData.referrals || { level1: [], level2: [], level3: [] },
+                            referrals: {
+                                level1: userData.referrals?.level1 || [],
+                                level2: userData.referrals?.level2 || [],
+                                level3: userData.referrals?.level3 || []
+                            },
                             referredBy: userData.referredBy || null,
                             joinDate: userData.joinDate || 'Unknown',
-                            lastActive: userData.lastActive || new Date().toISOString().split('T')[0],
+                            lastActive: userData.lastActive || 'Unknown',
                             isLocked: userData.isLocked || false,
-                            lockDate: userData.lockDate || null,
                             withdrawHistory: userData.withdrawHistory || []
                         };
                         
@@ -655,53 +944,112 @@
             }
         }
 
+        function loadWithdrawals() {
+            allWithdrawals = [];
+            
+            allUsers.forEach(user => {
+                if (user.withdrawHistory && user.withdrawHistory.length > 0) {
+                    user.withdrawHistory.forEach(w => {
+                        allWithdrawals.push({
+                            id: w.id || `WD${Date.now()}_${Math.random()}`,
+                            userId: user.id,
+                            name: user.name,
+                            method: w.method || 'unknown',
+                            phone: w.phone || 'N/A',
+                            points: w.points || 0,
+                            taka: w.taka || 0,
+                            status: w.status || 'pending',
+                            date: w.date || user.joinDate
+                        });
+                    });
+                }
+            });
+        }
+
+        // ============================================
         // স্ট্যাটস আপডেট
+        // ============================================
         function updateStats() {
             const totalUsers = allUsers.length;
+            const today = new Date().toDateString();
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString();
+            
+            const todayUsers = allUsers.filter(u => u.joinDate === today).length;
+            const activeUsers = allUsers.filter(u => u.lastActive >= weekAgo).length;
             const lockedUsers = allUsers.filter(u => u.isLocked).length;
-            const unlockedUsers = totalUsers - lockedUsers;
             
             const totalPoints = allUsers.reduce((sum, u) => sum + u.points, 0);
             const totalViews = allUsers.reduce((sum, u) => sum + u.totalViews, 0);
             const totalReferrals = allUsers.reduce((sum, u) => sum + u.referrals.level1.length, 0);
             
-            const today = new Date().toDateString();
-            const todayUsers = allUsers.filter(u => u.joinDate === today).length;
-            const yesterday = new Date(Date.now() - 86400000).toDateString();
-            const yesterdayUsers = allUsers.filter(u => u.joinDate === yesterday).length;
+            const totalWithdraw = allWithdrawals.filter(w => w.status === 'approved').reduce((sum, w) => sum + w.points, 0);
+            const pendingWithdraw = allWithdrawals.filter(w => w.status === 'pending').reduce((sum, w) => sum + w.points, 0);
             
-            // সিমুলেটেড উইথড্র ডাটা
-            const totalWithdraw = Math.floor(totalPoints * 0.3);
-            const pendingWithdraw = Math.floor(totalPoints * 0.1);
-            
-            // UI আপডেট
             document.getElementById('totalUsers').textContent = totalUsers;
-            document.getElementById('totalUsersDetail').textContent = `লকড: ${lockedUsers} | আনলকড: ${unlockedUsers}`;
             document.getElementById('todayUsers').textContent = todayUsers;
-            document.getElementById('yesterdayUsers').textContent = yesterdayUsers;
+            document.getElementById('activeUsers').textContent = activeUsers;
+            document.getElementById('lockedUsers').textContent = lockedUsers;
+            document.getElementById('lockedPercent').textContent = totalUsers ? ((lockedUsers / totalUsers) * 100).toFixed(1) + '%' : '0%';
+            
             document.getElementById('totalPoints').textContent = totalPoints;
             document.getElementById('totalBdt').textContent = (totalPoints / 200).toFixed(2);
             document.getElementById('totalViews').textContent = totalViews;
-            document.getElementById('todayViews').textContent = Math.floor(totalViews / 30);
+            document.getElementById('todayViews').textContent = Math.floor(totalViews / 30) || 0;
+            
             document.getElementById('totalReferrals').textContent = totalReferrals;
             document.getElementById('level1Total').textContent = totalReferrals;
+            
             document.getElementById('totalWithdraw').textContent = totalWithdraw;
             document.getElementById('totalWithdrawBdt').textContent = (totalWithdraw / 200).toFixed(2);
             document.getElementById('pendingWithdraw').textContent = pendingWithdraw;
             document.getElementById('pendingBdt').textContent = (pendingWithdraw / 200).toFixed(2);
-            document.getElementById('lockedUsers').textContent = lockedUsers;
-            document.getElementById('lockedPercent').textContent = totalUsers ? ((lockedUsers / totalUsers) * 100).toFixed(1) + '%' : '0%';
+        }
+
+        function updateDetailedStats() {
+            const totalUsers = allUsers.length;
+            const totalPoints = allUsers.reduce((sum, u) => sum + u.points, 0);
+            const totalViews = allUsers.reduce((sum, u) => sum + u.totalViews, 0);
+            const totalReferrals = allUsers.reduce((sum, u) => sum + u.referrals.level1.length, 0);
             
-            // ডিটেইল স্ট্যাটস
+            const totalCommission = allUsers.reduce((sum, u) => {
+                return sum + (u.referrals.level1.length * settings.refBonusL1) +
+                             (u.referrals.level2.length * settings.refBonusL2) +
+                             (u.referrals.level3.length * settings.refBonusL3);
+            }, 0);
+            
             document.getElementById('avgPoints').textContent = totalUsers ? Math.floor(totalPoints / totalUsers) : 0;
             document.getElementById('avgViews').textContent = totalUsers ? Math.floor(totalViews / totalUsers) : 0;
             document.getElementById('maxPoints').textContent = allUsers.length ? Math.max(...allUsers.map(u => u.points)) : 0;
-            document.getElementById('maxViews').textContent = allUsers.length ? Math.max(...allUsers.map(u => u.totalViews)) : 0;
-            document.getElementById('referralRate').textContent = totalUsers ? ((totalReferrals / totalUsers) * 100).toFixed(1) + '%' : '0%';
-            document.getElementById('conversionRate').textContent = '15%'; // সিমুলেটেড
+            document.getElementById('maxReferrals').textContent = allUsers.length ? Math.max(...allUsers.map(u => u.referrals.level1.length)) : 0;
+            
+            document.getElementById('totalCommission').textContent = totalCommission;
+            document.getElementById('totalCommissionBdt').textContent = (totalCommission / 200).toFixed(2);
+            document.getElementById('totalReferralCount').textContent = totalReferrals;
+            document.getElementById('avgReferral').textContent = totalUsers ? (totalReferrals / totalUsers).toFixed(2) : 0;
+            
+            const returningUsers = allUsers.filter(u => u.lastActive !== u.joinDate).length;
+            document.getElementById('returningUsers').textContent = totalUsers ? ((returningUsers / totalUsers) * 100).toFixed(1) + '%' : '0%';
+            
+            // Growth calculations
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString();
+            const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toDateString();
+            
+            const weekOldUsers = allUsers.filter(u => u.joinDate <= weekAgo).length;
+            const monthOldUsers = allUsers.filter(u => u.joinDate <= monthAgo).length;
+            
+            const weeklyGrowth = weekOldUsers ? ((totalUsers - weekOldUsers) / weekOldUsers * 100).toFixed(1) : 0;
+            const monthlyGrowth = monthOldUsers ? ((totalUsers - monthOldUsers) / monthOldUsers * 100).toFixed(1) : 0;
+            
+            document.getElementById('weeklyGrowth').textContent = `+${weeklyGrowth}%`;
+            document.getElementById('monthlyGrowth').textContent = `+${monthlyGrowth}%`;
+            
+            const referralConversion = totalUsers ? ((totalReferrals / totalUsers) * 100).toFixed(1) : 0;
+            document.getElementById('referralConversion').textContent = referralConversion + '%';
         }
 
+        // ============================================
         // ইউজার ডিসপ্লে
+        // ============================================
         function displayUsers() {
             const searchTerm = document.getElementById('userSearch')?.value.toLowerCase() || '';
             const filter = document.getElementById('userFilter')?.value || 'all';
@@ -731,6 +1079,9 @@
                 case 'noReferral':
                     filteredUsers = filteredUsers.filter(u => u.referrals.level1.length === 0);
                     break;
+                case 'highPoints':
+                    filteredUsers = filteredUsers.filter(u => u.points > 1000);
+                    break;
             }
             
             // সর্ট
@@ -745,7 +1096,7 @@
             });
             
             let html = '';
-            filteredUsers.slice(0, 50).forEach(user => {
+            filteredUsers.slice(0, 100).forEach(user => {
                 const statusClass = user.isLocked ? 'badge-danger' : 'badge-success';
                 const statusText = user.isLocked ? '🔒 লকড' : '✅ আনলকড';
                 
@@ -753,13 +1104,14 @@
                     <td><span class="badge badge-info">${user.id}</span></td>
                     <td>${user.name}</td>
                     <td><strong>${user.points}</strong></td>
+                    <td>৳${(user.points/200).toFixed(2)}</td>
                     <td>${user.totalViews}</td>
                     <td>${user.referrals.level1.length}</td>
                     <td><span class="badge ${statusClass}">${statusText}</span></td>
                     <td>${user.joinDate}</td>
                     <td>
-                        <button class="btn btn-primary" style="padding:5px 10px;" onclick="viewUserDetails('${user.id}')">
-                            <i class="fas fa-eye"></i>
+                        <button class="btn btn-primary" style="padding:5px 10px;" onclick="editUser('${user.id}')">
+                            <i class="fas fa-edit"></i>
                         </button>
                         <button class="btn ${user.isLocked ? 'btn-success' : 'btn-warning'}" style="padding:5px 10px;" onclick="toggleUserLock('${user.id}')">
                             <i class="fas ${user.isLocked ? 'fa-unlock' : 'fa-lock'}"></i>
@@ -768,39 +1120,69 @@
                 </tr>`;
             });
             
-            document.getElementById('usersTableBody').innerHTML = html || '<tr><td colspan="8">কোন ইউজার পাওয়া যায়নি</td></tr>';
+            document.getElementById('usersTableBody').innerHTML = html || '<tr><td colspan="9">কোন ইউজার পাওয়া যায়নি</td></tr>';
         }
 
-        // লকড ইউজার ডিসপ্লে
-        function displayLockedUsers() {
-            const lockedUsers = allUsers.filter(u => u.isLocked);
-            document.getElementById('lockedCount').textContent = lockedUsers.length;
+        function displayWithdrawals() {
+            const filter = document.getElementById('withdrawFilter')?.value || 'all';
+            
+            let filtered = [...allWithdrawals];
+            if (filter !== 'all') {
+                filtered = filtered.filter(w => w.status === filter);
+            }
+            
+            filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
             
             let html = '';
-            lockedUsers.forEach(user => {
+            filtered.slice(0, 100).forEach(w => {
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'approved': 'badge-success',
+                    'rejected': 'badge-danger'
+                }[w.status] || 'badge-info';
+                
+                const statusText = {
+                    'pending': '⏳ পেন্ডিং',
+                    'approved': '✅ অ্যাপ্রুভড',
+                    'rejected': '❌ রিজেক্টেড'
+                }[w.status] || w.status;
+                
                 html += `<tr>
-                    <td><span class="badge badge-info">${user.id}</span></td>
-                    <td>${user.name}</td>
-                    <td>${user.points}</td>
-                    <td>${user.totalViews}</td>
-                    <td>${user.lockDate || 'Unknown'}</td>
+                    <td>${w.userId}</td>
+                    <td>${w.name}</td>
+                    <td>${w.method}</td>
+                    <td>${w.phone}</td>
+                    <td>${w.points}</td>
+                    <td>৳${w.taka}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
+                    <td>${new Date(w.date).toLocaleDateString()}</td>
                     <td>
-                        <button class="btn btn-success" style="padding:5px 10px;" onclick="toggleUserLock('${user.id}')">
-                            <i class="fas fa-unlock"></i> আনলক
+                        ${w.status === 'pending' ? `
+                            <button class="btn btn-success" style="padding:5px 10px;" onclick="processWithdraw('${w.id}')">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-danger" style="padding:5px 10px;" onclick="rejectWithdraw('${w.id}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-info" style="padding:5px 10px;" onclick="viewWithdraw('${w.id}')">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </td>
                 </tr>`;
             });
             
-            document.getElementById('lockedTableBody').innerHTML = html || '<tr><td colspan="6">কোন লকড ইউজার নেই</td></tr>';
+            document.getElementById('withdrawalsBody').innerHTML = html || '<tr><td colspan="9">কোন উইথড্র রিকোয়েস্ট নেই</td></tr>';
         }
 
-        // টপ ইউজার আপডেট
         function updateTopUsers() {
             const topUsers = [...allUsers].sort((a, b) => b.points - a.points).slice(0, 10);
             
             let html = '';
             topUsers.forEach((user, index) => {
+                const statusClass = user.isLocked ? 'badge-danger' : 'badge-success';
+                const statusText = user.isLocked ? 'লকড' : 'আনলকড';
+                
                 html += `<tr>
                     <td><span class="badge badge-warning">#${index + 1}</span></td>
                     <td>${user.id}</td>
@@ -808,20 +1190,51 @@
                     <td>${user.points}</td>
                     <td>${user.totalViews}</td>
                     <td>${user.referrals.level1.length}</td>
+                    <td><span class="badge ${statusClass}">${statusText}</span></td>
                 </tr>`;
             });
             
             document.getElementById('topUsersBody').innerHTML = html;
         }
 
-        // ইউজার বিস্তারিত দেখান
-        function viewUserDetails(userId) {
+        function updateReferrals() {
+            let html = '';
+            const referrers = allUsers.filter(u => u.referrals.level1.length > 0);
+            
+            referrers.sort((a, b) => b.referrals.level1.length - a.referrals.level1.length);
+            
+            referrers.slice(0, 50).forEach(user => {
+                const totalCommission = user.referrals.level1.length * settings.refBonusL1 +
+                                       user.referrals.level2.length * settings.refBonusL2 +
+                                       user.referrals.level3.length * settings.refBonusL3;
+                
+                html += `<tr>
+                    <td><strong>${user.id}</strong><br><small>${user.name}</small></td>
+                    <td>${user.referrals.level1.length}</td>
+                    <td>${user.referrals.level2.length}</td>
+                    <td>${user.referrals.level3.length}</td>
+                    <td>${totalCommission} (৳${(totalCommission/200).toFixed(2)})</td>
+                    <td>
+                        <button class="btn btn-info" style="padding:5px 10px;" onclick="viewReferralTree('${user.id}')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            });
+            
+            document.getElementById('referralsBody').innerHTML = html || '<tr><td colspan="6">কোন রেফারেল ডাটা নেই</td></tr>';
+        }
+
+        // ============================================
+        // ইউজার অ্যাকশন
+        // ============================================
+        function editUser(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
             
             currentUserId = userId;
             
-            let html = `
+            document.getElementById('userEditDetails').innerHTML = `
                 <div class="detail-row">
                     <span class="detail-label">ইউজার ID:</span>
                     <span class="detail-value">${user.id}</span>
@@ -831,162 +1244,287 @@
                     <span class="detail-value">${user.name}</span>
                 </div>
                 <div class="detail-row">
-                    <span class="detail-label">পয়েন্ট:</span>
-                    <span class="detail-value">${user.points} (৳${(user.points/200).toFixed(2)})</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">মোট ভিউ:</span>
-                    <span class="detail-value">${user.totalViews}</span>
+                    <span class="detail-label">বর্তমান পয়েন্ট:</span>
+                    <span class="detail-value">${user.points}</span>
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">রেফারেল:</span>
                     <span class="detail-value">L1: ${user.referrals.level1.length}, L2: ${user.referrals.level2.length}, L3: ${user.referrals.level3.length}</span>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">স্ট্যাটাস:</span>
-                    <span class="detail-value">${user.isLocked ? '🔒 লকড' : '✅ আনলকড'}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">জয়েন:</span>
-                    <span class="detail-value">${user.joinDate}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">শেষ অ্যাক্টিভ:</span>
-                    <span class="detail-value">${user.lastActive}</span>
-                </div>
             `;
             
-            document.getElementById('userDetails').innerHTML = html;
-            document.getElementById('lockUnlockBtn').innerHTML = user.isLocked ? 
-                '<i class="fas fa-unlock"></i> আনলক করুন' : 
-                '<i class="fas fa-lock"></i> লক করুন';
+            document.getElementById('editPoints').value = user.points;
+            document.getElementById('editStatus').value = user.isLocked;
             
-            document.getElementById('userDetailModal').style.display = 'flex';
+            document.getElementById('userEditModal').style.display = 'flex';
         }
 
-        // ইউজার লক/আনলক টগল
+        function saveUserEdit() {
+            const user = allUsers.find(u => u.id === currentUserId);
+            if (!user) return;
+            
+            const newPoints = parseInt(document.getElementById('editPoints').value);
+            const newStatus = document.getElementById('editStatus').value === 'true';
+            
+            if (!isNaN(newPoints)) {
+                user.points = newPoints;
+            }
+            user.isLocked = newStatus;
+            
+            localStorage.setItem(user.key, JSON.stringify(user));
+            
+            closeModal();
+            loadAllData();
+            showNotification('ইউজার আপডেট করা হয়েছে');
+        }
+
+        function deleteUser() {
+            if (!confirm('আপনি কি নিশ্চিত? এই ইউজার ডিলিট হবে!')) return;
+            
+            const user = allUsers.find(u => u.id === currentUserId);
+            if (user) {
+                localStorage.removeItem(user.key);
+                closeModal();
+                loadAllData();
+                showNotification('ইউজার ডিলিট করা হয়েছে');
+            }
+        }
+
         function toggleUserLock(userId) {
             const user = allUsers.find(u => u.id === userId);
             if (!user) return;
             
             user.isLocked = !user.isLocked;
-            user.lockDate = user.isLocked ? new Date().toISOString().split('T')[0] : null;
-            
-            // লোকাল স্টোরেজ আপডেট
             localStorage.setItem(user.key, JSON.stringify(user));
             
-            // সব ট্যাব রিফ্রেশ
             loadAllData();
+            showNotification(`ইউজার ${user.isLocked ? 'লক' : 'আনলক'} করা হয়েছে`);
+        }
+
+        // ============================================
+        // উইথড্র অ্যাকশন
+        // ============================================
+        function processWithdraw(withdrawId) {
+            currentWithdrawId = withdrawId;
+            const withdraw = allWithdrawals.find(w => w.id === withdrawId);
             
-            if (user.isLocked) {
-                alert(`✅ ইউজার ${userId} লক করা হয়েছে`);
-            } else {
-                alert(`✅ ইউজার ${userId} আনলক করা হয়েছে`);
+            if (withdraw) {
+                document.getElementById('withdrawDetails').innerHTML = `
+                    <div class="detail-row">
+                        <span class="detail-label">ইউজার:</span>
+                        <span class="detail-value">${withdraw.name} (${withdraw.userId})</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">পদ্ধতি:</span>
+                        <span class="detail-value">${withdraw.method}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">নম্বর:</span>
+                        <span class="detail-value">${withdraw.phone}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">পরিমাণ:</span>
+                        <span class="detail-value">${withdraw.points} পয়েন্ট = ৳${withdraw.taka}</span>
+                    </div>
+                `;
+                document.getElementById('withdrawModal').style.display = 'flex';
             }
         }
 
-        // সব ইউজার আনলক
-        function unlockAllUsers() {
-            if (!confirm('আপনি কি সব লকড ইউজার আনলক করতে চান?')) return;
+        function approveWithdraw() {
+            if (currentWithdrawId) {
+                const withdraw = allWithdrawals.find(w => w.id === currentWithdrawId);
+                if (withdraw) {
+                    withdraw.status = 'approved';
+                    
+                    const user = allUsers.find(u => u.id === withdraw.userId);
+                    if (user) {
+                        const wIndex = user.withdrawHistory.findIndex(w => w.id === currentWithdrawId);
+                        if (wIndex !== -1) {
+                            user.withdrawHistory[wIndex].status = 'approved';
+                            localStorage.setItem(user.key, JSON.stringify(user));
+                        }
+                    }
+                    
+                    loadAllData();
+                    closeModal();
+                    showNotification('উইথড্র অ্যাপ্রুভ করা হয়েছে');
+                }
+            }
+        }
+
+        function rejectWithdraw(withdrawId) {
+            if (!confirm('রিজেক্ট করবেন?')) return;
             
-            allUsers.forEach(user => {
-                if (user.isLocked) {
-                    user.isLocked = false;
-                    user.lockDate = null;
-                    localStorage.setItem(user.key, JSON.stringify(user));
+            const id = withdrawId || currentWithdrawId;
+            const withdraw = allWithdrawals.find(w => w.id === id);
+            
+            if (withdraw) {
+                withdraw.status = 'rejected';
+                
+                const user = allUsers.find(u => u.id === withdraw.userId);
+                if (user) {
+                    const wIndex = user.withdrawHistory.findIndex(w => w.id === id);
+                    if (wIndex !== -1) {
+                        user.withdrawHistory[wIndex].status = 'rejected';
+                        localStorage.setItem(user.key, JSON.stringify(user));
+                    }
+                }
+                
+                loadAllData();
+                closeModal();
+                showNotification('উইথড্র রিজেক্ট করা হয়েছে');
+            }
+        }
+
+        function processAllWithdrawals() {
+            if (!confirm('সব পেন্ডিং উইথড্র অ্যাপ্রুভ করবেন?')) return;
+            
+            const pending = allWithdrawals.filter(w => w.status === 'pending');
+            
+            pending.forEach(withdraw => {
+                withdraw.status = 'approved';
+                
+                const user = allUsers.find(u => u.id === withdraw.userId);
+                if (user) {
+                    const wIndex = user.withdrawHistory.findIndex(w => w.id === withdraw.id);
+                    if (wIndex !== -1) {
+                        user.withdrawHistory[wIndex].status = 'approved';
+                        localStorage.setItem(user.key, JSON.stringify(user));
+                    }
                 }
             });
             
             loadAllData();
-            alert('✅ সব লকড ইউজার আনলক করা হয়েছে');
+            showNotification(`${pending.length} টি উইথড্র অ্যাপ্রুভ করা হয়েছে`);
         }
 
-        // স্পেসিফিক ইউজার সার্চ
-        function searchSpecificUser() {
-            const userId = document.getElementById('searchUserId').value.trim();
-            if (!userId) {
-                alert('ইউজার আইডি দিন');
-                return;
-            }
-            
-            const user = allUsers.find(u => u.id === userId);
-            const resultDiv = document.getElementById('searchResult');
-            
-            if (user) {
-                let html = `
-                    <tr><th>ইউজার ID</th><td>${user.id}</td></tr>
-                    <tr><th>নাম</th><td>${user.name}</td></tr>
-                    <tr><th>পয়েন্ট</th><td>${user.points}</td></tr>
-                    <tr><th>ভিউ</th><td>${user.totalViews}</td></tr>
-                    <tr><th>রেফারেল L1</th><td>${user.referrals.level1.length}</td></tr>
-                    <tr><th>রেফারেল L2</th><td>${user.referrals.level2.length}</td></tr>
-                    <tr><th>রেফারেল L3</th><td>${user.referrals.level3.length}</td></tr>
-                    <tr><th>স্ট্যাটাস</th><td>${user.isLocked ? '🔒 লকড' : '✅ আনলকড'}</td></tr>
-                    <tr><th>জয়েন</th><td>${user.joinDate}</td></tr>
-                    <tr><th>শেষ অ্যাক্টিভ</th><td>${user.lastActive}</td></tr>
-                `;
-                
-                document.getElementById('searchResultBody').innerHTML = html;
-                resultDiv.style.display = 'block';
-            } else {
-                document.getElementById('searchResultBody').innerHTML = '<tr><td colspan="2">❌ ইউজার পাওয়া যায়নি</td></tr>';
-                resultDiv.style.display = 'block';
-            }
+        // ============================================
+        // সেটিংস আপডেট
+        // ============================================
+        function updateAdPoints() {
+            settings.adPoints = parseInt(document.getElementById('adPoints').value) || 5;
+            saveSettings();
+            showNotification('অ্যাড পয়েন্ট আপডেট করা হয়েছে');
         }
 
-        // ইউজার 7712336151 চেক
-        function checkUser7712336151() {
-            const userId = '7712336151';
-            const user = allUsers.find(u => u.id === userId);
-            
-            if (user) {
-                alert(`✅ ইউজার 7712336151 পাওয়া গেছে!\n\nনাম: ${user.name}\nপয়েন্ট: ${user.points}\nস্ট্যাটাস: ${user.isLocked ? 'লকড' : 'আনলকড'}\nজয়েন: ${user.joinDate}`);
-                viewUserDetails(userId);
-            } else {
-                const createUser = confirm('❌ ইউজার 7712336151 নেই। নতুন ইউজার ক্রিয়েট করবেন?');
-                
-                if (createUser) {
-                    const newUser = {
-                        id: '7712336151',
-                        name: 'Test User',
-                        points: 1000,
-                        totalViews: 50,
-                        referrals: { level1: [], level2: [], level3: [] },
-                        referredBy: null,
-                        joinDate: new Date().toISOString().split('T')[0],
-                        lastActive: new Date().toDateString(),
-                        isLocked: false,
-                        lockDate: null,
-                        withdrawHistory: []
-                    };
-                    
-                    localStorage.setItem('earnquickUser_7712336151', JSON.stringify(newUser));
-                    loadAllData();
-                    alert('✅ ইউজার 7712336151 ক্রিয়েট করা হয়েছে!');
-                }
-            }
+        function updateRefBonuses() {
+            settings.refBonusL1 = parseInt(document.getElementById('refBonusL1').value) || 200;
+            settings.refBonusL2 = parseInt(document.getElementById('refBonusL2').value) || 100;
+            settings.refBonusL3 = parseInt(document.getElementById('refBonusL3').value) || 50;
+            saveSettings();
+            showNotification('রেফারেল বোনাস আপডেট করা হয়েছে');
         }
 
-        function checkUserPresence(userId) {
-            const user = allUsers.find(u => u.id === userId);
-            if (user) {
-                console.log(`✅ ইউজার ${userId} পাওয়া গেছে:`, user);
-            }
+        function updateDailyBonus() {
+            settings.dailyBonus = parseInt(document.getElementById('dailyBonus').value) || 50;
+            saveSettings();
+            showNotification('ডেইলি বোনাস আপডেট করা হয়েছে');
         }
 
-        // ইউজার এক্সপোর্ট
+        function updateWithdrawRate() {
+            settings.withdrawPoints = parseInt(document.getElementById('withdrawPoints').value) || 4000;
+            settings.rechargePoints = parseInt(document.getElementById('rechargePoints').value) || 2000;
+            saveSettings();
+            showNotification('উইথড্র রেট আপডেট করা হয়েছে');
+        }
+
+        function updateMonetagZones() {
+            settings.vignetteZone = document.getElementById('vignetteZone').value;
+            settings.rewardedZone = document.getElementById('rewardedZone').value;
+            settings.interstitialZone = document.getElementById('interstitialZone').value;
+            saveSettings();
+            showNotification('Monetag জোন আপডেট করা হয়েছে');
+        }
+
+        function updateAutoLock() {
+            settings.autoLockDays = parseInt(document.getElementById('autoLockDays').value) || 7;
+            saveSettings();
+            showNotification('অটো লক সেটিংস আপডেট করা হয়েছে');
+        }
+
+        function toggleMaintenance() {
+            settings.maintenanceMode = document.getElementById('maintenanceMode').value;
+            saveSettings();
+            showNotification(`মেইনটেন্যান্স মোড ${settings.maintenanceMode === 'on' ? 'চালু' : 'বন্ধ'} করা হয়েছে`);
+        }
+
+        // ============================================
+        // এক্সপোর্ট ফাংশন
+        // ============================================
         function exportUsers() {
-            let csv = 'User ID,নাম,পয়েন্ট,ভিউ,রেফারেল L1,রেফারেল L2,রেফারেল L3,স্ট্যাটাস,জয়েন\n';
+            let csv = 'User ID,নাম,পয়েন্ট,টাকা,ভিউ,রেফারেল L1,রেফারেল L2,রেফারেল L3,রেফার করেছেন,স্ট্যাটাস,জয়েন,শেষ অ্যাক্টিভ\n';
             
             allUsers.forEach(u => {
-                csv += `${u.id},${u.name},${u.points},${u.totalViews},${u.referrals.level1.length},${u.referrals.level2.length},${u.referrals.level3.length},${u.isLocked ? 'Locked' : 'Unlocked'},${u.joinDate}\n`;
+                csv += `${u.id},${u.name},${u.points},${(u.points/200).toFixed(2)},${u.totalViews},${u.referrals.level1.length},${u.referrals.level2.length},${u.referrals.level3.length},${u.referredBy || ''},${u.isLocked ? 'Locked' : 'Unlocked'},${u.joinDate},${u.lastActive}\n`;
             });
             
-            downloadCSV(csv, 'earnquick_users.csv');
+            downloadCSV(csv, `earnquick_users_${new Date().toISOString().split('T')[0]}.csv`);
+            showNotification('CSV ডাউনলোড শুরু হয়েছে');
+        }
+
+        function exportFullDatabase() {
+            const backup = {
+                users: allUsers,
+                settings: settings,
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(backup, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `earnquick_backup_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('ব্যাকআপ ডাউনলোড শুরু হয়েছে');
+        }
+
+        function exportReport(type) {
+            let data = [];
+            
+            switch(type) {
+                case 'daily':
+                    data = allUsers.filter(u => u.joinDate === new Date().toDateString());
+                    break;
+                case 'weekly':
+                    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString();
+                    data = allUsers.filter(u => u.joinDate >= weekAgo);
+                    break;
+                case 'monthly':
+                    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toDateString();
+                    data = allUsers.filter(u => u.joinDate >= monthAgo);
+                    break;
+                default:
+                    data = allUsers;
+            }
+            
+            let csv = 'User ID,নাম,পয়েন্ট,ভিউ,রেফারেল,জয়েন\n';
+            data.forEach(u => {
+                csv += `${u.id},${u.name},${u.points},${u.totalViews},${u.referrals.level1.length},${u.joinDate}\n`;
+            });
+            
+            downloadCSV(csv, `earnquick_report_${type}_${new Date().toISOString().split('T')[0]}.csv`);
+        }
+
+        function exportReferrals() {
+            let csv = 'রেফারার,লেভেল ১ কাউন্ট,লেভেল ২ কাউন্ট,লেভেল ৩ কাউন্ট,মোট কমিশন\n';
+            
+            allUsers.filter(u => u.referrals.level1.length > 0).forEach(u => {
+                const commission = u.referrals.level1.length * settings.refBonusL1 +
+                                  u.referrals.level2.length * settings.refBonusL2 +
+                                  u.referrals.level3.length * settings.refBonusL3;
+                
+                csv += `${u.id},${u.referrals.level1.length},${u.referrals.level2.length},${u.referrals.level3.length},${commission}\n`;
+            });
+            
+            downloadCSV(csv, `earnquick_referrals_${new Date().toISOString().split('T')[0]}.csv`);
         }
 
         function downloadCSV(csv, filename) {
-            const blob = new Blob([csv], { type: 'text/csv' });
+            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -995,7 +1533,78 @@
             window.URL.revokeObjectURL(url);
         }
 
-        // ট্যাব দেখান
+        // ============================================
+        // চার্ট
+        // ============================================
+        let userChart, statsChart;
+
+        function initCharts() {
+            const userCtx = document.getElementById('userChart').getContext('2d');
+            userChart = new Chart(userCtx, {
+                type: 'line',
+                data: {
+                    labels: ['সপ্তাহ ১', 'সপ্তাহ ২', 'সপ্তাহ ৩', 'সপ্তাহ ৪'],
+                    datasets: [{
+                        label: 'নতুন ইউজার',
+                        data: [0, 0, 0, 0],
+                        borderColor: '#5E35B1',
+                        backgroundColor: 'rgba(94,53,177,0.1)',
+                        tension: 0.4
+                    }]
+                }
+            });
+            
+            const statsCtx = document.getElementById('statsChart').getContext('2d');
+            statsChart = new Chart(statsCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['সক্রিয়', 'নিষ্ক্রিয়', 'নতুন'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#4CAF50', '#F44336', '#FFB300']
+                    }]
+                }
+            });
+        }
+
+        function updateCharts() {
+            const today = new Date().toDateString();
+            const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toDateString();
+            
+            const activeUsers = allUsers.filter(u => u.lastActive >= weekAgo).length;
+            const inactiveUsers = allUsers.filter(u => u.lastActive < weekAgo).length;
+            const newUsers = allUsers.filter(u => u.joinDate >= weekAgo).length;
+            
+            if (statsChart) {
+                statsChart.data.datasets[0].data = [activeUsers, inactiveUsers, newUsers];
+                statsChart.update();
+            }
+            
+            // Weekly user growth
+            const weeks = [];
+            const weekData = [];
+            for (let i = 3; i >= 0; i--) {
+                const start = new Date(Date.now() - (i + 1) * 7 * 24 * 60 * 60 * 1000);
+                const end = new Date(Date.now() - i * 7 * 24 * 60 * 60 * 1000);
+                weeks.push(`Week ${4-i}`);
+                
+                const count = allUsers.filter(u => {
+                    const joinDate = new Date(u.joinDate);
+                    return joinDate >= start && joinDate < end;
+                }).length;
+                
+                weekData.push(count);
+            }
+            
+            if (userChart) {
+                userChart.data.datasets[0].data = weekData;
+                userChart.update();
+            }
+        }
+
+        // ============================================
+        // ইউটিলিটি ফাংশন
+        // ============================================
         function showTab(tabName) {
             document.querySelectorAll('.tab-pane').forEach(pane => {
                 pane.classList.remove('active');
@@ -1008,22 +1617,66 @@
             event.target.classList.add('active');
         }
 
-        // মডেল বন্ধ
         function closeModal() {
-            document.getElementById('userDetailModal').style.display = 'none';
+            document.getElementById('userEditModal').style.display = 'none';
+            document.getElementById('withdrawModal').style.display = 'none';
             currentUserId = null;
+            currentWithdrawId = null;
         }
 
-        // ডাটা রিফ্রেশ
         function refreshData() {
             loadAllData();
-            alert('ডাটা রিফ্রেশ করা হয়েছে');
+            updateCharts();
+            showNotification('ডাটা রিফ্রেশ করা হয়েছে');
+        }
+
+        function showNotification(message) {
+            // সিম্পল অ্যালার্ট
+            alert(message);
+        }
+
+        function showReferralTree() {
+            const searchTerm = document.getElementById('referralSearch')?.value;
+            if (searchTerm) {
+                viewReferralTree(searchTerm);
+            }
+        }
+
+        function viewReferralTree(userId) {
+            const user = allUsers.find(u => u.id === userId);
+            if (!user) {
+                alert('ইউজার পাওয়া যায়নি');
+                return;
+            }
+            
+            let message = `🌳 রেফারেল ট্রি for ${userId}\n\n`;
+            message += `👤 ${user.name}\n`;
+            message += `📊 L1: ${user.referrals.level1.length}, L2: ${user.referrals.level2.length}, L3: ${user.referrals.level3.length}\n\n`;
+            
+            if (user.referrals.level1.length > 0) {
+                message += `📋 লেভেল ১:\n`;
+                user.referrals.level1.forEach((refId, i) => {
+                    const refUser = allUsers.find(u => u.id === refId);
+                    message += `   ${i+1}. ${refId} (${refUser?.name || 'Unknown'})\n`;
+                });
+            }
+            
+            alert(message);
+        }
+
+        function viewWithdraw(withdrawId) {
+            const withdraw = allWithdrawals.find(w => w.id === withdrawId);
+            if (withdraw) {
+                alert(JSON.stringify(withdraw, null, 2));
+            }
         }
 
         // ইভেন্ট লিসেনার
         document.getElementById('userSearch')?.addEventListener('input', displayUsers);
         document.getElementById('userFilter')?.addEventListener('change', displayUsers);
         document.getElementById('userSort')?.addEventListener('change', displayUsers);
+        document.getElementById('withdrawFilter')?.addEventListener('change', displayWithdrawals);
+        document.getElementById('referralSearch')?.addEventListener('input', updateReferrals);
     </script>
 </body>
-    </html>
+</html>
