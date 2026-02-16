@@ -10,14 +10,14 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
-    <!-- Monetag Rewarded Interstitial SDK (আপনার দেওয়া - Zone: 10603637) -->
+    <!-- Monetag Vignette Banner (Zone: 10616027) -->
+    <script>(function(s){s.dataset.zone='10616027',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+    
+    <!-- Monetag Rewarded Interstitial SDK (Zone: 10603637) -->
     <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     
-    <!-- Monetag In-App Interstitial SDK (অটো এড - Zone: 10603638) -->
+    <!-- Monetag In-App Interstitial SDK (Zone: 10603638) -->
     <script src='//libtl.com/sdk.js' data-zone='10603638' data-sdk='show_10603638'></script>
-    
-    <!-- ⭐ Monetag Vignette Banner SDK (নতুন - Zone: 10616027) ⭐ -->
-    <script>(function(s){s.dataset.zone='10616027',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     
     <!-- টেলিগ্রাম ওয়েব অ্যাপ SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -282,10 +282,10 @@
         }
 
         .referral-code-box .code {
-            font-size: 18px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            font-size: 16px;
+            font-weight: 600;
             color: var(--primary);
+            word-break: break-all;
         }
 
         .copy-btn {
@@ -297,12 +297,27 @@
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .share-btn {
+            background: var(--secondary);
+            color: var(--dark);
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
         }
 
         .level-stats {
             display: flex;
             justify-content: space-around;
             text-align: center;
+            margin-top: 15px;
         }
 
         .level-item {
@@ -633,12 +648,9 @@
             <button class="watch-ad-btn" onclick="watchManualAd()" id="watchAdBtn">
                 <i class="fas fa-play-circle"></i> অ্যাড দেখুন (৫ পয়েন্ট)
             </button>
-            <div style="text-align: center; margin-top: 10px; color: #666; font-size: 12px;">
-                <i class="fas fa-infinity"></i> আনলিমিটেড অ্যাড দেখার সুযোগ
-            </div>
         </div>
 
-        <!-- রেফারেল কার্ড -->
+        <!-- রেফারেল কার্ড (রিয়েল সিস্টেম) -->
         <div class="referral-card">
             <div class="referral-header">
                 <h3><i class="fas fa-gift" style="color: var(--secondary);"></i> রেফারেল প্রোগ্রাম</h3>
@@ -646,22 +658,26 @@
             </div>
             
             <div class="referral-code-box">
-                <span class="code" id="referralCode">EARNQUICK</span>
-                <button class="copy-btn" onclick="copyReferralCode()"><i class="far fa-copy"></i> কপি</button>
+                <span class="code" id="referralLink">লোড হচ্ছে...</span>
+                <button class="copy-btn" onclick="copyReferralLink()"><i class="far fa-copy"></i> কপি</button>
             </div>
+            
+            <button class="share-btn" onclick="shareReferralLink()">
+                <i class="fas fa-share-alt"></i> রেফারেল লিংক শেয়ার করুন
+            </button>
 
             <div class="level-stats">
                 <div class="level-item">
                     <div class="count" id="level1Count">0</div>
-                    <div class="title">লেভেল ১ (২০%)</div>
+                    <div class="title">লেভেল ১ (২০০)</div>
                 </div>
                 <div class="level-item">
                     <div class="count" id="level2Count">0</div>
-                    <div class="title">লেভেল ২ (১০%)</div>
+                    <div class="title">লেভেল ২ (১০০)</div>
                 </div>
                 <div class="level-item">
                     <div class="count" id="level3Count">0</div>
-                    <div class="title">লেভেল ৩ (৫%)</div>
+                    <div class="title">লেভেল ৩ (৫০)</div>
                 </div>
             </div>
         </div>
@@ -833,15 +849,15 @@
             name: '',
             points: 0,
             totalViews: 0,
-            autoAdShown: 0,
-            lastAutoAdTime: null,
             referrals: {
-                level1: 0,
-                level2: 0,
-                level3: 0
+                level1: [],
+                level2: [],
+                level3: []
             },
+            referredBy: null,
             lastDailyBonus: null,
-            referTaskClaimed: false
+            referTaskClaimed: false,
+            joinDate: new Date().toISOString().split('T')[0]
         };
 
         let currentWithdrawMethod = null;
@@ -859,6 +875,10 @@
                 userData.id = user.id.toString();
                 userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
                 updateProfileDisplay();
+                
+                // চেক করুন কেউ রেফার করেছে কিনা
+                checkReferral();
+                
                 saveUserData();
             } else {
                 if (!userData.id) {
@@ -870,7 +890,7 @@
             
             updateUI();
             
-            // অটো এড সেটআপ চালু করুন
+            // অটো এড সেটআপ
             setupAutoAds();
         }
 
@@ -910,20 +930,24 @@
             document.getElementById('balanceAmount').textContent = '৳' + (userData.points / 200).toFixed(2);
             
             document.getElementById('totalViews').textContent = userData.totalViews.toLocaleString();
-            document.getElementById('totalRefers').textContent = userData.referrals.level1;
+            document.getElementById('totalRefers').textContent = userData.referrals.level1.length;
             document.getElementById('totalEarned').textContent = '৳' + (userData.points / 200).toFixed(2);
             
             document.getElementById('profilePoints').textContent = userData.points;
-            document.getElementById('profileRefer').textContent = userData.referrals.level1;
+            document.getElementById('profileRefer').textContent = userData.referrals.level1.length;
             document.getElementById('profileViews').textContent = userData.totalViews.toLocaleString();
             
-            document.getElementById('level1Count').textContent = userData.referrals.level1;
-            document.getElementById('level2Count').textContent = userData.referrals.level2;
-            document.getElementById('level3Count').textContent = userData.referrals.level3;
+            // রেফারেল কাউন্ট আপডেট
+            document.getElementById('level1Count').textContent = userData.referrals.level1.length;
+            document.getElementById('level2Count').textContent = userData.referrals.level2.length;
+            document.getElementById('level3Count').textContent = userData.referrals.level3.length;
+            
+            // রেফারেল লিংক আপডেট
+            document.getElementById('referralLink').textContent = generateReferralLink();
             
             // রেফার টাস্ক বাটন
             const referBtn = document.getElementById('referTaskBtn');
-            if (userData.referrals.level1 > 0 && !userData.referTaskClaimed) {
+            if (userData.referrals.level1.length > 0 && !userData.referTaskClaimed) {
                 referBtn.textContent = 'ক্লেইম';
                 referBtn.disabled = false;
                 referBtn.classList.remove('completed');
@@ -962,55 +986,107 @@
             }, 3000);
         }
 
-        // অটো এড সেটআপ - নির্দিষ্ট সময় পরপর অটো দেখাবে
+        // ⭐ রেফারেল লিংক জেনারেট
+        function generateReferralLink() {
+            if (!userData.id) return 'লোড হচ্ছে...';
+            return `https://t.me/EarnQuick_Official_bot/app?startapp=ref_${userData.id}`;
+        }
+
+        // ⭐ রেফারেল লিংক কপি
+        function copyReferralLink() {
+            const link = generateReferralLink();
+            navigator.clipboard.writeText(link);
+            showMessage('রেফারেল লিংক কপি হয়েছে!', 'success');
+        }
+
+        // ⭐ রেফারেল লিংক শেয়ার
+        function shareReferralLink() {
+            const link = generateReferralLink();
+            const text = `🎁 EarnQuick এ জয়েন হয়ে পয়েন্ট আয় করুন!\n\n✅ প্রতি অ্যাড দেখে ৫ পয়েন্ট\n✅ ডেইলি বোনাস ৫০ পয়েন্ট\n✅ রেফার করে ২০০ পয়েন্ট\n✅ ৪০০০ পয়েন্ট = ২০ টাকা উইথড্র\n\nআমার রেফারেল লিংক:\n${link}`;
+            
+            window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(text)}`, '_blank');
+        }
+
+        // ⭐ রেফারেল চেক - রিয়েল টাইম
+        function checkReferral() {
+            const startParam = tg.initDataUnsafe?.start_param || tg.startParam;
+            
+            if (startParam && startParam.startsWith('ref_')) {
+                const referrerId = startParam.replace('ref_', '');
+                console.log('রেফার করেছেন:', referrerId);
+                
+                if (referrerId !== userData.id) { // নিজে নিজে রেফার করতে পারবে না
+                    processReferral(referrerId, userData.id);
+                }
+            }
+        }
+
+        // ⭐ রেফারেল প্রসেস - ৩ লেভেল কমিশন
+        function processReferral(referrerId, newUserId) {
+            // রেফারার এর ডাটা লোড করুন
+            let referrerData = JSON.parse(localStorage.getItem('earnquickUser_' + referrerId));
+            
+            if (referrerData) {
+                // লেভেল ১ কমিশন (২০০ পয়েন্ট)
+                referrerData.points += 200;
+                referrerData.referrals.level1.push(newUserId);
+                localStorage.setItem('earnquickUser_' + referrerId, JSON.stringify(referrerData));
+                
+                // লেভেল ২ কমিশন (১০০ পয়েন্ট)
+                if (referrerData.referredBy) {
+                    let level2Data = JSON.parse(localStorage.getItem('earnquickUser_' + referrerData.referredBy));
+                    if (level2Data) {
+                        level2Data.points += 100;
+                        level2Data.referrals.level2.push(newUserId);
+                        localStorage.setItem('earnquickUser_' + referrerData.referredBy, JSON.stringify(level2Data));
+                        
+                        // লেভেল ৩ কমিশন (৫০ পয়েন্ট)
+                        if (level2Data.referredBy) {
+                            let level3Data = JSON.parse(localStorage.getItem('earnquickUser_' + level2Data.referredBy));
+                            if (level3Data) {
+                                level3Data.points += 50;
+                                level3Data.referrals.level3.push(newUserId);
+                                localStorage.setItem('earnquickUser_' + level2Data.referredBy, JSON.stringify(level3Data));
+                            }
+                        }
+                    }
+                }
+                
+                // নতুন ইউজারের ডাটায় রেফারার সংরক্ষণ
+                userData.referredBy = referrerId;
+                saveUserData();
+                
+                showMessage(`আপনাকে রেফার করেছেন ID: ${referrerId}`, 'success');
+            }
+        }
+
+        // অটো এড সেটআপ
         function setupAutoAds() {
             console.log('Setting up auto ads...');
             
-            // ১০ সেকেন্ড পর প্রথম অটো এড দেখাবে
             setTimeout(() => {
                 showAutoAd();
             }, 10000);
             
-            // তারপর প্রতি ৩০ সেকেন্ড পর পর দেখাবে
             setInterval(() => {
                 showAutoAd();
             }, 30000);
         }
 
-        // অটো এড দেখানোর ফাংশন (Zone: 10603638)
+        // অটো এড দেখান
         function showAutoAd() {
-            const now = Date.now();
-            const thirtyMinutes = 30 * 60 * 1000;
-            
-            if (userData.lastAutoAdTime && (now - userData.lastAutoAdTime) < thirtyMinutes) {
-                if (userData.autoAdShown >= 3) {
-                    console.log('Auto ad limit reached');
-                    return;
-                }
-            } else {
-                userData.autoAdShown = 0;
-                userData.lastAutoAdTime = now;
-            }
-            
             if (typeof show_10603638 === 'function') {
-                show_10603638().then((event) => {
+                show_10603638().then(() => {
                     userData.points += 5;
                     userData.totalViews += 1;
-                    userData.autoAdShown += 1;
-                    userData.lastAutoAdTime = now;
-                    
                     saveUserData();
                     updateUI();
-                    
-                    showMessage('অটো এড থেকে +৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
-                    
-                }).catch((error) => {
-                    console.log('Auto ad error:', error);
-                });
+                    showMessage('অটো এড থেকে +৫ পয়েন্ট! 🎉', 'success');
+                }).catch(() => {});
             }
         }
 
-        // ম্যানুয়াল এড দেখানোর ফাংশন (Zone: 10603637)
+        // ম্যানুয়াল এড দেখান
         function watchManualAd() {
             const btn = document.getElementById('watchAdBtn');
             
@@ -1020,31 +1096,28 @@
             showMessage('অ্যাড লোড হচ্ছে...', 'info');
             
             if (typeof show_10603637 === 'function') {
-                show_10603637().then((event) => {
+                show_10603637().then(() => {
                     userData.points += 5;
                     userData.totalViews += 1;
-                    
                     saveUserData();
                     updateUI();
-                    
-                    showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! 🎉', 'success');
+                    showMessage('অভিনন্দন! +৫ পয়েন্ট! 🎉', 'success');
                     
                     btn.classList.remove('loading');
                     btn.disabled = false;
-                    
                 }).catch((error) => {
-                    showMessage('অ্যাড দেখাতে সমস্যা হয়েছে। আবার চেষ্টা করুন।', 'error');
+                    showMessage('অ্যাড দেখাতে সমস্যা হয়েছে', 'error');
                     btn.classList.remove('loading');
                     btn.disabled = false;
                 });
             } else {
-                // SDK লোড না হলে সিমুলেট করুন
+                // সিমুলেট
                 setTimeout(() => {
                     userData.points += 5;
                     userData.totalViews += 1;
                     saveUserData();
                     updateUI();
-                    showMessage('অভিনন্দন! আপনি ৫ পয়েন্ট পেয়েছেন! (টেস্ট) 🎉', 'success');
+                    showMessage('+৫ পয়েন্ট (টেস্ট)!', 'success');
                     btn.classList.remove('loading');
                     btn.disabled = false;
                 }, 2000);
@@ -1052,14 +1125,14 @@
         }
 
         function claimReferTask() {
-            if (userData.referrals.level1 > 0 && !userData.referTaskClaimed) {
+            if (userData.referrals.level1.length > 0 && !userData.referTaskClaimed) {
                 userData.points += 200;
                 userData.referTaskClaimed = true;
                 saveUserData();
                 updateUI();
                 showMessage('রেফারেল বোনাস +২০০ পয়েন্ট! 👥', 'success');
             } else if (userData.referTaskClaimed) {
-                showMessage('আপনি ইতিমধ্যে এই টাস্ক ক্লেইম করেছেন!', 'error');
+                showMessage('ইতিমধ্যে ক্লেইম করেছেন!', 'error');
             } else {
                 showMessage('প্রথমে ১ জন রেফার করুন!', 'error');
             }
@@ -1075,14 +1148,8 @@
                 updateUI();
                 showMessage('ডেইলি বোনাস +৫০ পয়েন্ট! 🎁', 'success');
             } else {
-                showMessage('আপনি আজকের বোনাস ইতিমধ্যে নিয়েছেন!', 'error');
+                showMessage('আজকের বোনাস নিয়েছেন!', 'error');
             }
-        }
-
-        function copyReferralCode() {
-            const code = document.getElementById('referralCode').textContent;
-            navigator.clipboard.writeText(code);
-            showMessage('রেফারেল কোড কপি হয়েছে!', 'success');
         }
 
         function switchSection(section) {
