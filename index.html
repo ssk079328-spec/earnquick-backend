@@ -10,11 +10,14 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     
-    <!-- Monetag Rewarded Interstitial SDK (আপনার দেওয়া) -->
+    <!-- Monetag Rewarded Interstitial SDK (আপনার দেওয়া - Zone: 10603637) -->
     <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
     
-    <!-- Monetag In-App Interstitial SDK (অটো এড) -->
+    <!-- Monetag In-App Interstitial SDK (অটো এড - Zone: 10603638) -->
     <script src='//libtl.com/sdk.js' data-zone='10603638' data-sdk='show_10603638'></script>
+    
+    <!-- ⭐ Monetag Vignette Banner SDK (নতুন - Zone: 10616027) ⭐ -->
+    <script>(function(s){s.dataset.zone='10616027',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
     
     <!-- টেলিগ্রাম ওয়েব অ্যাপ SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -65,12 +68,6 @@
             font-weight: 700;
             font-size: 14px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .headline marquee {
-            display: flex;
-            align-items: center;
-            gap: 20px;
         }
 
         .profile-header {
@@ -836,8 +833,8 @@
             name: '',
             points: 0,
             totalViews: 0,
-            autoAdShown: 0,        // অটো এড কতবার দেখেছে
-            lastAutoAdTime: null,   // শেষ অটো এড কখন দেখেছে
+            autoAdShown: 0,
+            lastAutoAdTime: null,
             referrals: {
                 level1: 0,
                 level2: 0,
@@ -873,7 +870,7 @@
             
             updateUI();
             
-            // ⭐ অটো এড সেটআপ চালু করুন
+            // অটো এড সেটআপ চালু করুন
             setupAutoAds();
         }
 
@@ -965,43 +962,38 @@
             }, 3000);
         }
 
-        // ⭐ অটো এড সেটআপ - নির্দিষ্ট সময় পরপর অটো দেখাবে
+        // অটো এড সেটআপ - নির্দিষ্ট সময় পরপর অটো দেখাবে
         function setupAutoAds() {
             console.log('Setting up auto ads...');
             
             // ১০ সেকেন্ড পর প্রথম অটো এড দেখাবে
             setTimeout(() => {
                 showAutoAd();
-            }, 10000); // ১০ সেকেন্ড
+            }, 10000);
             
             // তারপর প্রতি ৩০ সেকেন্ড পর পর দেখাবে
             setInterval(() => {
                 showAutoAd();
-            }, 30000); // ৩০ সেকেন্ড
+            }, 30000);
         }
 
-        // ⭐ অটো এড দেখানোর ফাংশন
+        // অটো এড দেখানোর ফাংশন (Zone: 10603638)
         function showAutoAd() {
-            // চেক করুন ৩০ মিনিটে সর্বোচ্চ ৩ বার দেখানো হয়েছে কিনা
             const now = Date.now();
-            const thirtyMinutes = 30 * 60 * 1000; // ৩০ মিনিট
+            const thirtyMinutes = 30 * 60 * 1000;
             
             if (userData.lastAutoAdTime && (now - userData.lastAutoAdTime) < thirtyMinutes) {
-                // ৩০ মিনিটের মধ্যে কতবার দেখেছে?
                 if (userData.autoAdShown >= 3) {
-                    console.log('Auto ad limit reached for this 30-min window');
-                    return; // ৩০ মিনিটে ৩ বার শেষ
+                    console.log('Auto ad limit reached');
+                    return;
                 }
             } else {
-                // নতুন ৩০ মিনিট উইন্ডো শুরু
                 userData.autoAdShown = 0;
                 userData.lastAutoAdTime = now;
             }
             
-            // অটো এড দেখান (Zone ID: 10603638)
             if (typeof show_10603638 === 'function') {
                 show_10603638().then((event) => {
-                    // অটো এড দেখার পর ইউজারকে ৫ পয়েন্ট দিন
                     userData.points += 5;
                     userData.totalViews += 1;
                     userData.autoAdShown += 1;
@@ -1018,7 +1010,7 @@
             }
         }
 
-        // ⭐ ম্যানুয়াল এড দেখানোর ফাংশন (বাটন ক্লিক করে)
+        // ম্যানুয়াল এড দেখানোর ফাংশন (Zone: 10603637)
         function watchManualAd() {
             const btn = document.getElementById('watchAdBtn');
             
@@ -1027,10 +1019,8 @@
             
             showMessage('অ্যাড লোড হচ্ছে...', 'info');
             
-            // ম্যানুয়াল এড দেখান (Zone ID: 10603637)
             if (typeof show_10603637 === 'function') {
                 show_10603637().then((event) => {
-                    // এড দেখার পর ইউজারকে ৫ পয়েন্ট দিন
                     userData.points += 5;
                     userData.totalViews += 1;
                     
@@ -1178,4 +1168,4 @@
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
-    </html>
+</html>
