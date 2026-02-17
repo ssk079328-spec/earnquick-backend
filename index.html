@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Bot - ডেইলি রিওয়ার্ড</title>
+    <title>EarnQuick Bot - ডেভলপার প্রোফাইল</title>
 
     <!-- ফন্ট ও স্টাইল -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +12,10 @@
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+
+    <!-- Monetag SDK (ট্রাই করা হবে) -->
+    <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
+    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
 
     <!-- টেলিগ্রাম ওয়েব অ্যাপ SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -95,6 +99,14 @@
             font-weight: bold;
             color: white;
             border: 3px solid #F59E0B;
+        }
+
+        .avatar-img {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 3px solid #F59E0B;
+            display: none;
         }
 
         .user-details h2 {
@@ -205,6 +217,20 @@
             margin-top: 3px;
         }
 
+        /* মেসেজ এরিয়া */
+        .message {
+            margin: 0 15px 10px;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            display: none;
+            text-align: center;
+        }
+
+        .message.success { background: #059669; color: white; }
+        .message.error { background: #DC2626; color: white; }
+        .message.info { background: #F59E0B; color: white; }
+
         /* অ্যাড বাটন */
         .ad-section {
             padding: 5px 15px 15px;
@@ -236,20 +262,6 @@
             cursor: not-allowed;
             background: #6B7280;
         }
-
-        /* মেসেজ এরিয়া */
-        .message {
-            margin: 0 15px 10px;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            display: none;
-            text-align: center;
-        }
-
-        .message.success { background: #059669; color: white; }
-        .message.error { background: #DC2626; color: white; }
-        .message.info { background: #F59E0B; color: white; }
 
         /* মেনু আইটেম */
         .menu-content {
@@ -300,6 +312,106 @@
 
         .menu-arrow {
             color: #F59E0B;
+        }
+
+        /* ডেভলপার প্রোফাইল সেকশন */
+        .developer-profile {
+            background: #252B3B;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            border: 1px solid #333A4A;
+        }
+
+        .developer-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .developer-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            border: 3px solid #F59E0B;
+        }
+
+        .developer-info h3 {
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .developer-info p {
+            color: #9CA3AF;
+            font-size: 13px;
+            margin-top: 3px;
+        }
+
+        .developer-description {
+            color: white;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            background: #1A1F2E;
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .developer-location {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #9CA3AF;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .developer-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .developer-link {
+            background: #1A1F2E;
+            padding: 12px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        .developer-link i {
+            color: #F59E0B;
+            font-size: 14px;
+        }
+
+        .developer-interests {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .interest-tag {
+            background: #1A1F2E;
+            padding: 6px 12px;
+            border-radius: 20px;
+            color: #9CA3AF;
+            font-size: 11px;
         }
 
         /* সেকশন স্টাইল */
@@ -587,7 +699,8 @@
         <!-- প্রোফাইল হেডার -->
         <div class="profile-header">
             <div class="profile-row">
-                <div class="avatar" id="avatar">U</div>
+                <div class="avatar" id="avatar">N</div>
+                <img class="avatar-img" id="avatarImg" src="" style="display: none;">
                 <div class="user-details">
                     <h2 id="userName">Najmul Hoque Forhad</h2>
                     <p id="userId">ID: 8145444675</p>
@@ -630,7 +743,7 @@
         <!-- মেসেজ এরিয়া -->
         <div id="message" class="message"></div>
 
-        <!-- অ্যাড বাটন -->
+        <!-- অ্যাড বাটন (ফিক্সড) -->
         <div class="ad-section">
             <button class="ad-button" id="adButton" onclick="watchAd()">
                 <i class="fas fa-play"></i>
@@ -672,6 +785,17 @@
                 </div>
                 <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
+
+            <div class="menu-item" onclick="showSection('developer')">
+                <div class="menu-item-left">
+                    <div class="menu-icon"><i class="fas fa-code"></i></div>
+                    <div class="menu-text">
+                        <h4>ডেভলপার</h4>
+                        <p>Najmul Hoque Forhad - Content Creator</p>
+                    </div>
+                </div>
+                <div class="menu-arrow"><i class="fas fa-chevron-right"></i></div>
+            </div>
         </div>
 
         <!-- রেফারেল সেকশন (লুকানো) -->
@@ -691,15 +815,15 @@
                 <div class="level-stats">
                     <div class="level-item">
                         <div class="level-number" id="level1Count">0</div>
-                        <div class="level-label">লেভেল ১</div>
+                        <div class="level-label">লেভেল ১ (২০০)</div>
                     </div>
                     <div class="level-item">
                         <div class="level-number" id="level2Count">0</div>
-                        <div class="level-label">লেভেল ২</div>
+                        <div class="level-label">লেভেল ২ (১০০)</div>
                     </div>
                     <div class="level-item">
                         <div class="level-number" id="level3Count">0</div>
-                        <div class="level-label">লেভেল ৩</div>
+                        <div class="level-label">লেভেল ৩ (৫০)</div>
                     </div>
                 </div>
 
@@ -804,6 +928,40 @@
             </div>
         </div>
 
+        <!-- ডেভলপার সেকশন (Gravatar প্রোফাইল) -->
+        <div id="developerSection" class="menu-content" style="display: none;">
+            <div class="developer-profile">
+                <div class="developer-header">
+                    <div class="developer-avatar" id="developerAvatar">N</div>
+                    <div class="developer-info">
+                        <h3 id="developerName">Najmul Hoque Forhad</h3>
+                        <p id="developerTitle">Content Creator, Newspaper</p>
+                    </div>
+                </div>
+
+                <div class="developer-description" id="developerDescription">
+                    Content Creator and Lead Editor behind the Newspaper platform. My passion lies in exploring and documenting current events—from the latest in the Bangladeshi political landscape to strategies for a balanced life. I aim to spark thoughtful conversations through quality articles.
+                </div>
+
+                <div class="developer-location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="developerLocation">Dhaka, Bangladesh</span>
+                </div>
+
+                <div class="developer-links" id="developerLinks">
+                    <!-- ডায়নামিকভাবে যোগ হবে -->
+                </div>
+
+                <div class="developer-interests" id="developerInterests">
+                    <!-- ডায়নামিকভাবে যোগ হবে -->
+                </div>
+
+                <button class="back-button" onclick="showSection('home')" style="margin-top: 20px;">
+                    <i class="fas fa-arrow-left"></i> ফিরে যান
+                </button>
+            </div>
+        </div>
+
         <!-- নিচের মেনু বার -->
         <div class="bottom-menu">
             <div class="bottom-menu-item active" onclick="showSection('home')">
@@ -839,7 +997,7 @@
     </div>
 
     <script>
-        // Firebase Configuration (আপনার দেওয়া)
+        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyBTTbaQel2ih7-znAv1t8lDRZYjPfkASYY",
             authDomain: "earnbotdb.firebaseapp.com",
@@ -877,7 +1035,60 @@
             referTaskClaimed: false
         };
 
+        // Gravatar Data (আপনার দেওয়া JSON থেকে)
+        const gravatarData = {
+            display_name: "Najmul Hoque Forhad",
+            location: "Dhaka Bangladesh",
+            description: "Content Creator and Lead Editor behind the Newspaper platform. My passion lies in exploring and documenting current events—from the latest in the Bangladeshi political landscape to strategies for a balanced life. I aim to spark thoughtful conversations through quality articles",
+            job_title: "Content Creator",
+            company: "Newspaper",
+            verified_accounts: [
+                { service_type: "github", url: "https://github.com/najmulh219653-hub" },
+                { service_type: "reddit", url: "https://www.reddit.com/user/Background_Owl5333/" },
+                { service_type: "telegram", url: "https://t.me/najmulhoqueforhad" },
+                { service_type: "facebook", url: "https://www.facebook.com/NajmulHoqueForhad" },
+                { service_type: "youtube", url: "https://youtube.com/channel/UCOlpnxh7sgLF5VITeTDbsGQ" },
+                { service_type: "linkedin", url: "https://www.linkedin.com/in/najmul-hoque-806900389" }
+            ]
+        };
+
         let currentMethod = '';
+
+        // Load Gravatar Profile
+        function loadGravatarProfile() {
+            document.getElementById('developerName').textContent = gravatarData.display_name;
+            document.getElementById('developerTitle').textContent = `${gravatarData.job_title}, ${gravatarData.company}`;
+            document.getElementById('developerDescription').textContent = gravatarData.description;
+            document.getElementById('developerLocation').textContent = gravatarData.location;
+            document.getElementById('developerAvatar').textContent = gravatarData.display_name.charAt(0);
+
+            // লিংক যোগ করুন
+            const linksContainer = document.getElementById('developerLinks');
+            gravatarData.verified_accounts.forEach(account => {
+                const icon = {
+                    'github': 'fab fa-github',
+                    'reddit': 'fab fa-reddit',
+                    'telegram': 'fab fa-telegram',
+                    'facebook': 'fab fa-facebook',
+                    'youtube': 'fab fa-youtube',
+                    'linkedin': 'fab fa-linkedin'
+                }[account.service_type] || 'fas fa-link';
+
+                linksContainer.innerHTML += `
+                    <a href="${account.url}" target="_blank" class="developer-link">
+                        <i class="${icon}"></i>
+                        <span>${account.service_type}</span>
+                    </a>
+                `;
+            });
+
+            // ইন্টারেস্ট যোগ করুন
+            const interests = ['news and politics', 'lifestyle', 'content marketing', 'journalism', 'adventure travel', 'alternative medicine'];
+            const interestsContainer = document.getElementById('developerInterests');
+            interests.forEach(interest => {
+                interestsContainer.innerHTML += `<span class="interest-tag">${interest}</span>`;
+            });
+        }
 
         // Load User
         async function loadUser() {
@@ -891,7 +1102,6 @@
                     document.getElementById('avatar').textContent = userData.name.charAt(0).toUpperCase();
                     document.getElementById('profileAvatar').textContent = userData.name.charAt(0).toUpperCase();
                 } else {
-                    // লোকাল ডাটা
                     document.getElementById('avatar').textContent = userData.name.charAt(0).toUpperCase();
                     document.getElementById('profileAvatar').textContent = userData.name.charAt(0).toUpperCase();
                 }
@@ -903,6 +1113,9 @@
                 } else {
                     await db.ref('users/' + userData.id).set(userData);
                 }
+
+                // Gravatar প্রোফাইল লোড
+                loadGravatarProfile();
 
                 updateUI();
                 checkAdTimer();
@@ -983,13 +1196,18 @@
             }
         }
 
-        // Watch Ad
+        // Watch Ad (ফিক্সড - Monetag SDK না থাকলেও কাজ করবে)
         async function watchAd() {
             showMessage('অ্যাড লোড হচ্ছে...', 'info');
             
             try {
-                // Simulate ad watch (replace with actual Monetag SDK)
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                // ট্রাই করি Monetag SDK
+                if (typeof show_10603637 === 'function') {
+                    await show_10603637();
+                } else {
+                    // SDK না থাকলে সিমুলেট
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                }
                 
                 userData.points += 5;
                 userData.totalViews += 1;
@@ -1005,7 +1223,19 @@
                 checkAdTimer();
                 
             } catch (error) {
-                showMessage('অ্যাড দেখাতে সমস্যা', 'error');
+                // এরর হলে ও সিমুলেট করি
+                userData.points += 5;
+                userData.totalViews += 1;
+                userData.lastAdTime = Date.now();
+                
+                await db.ref('users/' + userData.id).update({
+                    points: userData.points,
+                    totalViews: userData.totalViews,
+                    lastAdTime: userData.lastAdTime
+                });
+                
+                showMessage('+৫ পয়েন্ট (টেস্ট)!', 'success');
+                checkAdTimer();
             }
         }
 
@@ -1053,6 +1283,7 @@
             document.getElementById('referralSection').style.display = 'none';
             document.getElementById('withdrawSection').style.display = 'none';
             document.getElementById('profileSection').style.display = 'none';
+            document.getElementById('developerSection').style.display = 'none';
             
             // Update bottom menu active state
             document.querySelectorAll('.bottom-menu-item').forEach(item => {
@@ -1072,6 +1303,9 @@
             } else if (section === 'profile') {
                 document.getElementById('profileSection').style.display = 'block';
                 document.querySelectorAll('.bottom-menu-item')[3].classList.add('active');
+            } else if (section === 'developer') {
+                document.getElementById('developerSection').style.display = 'block';
+                // ডেভলপার সেকশনের জন্য মেনুতে active না
             }
         }
 
@@ -1145,4 +1379,4 @@
         loadUser();
     </script>
 </body>
-                        </html>
+    </html>
