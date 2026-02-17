@@ -1,122 +1,23 @@
-# ============================================
-# Environment files (পরিবেশ ফাইল)
-# ============================================
+# Firebase
+firebase-config.js
+serviceAccountKey.json
+
+# Environment
 .env
 .env.local
-.env.development
-.env.production
-.env.test
 
-# ============================================
-# Firebase configuration (গোপন তথ্য)
-# ============================================
-firebase-config.js
-firebase-credentials.json
-service-account-key.json
-
-# ============================================
-# Node.js dependencies
-# ============================================
+# Node
 node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 package-lock.json
-yarn.lock
 
-# ============================================
-# IDE files (এডিটর ফাইল)
-# ============================================
+# IDE
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
+
+# OS
 .DS_Store
 Thumbs.db
 
-# ============================================
-# Build files (বিল্ড ফাইল)
-# ============================================
-dist/
-build/
-out/
-*.tgz
-*.zip
-*.tar
-
-# ============================================
-# Log files (লগ ফাইল)
-# ============================================
+# Logs
 *.log
-logs/
-*.logs
-error.log
-
-# ============================================
-# OS generated files (অপারেটিং সিস্টেম ফাইল)
-# ============================================
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-desktop.ini
-
-# ============================================
-# Backup files (ব্যাকআপ ফাইল)
-# ============================================
-*.bak
-*.backup
-*.old
-*.orig
-
-# ============================================
-# Temporary files (টেম্পোরারি ফাইল)
-# ============================================
-*.tmp
-*.temp
-*.cache
-.cache/
-.tmp/
-
-# ============================================
-# Database files (ডাটাবেস ফাইল)
-# ============================================
-*.sqlite
-*.sqlite3
-*.db
-*.db3
-
-# ============================================
-# Project specific (প্রজেক্ট স্পেসিফিক)
-# ============================================
-# আপনার গোপন তথ্য থাকলে এখানে যোগ করুন
-secrets/
-keys/
-config.local.js
-
-# ============================================
-# Test files (টেস্ট ফাইল)
-# ============================================
-coverage/
-.nyc_output/
-*.test.js
-*.spec.js
-
-# ============================================
-# Editor directories and files
-# ============================================
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
