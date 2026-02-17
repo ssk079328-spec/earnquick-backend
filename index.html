@@ -3,395 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EarnQuick Bot - ফিক্সড ভার্সন</title>
+    <title>EarnQuick Bot</title>
     
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <!-- External Files -->
+    <script src="firebase-config.js"></script>
+    <script src="monetag-config.js"></script>
+    <link rel="stylesheet" href="style.css">
     
-    <!-- Monetag SDK (সঠিকভাবে লোড হবে) -->
-    <script src="https://quge5.com/88/tag.min.js" data-zone="211571" async data-cfasync="false"></script>
-    <script src='//libtl.com/sdk.js' data-zone='10603637' data-sdk='show_10603637'></script>
-    
-    <!-- টেলিগ্রাম ওয়েব অ্যাপ -->
+    <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <!-- ফন্ট -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, #0F172A, #1E293B);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 12px;
-        }
-
-        .app-container {
-            max-width: 400px;
-            width: 100%;
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin: 10px 0;
-        }
-
-        /* চলমান হেডলাইন */
-        .headline-container {
-            background: linear-gradient(90deg, #8B5CF6, #EC4899, #F59E0B);
-            padding: 12px 0;
-            overflow: hidden;
-        }
-
-        .headline {
-            white-space: nowrap;
-            animation: scrollHeadline 20s linear infinite;
-            color: white;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .headline span {
-            margin-right: 30px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        @keyframes scrollHeadline {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        /* প্রোফাইল */
-        .profile-header {
-            padding: 20px;
-            background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-        }
-
-        .profile-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .profile-image-container {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 3px solid white;
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-avatar {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 26px;
-            font-weight: bold;
-            color: white;
-        }
-
-        .profile-info h2 {
-            color: white;
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .profile-info p {
-            color: rgba(255,255,255,0.8);
-            font-size: 12px;
-            margin-top: 3px;
-        }
-
-        /* ব্যালেন্স */
-        .balance-card {
-            background: rgba(255,255,255,0.1);
-            padding: 15px;
-            border-radius: 20px;
-            margin-top: 15px;
-            text-align: center;
-        }
-
-        .balance-amount {
-            color: white;
-            font-size: 32px;
-            font-weight: 800;
-        }
-
-        .balance-points {
-            color: #F59E0B;
-            font-size: 13px;
-            background: rgba(245,158,11,0.2);
-            padding: 4px 12px;
-            border-radius: 30px;
-            display: inline-block;
-            margin-top: 5px;
-        }
-
-        /* স্ট্যাটস */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            padding: 15px;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.03);
-            padding: 12px 5px;
-            border-radius: 15px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .stat-icon {
-            font-size: 18px;
-            color: #8B5CF6;
-            margin-bottom: 5px;
-        }
-
-        .stat-value {
-            color: white;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .stat-label {
-            color: rgba(255,255,255,0.6);
-            font-size: 10px;
-        }
-
-        /* মেসেজ */
-        .message {
-            margin: 0 15px 10px;
-            padding: 10px;
-            border-radius: 12px;
-            font-size: 13px;
-            display: none;
-        }
-
-        .message.success { background: rgba(16,185,129,0.2); color: #6EE7B7; }
-        .message.error { background: rgba(239,68,68,0.2); color: #FCA5A5; }
-        .message.info { background: rgba(139,92,246,0.2); color: #C4B5FD; }
-
-        /* অ্যাড বাটন */
-        .ad-section {
-            padding: 0 15px 15px;
-        }
-
-        .ad-button {
-            background: linear-gradient(135deg, #F59E0B, #D97706);
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 30px;
-            font-size: 16px;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .ad-button.disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            background: #6B7280;
-        }
-
-        /* ট্যাব বাটন */
-        .tab-buttons {
-            display: flex;
-            padding: 0 15px 15px;
-            gap: 8px;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 10px;
-            border-radius: 20px;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.3s;
-        }
-
-        .tab-btn.active {
-            background: #8B5CF6;
-            border-color: #8B5CF6;
-        }
-
-        /* ট্যাব কন্টেন্ট */
-        .tab-content {
-            display: none;
-            padding: 0 15px 15px;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* রেফারেল */
-        .referral-box {
-            background: rgba(255,255,255,0.03);
-            padding: 12px;
-            border-radius: 15px;
-            margin-bottom: 12px;
-        }
-
-        .referral-link {
-            background: rgba(0,0,0,0.3);
-            padding: 10px;
-            border-radius: 10px;
-            color: #F59E0B;
-            font-size: 12px;
-            word-break: break-all;
-            margin-bottom: 8px;
-        }
-
-        .copy-btn {
-            background: #8B5CF6;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 20px;
-            width: 100%;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .level-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-        }
-
-        .level-item {
-            text-align: center;
-        }
-
-        .level-number {
-            font-size: 20px;
-            font-weight: 700;
-            color: #F59E0B;
-        }
-
-        /* উইথড্র */
-        .withdraw-card {
-            background: rgba(255,255,255,0.03);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            cursor: pointer;
-        }
-
-        .withdraw-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .withdraw-info i {
-            font-size: 22px;
-        }
-
-        /* মডেল */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(5px);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #1E293B;
-            padding: 20px;
-            border-radius: 25px;
-            width: 90%;
-            max-width: 300px;
-        }
-
-        .modal-content h3 {
-            color: white;
-            margin-bottom: 12px;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            color: white;
-            margin-bottom: 12px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .modal-btn.confirm {
-            background: #10B981;
-            color: white;
-        }
-
-        .modal-btn.cancel {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- চলমান হেডলাইন -->
+        <!-- Headline -->
         <div class="headline-container">
             <div class="headline" id="headline">
                 <span><i class="fas fa-star"></i> অ্যাড দেখুন ৫ পয়েন্ট পান</span>
@@ -401,7 +28,7 @@
             </div>
         </div>
 
-        <!-- প্রোফাইল -->
+        <!-- Profile -->
         <div class="profile-header">
             <div class="profile-row">
                 <div class="profile-image-container">
@@ -414,49 +41,50 @@
                 </div>
             </div>
 
+            <!-- Balance -->
             <div class="balance-card">
                 <div class="balance-amount" id="balanceAmount">৳0.00</div>
                 <div class="balance-points" id="balancePoints">০ পয়েন্ট</div>
             </div>
         </div>
 
-        <!-- স্ট্যাটস -->
+        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-eye"></i></div>
                 <div class="stat-value" id="totalViews">০</div>
-                <div class="stat-label">ভিউ</div>
+                <div class="stat-label">মোট ভিউ</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-users"></i></div>
                 <div class="stat-value" id="totalRefers">০</div>
-                <div class="stat-label">রেফার</div>
+                <div class="stat-label">রেফারেল</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fas fa-trophy"></i></div>
                 <div class="stat-value" id="totalEarned">৳০</div>
-                <div class="stat-label">আয়</div>
+                <div class="stat-label">মোট আয়</div>
             </div>
         </div>
 
-        <!-- মেসেজ -->
+        <!-- Message -->
         <div id="message" class="message"></div>
 
-        <!-- অ্যাড বাটন -->
+        <!-- Ad Button -->
         <div class="ad-section">
-            <button class="ad-button" id="adButton" onclick="watchAd()">
-                <i class="fas fa-play"></i>
-                <span id="buttonText">অ্যাড দেখুন (৫ পয়েন্ট)</span>
+            <button class="ad-button" id="watchAdBtn" onclick="watchRewardedAd()">
+                <i class="fas fa-play-circle"></i>
+                <span>অ্যাড দেখুন (৫ পয়েন্ট)</span>
             </button>
         </div>
 
-        <!-- ট্যাব বাটন -->
+        <!-- Tab Buttons -->
         <div class="tab-buttons">
             <button class="tab-btn active" onclick="showTab('referral')">রেফারেল</button>
             <button class="tab-btn" onclick="showTab('withdraw')">উইথড্র</button>
         </div>
 
-        <!-- রেফারেল ট্যাব -->
+        <!-- Referral Tab -->
         <div id="referralTab" class="tab-content active">
             <div class="referral-box">
                 <div class="referral-link" id="referralLink"></div>
@@ -480,7 +108,7 @@
             </div>
         </div>
 
-        <!-- উইথড্র ট্যাব -->
+        <!-- Withdraw Tab -->
         <div id="withdrawTab" class="tab-content">
             <div class="withdraw-card" onclick="openWithdrawModal('bkash')">
                 <div class="withdraw-info">
@@ -525,7 +153,7 @@
         </div>
     </div>
 
-    <!-- উইথড্র মডেল -->
+    <!-- Withdraw Modal -->
     <div id="withdrawModal" class="modal">
         <div class="modal-content">
             <h3 id="modalTitle">বিকাশ উইথড্র</h3>
@@ -538,257 +166,7 @@
         </div>
     </div>
 
-    <script>
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBTTbaQel2ih7-znAv1t8lDRZYjPfkASYY",
-            authDomain: "earnbotdb.firebaseapp.com",
-            databaseURL: "https://earnbotdb-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "earnbotdb",
-            storageBucket: "earnbotdb.firebasestorage.app",
-            messagingSenderId: "873493967952",
-            appId: "1:873493967952:web:5a2ce9d5ee213a748d0d55"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        // Telegram WebApp
-        const tg = Telegram.WebApp;
-        tg.expand(); // ফুল স্ক্রিন
-        tg.ready();
-
-        // User Data
-        let userData = {
-            id: '',
-            name: '',
-            points: 0,
-            totalViews: 0,
-            referrals: { level1: 0, level2: 0, level3: 0 },
-            lastAdTime: 0
-        };
-
-        let currentMethod = '';
-
-        // Load User
-        async function loadUser() {
-            try {
-                // Telegram থেকে ইউজার ডাটা
-                if (tg.initDataUnsafe?.user) {
-                    const user = tg.initDataUnsafe.user;
-                    userData.id = user.id.toString();
-                    userData.name = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-                    
-                    // প্রোফাইল ছবি
-                    if (user.photo_url) {
-                        document.getElementById('profileImage').src = user.photo_url;
-                        document.getElementById('profileImage').style.display = 'block';
-                        document.getElementById('profileAvatar').style.display = 'none';
-                    } else {
-                        document.getElementById('profileAvatar').textContent = userData.name.charAt(0).toUpperCase();
-                    }
-                } else {
-                    userData.id = 'local_' + Date.now();
-                    userData.name = 'Local User';
-                }
-
-                // Firebase থেকে ডাটা
-                const snapshot = await db.ref('users/' + userData.id).once('value');
-                if (snapshot.exists()) {
-                    userData = { ...userData, ...snapshot.val() };
-                } else {
-                    await db.ref('users/' + userData.id).set(userData);
-                }
-
-                updateUI();
-                checkTimer();
-
-                // রিয়েল-টাইম লিসেনার
-                db.ref('users/' + userData.id).on('value', (snap) => {
-                    if (snap.exists()) {
-                        userData = snap.val();
-                        updateUI();
-                    }
-                });
-
-            } catch (error) {
-                showMessage('ডাটা লোড করতে সমস্যা', 'error');
-            }
-        }
-
-        // UI আপডেট
-        function updateUI() {
-            document.getElementById('userName').textContent = userData.name;
-            document.getElementById('userId').textContent = 'ID: ' + userData.id;
-            
-            document.getElementById('balanceAmount').textContent = '৳' + (userData.points / 200).toFixed(2);
-            document.getElementById('balancePoints').textContent = userData.points + ' পয়েন্ট';
-            
-            document.getElementById('totalViews').textContent = userData.totalViews;
-            document.getElementById('totalRefers').textContent = userData.referrals.level1;
-            document.getElementById('totalEarned').textContent = '৳' + (userData.points / 200).toFixed(2);
-            
-            document.getElementById('level1Count').textContent = userData.referrals.level1;
-            document.getElementById('level2Count').textContent = userData.referrals.level2;
-            document.getElementById('level3Count').textContent = userData.referrals.level3;
-            
-            document.getElementById('referralLink').textContent = generateReferralLink();
-        }
-
-        // টাইমার চেক
-        function checkTimer() {
-            const now = Date.now();
-            const lastAd = userData.lastAdTime || 0;
-            const timeLeft = 30 - Math.floor((now - lastAd) / 1000);
-            
-            const btn = document.getElementById('adButton');
-            
-            if (timeLeft > 0 && timeLeft < 30) {
-                btn.classList.add('disabled');
-                btn.disabled = true;
-                document.getElementById('buttonText').textContent = `অপেক্ষা করুন (${timeLeft}s)`;
-                
-                setTimeout(checkTimer, 1000);
-            } else {
-                btn.classList.remove('disabled');
-                btn.disabled = false;
-                document.getElementById('buttonText').textContent = 'অ্যাড দেখুন (৫ পয়েন্ট)';
-            }
-        }
-
-        // অ্যাড দেখান
-        async function watchAd() {
-            const btn = document.getElementById('adButton');
-            
-            showMessage('অ্যাড লোড হচ্ছে...', 'info');
-            
-            try {
-                // Monetag SDK চেক
-                if (typeof show_10603637 === 'function') {
-                    await show_10603637();
-                }
-                
-                // পয়েন্ট যোগ
-                userData.points += 5;
-                userData.totalViews += 1;
-                userData.lastAdTime = Date.now();
-                
-                // Firebase আপডেট
-                await db.ref('users/' + userData.id).update({
-                    points: userData.points,
-                    totalViews: userData.totalViews,
-                    lastAdTime: userData.lastAdTime
-                });
-                
-                showMessage('+৫ পয়েন্ট!', 'success');
-                checkTimer();
-                
-            } catch (error) {
-                showMessage('অ্যাড দেখাতে সমস্যা', 'error');
-                btn.classList.remove('disabled');
-                btn.disabled = false;
-            }
-        }
-
-        // রেফারেল লিংক
-        function generateReferralLink() {
-            return `https://t.me/EarnQuick_Official_bot/app?startapp=ref_${userData.id}`;
-        }
-
-        async function copyReferral() {
-            try {
-                await navigator.clipboard.writeText(generateReferralLink());
-                showMessage('কপি হয়েছে!', 'success');
-            } catch (error) {
-                showMessage('কপি করতে সমস্যা', 'error');
-            }
-        }
-
-        // ট্যাব দেখান
-        function showTab(tab) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            if (tab === 'referral') {
-                document.getElementById('referralTab').classList.add('active');
-            } else {
-                document.getElementById('withdrawTab').classList.add('active');
-            }
-        }
-
-        // উইথড্র মডেল
-        function openWithdrawModal(method) {
-            currentMethod = method;
-            
-            const methods = {
-                'bkash': { name: 'বিকাশ', min: 4000, taka: 20 },
-                'nagad': { name: 'নগদ', min: 4000, taka: 20 },
-                'rocket': { name: 'রকেট', min: 4000, taka: 20 },
-                'recharge': { name: 'মোবাইল রিচার্জ', min: 2000, taka: 10 }
-            };
-            
-            const m = methods[method];
-            
-            if (userData.points < m.min) {
-                showMessage(`প্রয়োজন ${m.min} পয়েন্ট`, 'error');
-                return;
-            }
-            
-            document.getElementById('modalTitle').textContent = m.name;
-            document.getElementById('modalInfo').textContent = `${m.min} পয়েন্ট = ${m.taka} টাকা`;
-            document.getElementById('withdrawModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('withdrawModal').style.display = 'none';
-            document.getElementById('withdrawPhone').value = '';
-        }
-
-        async function processWithdraw() {
-            const phone = document.getElementById('withdrawPhone').value;
-            
-            if (!phone || phone.length < 11) {
-                showMessage('সঠিক নম্বর দিন', 'error');
-                return;
-            }
-            
-            const methods = {
-                'bkash': { min: 4000, taka: 20 },
-                'nagad': { min: 4000, taka: 20 },
-                'rocket': { min: 4000, taka: 20 },
-                'recharge': { min: 2000, taka: 10 }
-            };
-            
-            const m = methods[currentMethod];
-            
-            userData.points -= m.min;
-            await db.ref('users/' + userData.id).update({ points: userData.points });
-            
-            showMessage('উইথড্র রিকোয়েস্ট জমা হয়েছে', 'success');
-            closeModal();
-            updateUI();
-        }
-
-        // মেসেজ দেখান
-        function showMessage(text, type) {
-            const msg = document.getElementById('message');
-            msg.textContent = text;
-            msg.className = 'message ' + type;
-            msg.style.display = 'block';
-            setTimeout(() => {
-                msg.style.display = 'none';
-            }, 2000);
-        }
-
-        // স্টার্ট
-        window.onload = loadUser;
-    </script>
+    <!-- Main JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
